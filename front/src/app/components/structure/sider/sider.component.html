@@ -1,0 +1,40 @@
+<nz-sider nzCollapsible [nzTheme]="config.theme ? 'dark' : 'light' " [(nzCollapsed)]="config.collapsed" >
+  <div routerLink="/home" style="cursor: pointer;" routerLinkActive="active" class="logo"></div>
+  <ul nz-menu [nzTheme]="config.theme ? 'dark' : 'light' " nzMode="inline">
+    <li nz-submenu nzTitle="Mon compte" nzIcon="user"
+        [(nzOpen)]="openMap.compte" (nzOpenChange)="openHandler('compte')">
+      <ul>
+        <li routerLink="/utilisateur/compte" nzMatchRouter nz-menu-item>Compte</li>
+        <li nzDisabled nzMatchRouter nz-menu-item>Historique</li>
+        <li nzDisabled nzMatchRouter nz-menu-item>Préférences</li>
+      </ul>
+    </li>
+
+    <li routerLink="/pairs" nz-menu-item nzMatchRouter
+        (click)="openHandler('pairs')">
+      <i nz-icon nzType="dollar"></i>
+      <span >Les Paires</span>
+    </li>
+
+    <li routerLink="/markets" nz-menu-item nzMatchRouter
+        (click)="openHandler('markets')">
+      <i nz-icon nzType="shop"></i>
+      <span>Les Markets</span>
+    </li>
+
+    <li nz-submenu nzTitle="K-alculatorV1" nzIcon="rocket"
+        [(nzOpen)]="openMap.kalculator" (nzOpenChange)="openHandler('kalculator')">
+      <ul>
+        <li routerLink="/bests/calculer" nzMatchRouter nz-menu-item>Calculer</li>
+        <li routerLink="/bests/historique" nzMatchRouter nz-menu-item>Historique</li>
+      </ul>
+    </li>
+
+    <li class="mt-2">
+      <nz-switch class="ml-4" (ngModelChange)="changeConfig($event)" [ngModel]="config.theme"></nz-switch>
+      <i nz-icon></i>
+      <span class="ml-2">{{!config.collapsed ? config.theme ? 'Sombre' : 'Lumineux' : ''}}</span>
+    </li>
+  </ul>
+
+</nz-sider>

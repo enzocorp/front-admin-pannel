@@ -1,0 +1,41 @@
+<strong style="font-size: 0.9rem" nz-typography >Filtrer par</strong><br>
+<form nz-form  [formGroup]="filterform">
+  <nz-input-group [nzAddOnBefore]="addOnBeforeTemplate" style="width: fit-content; display: flex" [nzSuffix]="suffixIconSearch">
+    <input style="min-width: 150px" type="text" nz-input formControlName="pair" placeholder="Rechercher par nom" />
+  </nz-input-group>
+
+  <div class="mt-2">
+    <nz-radio-group class="mr-3" formControlName="banned" nzSize="small">
+      <label nz-radio-button>toutes</label>
+      <label nz-radio-button nzValue="banned">éliminée(s)</label>
+      <label nz-radio-button nzValue="allowed">en service(s)</label>
+    </nz-radio-group>
+    <span class="mr-1">Signalée(s)</span><nz-switch class="mr-3" nzSize="small" formControlName="reported"></nz-switch>
+  </div>
+</form>
+
+  <div class="mt-2">
+    <p>
+      <strong style="font-size: 0.9rem" nz-typography >Trier par</strong><br>
+      <nz-radio-group nzName="radiogroup" [(ngModel)]="sort.key" (ngModelChange)="onRadioChange($event)">
+        <label nz-radio nzValue="_id" class="mr-2">date</label>
+        <label nz-radio nzValue="name" class="mr-2">nom</label>
+        <label nz-radio nzValue="exclusion.pairIsExclude" class="mr-2">élimination</label>
+        <label nz-radio nzValue="banLenght" class="mr-2">signalement</label>
+        <label nz-radio nzValue="ifPositiveSpread.profitMaxiMoyen_usd" class="mr-2">gains max</label>
+        <label nz-radio nzValue="ifPositiveSpread.spreadMoyen_15kusd" class="mr-2">gains 15k$</label>
+      </nz-radio-group>
+      <nz-switch nzSize="small" [ngModel]="true" nzCheckedChildren="croissant" nzUnCheckedChildren="décroissant" (click)="onChangeOrder()"></nz-switch>
+    </p>
+  </div>
+
+<ng-template #suffixIconSearch>
+  <i nz-icon nzType="search"></i>
+</ng-template>
+
+<ng-template #addOnBeforeTemplate>
+  <nz-select style="width: 150px" [(ngModel)]="searchMod" >
+    <nz-option nzLabel="Commence par" nzValue="startWith"></nz-option>
+    <nz-option nzLabel="Termine par" nzValue="endWith"></nz-option>
+  </nz-select>
+</ng-template>

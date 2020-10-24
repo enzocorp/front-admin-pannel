@@ -1,0 +1,18 @@
+
+<nz-badge
+  [nzStyle]="{ backgroundColor: pairBan.color !== null && tabColor[pairBan.color]}"
+  [nzDot]=" (pairBan.fromSome === 1 && markets_id.length === 1) || pairBan.fromAll "
+  [nzCount]="markets_id.length > 1 ? pairBan.fromSome : 0">
+<span
+  nz-popover
+  [nzPopoverContent]="form"
+  nzPopoverPlacement="bottom"
+  nzPopoverTrigger="click"
+  [(nzPopoverVisible)]="visible">
+  <ng-content></ng-content>
+</span>
+</nz-badge>
+
+<ng-template #form>
+  <app-form (afterSubmit)="updateData()" [(visible)]="visible" [(markets)]="markets_object" [(pair)]="pair"></app-form>
+</ng-template>

@@ -1,0 +1,177 @@
+<nz-drawer
+  [nzBodyStyle]="{ overflow: 'auto', paddingBottom: '4rem' }"
+  [nzMaskClosable]="true"
+  [nzWidth]="720"
+  [nzVisible]="visible"
+  [nzTitle]="excludePair "
+  (nzOnClose)="close()"
+>
+  <nz-spin [nzSpinning]="!pair" nzTip="Chargement...">
+  <div *ngIf="pair && best">
+    <nz-divider nzText="Les markets " nzOrientation="left"></nz-divider>
+    <nz-row [nzGutter]="16">
+
+      <nz-col [nzSpan]="12">
+        <nz-card [nzTitle]="best.buy.exchange" [nzExtra]="excludeBuy">
+          <nz-statistic
+            [nzValue]="(best.buy.price | number: '1.0-5' | replaceBy : ',' : ' ' )"
+            nzTitle="Prix d'achat"
+            [nzPrefix]="prefixTplOne"
+            [nzSuffix]="best.quote"
+            [nzValueStyle]="{ color: '#3F8600' }"
+          >
+          </nz-statistic>
+          <ng-template #prefixTplOne><i nz-icon nzType="arrow-up"></i></ng-template>
+          <br>
+          - Volume : <strong>{{best.buy.buy_volume}} {{best.base}}</strong>
+          <br>
+          - Market : <a href="{{best.buy.website}}" target="_blank"  >{{best.buy.website}}</a>
+          <br>
+          - {{best.buy.exchange}} est le volume limiteur :
+          <span [ngStyle]="{color : best.volumeLimiteur === 'buy' ? 'red' : 'green'}" >
+          {{best.volumeLimiteur === 'buy' ? 'Oui' : 'Non'}}
+        </span>
+        </nz-card>
+      </nz-col>
+
+      <nz-col [nzSpan]="12">
+        <nz-card [nzTitle]="best.sell.exchange" [nzExtra]="excludeSell">
+          <nz-statistic
+            [nzValue]="(best.sell.price | number: '1.0-5' | replaceBy : ',' : ' ' )"
+            nzTitle="Prix de vente"
+            [nzPrefix]="prefixTplTwo"
+            [nzSuffix]="best.quote"
+            [nzValueStyle]="{ color: '#CF1322' }"
+          >
+          </nz-statistic>
+          <ng-template #prefixTplTwo><i nz-icon nzType="arrow-down"></i></ng-template>
+          <br>
+          - Volume : <strong>{{best.sell.sell_volume}} {{best.base}}</strong>
+          <br>
+          - Market : <a href="{{best.sell.website}}" target="_blank"  >{{best.sell.website}}</a>
+          <br>
+          - {{best.sell.exchange}} est le volume limiteur :
+          <span [ngStyle]="{color : best.volumeLimiteur === 'sell' ? 'red' : 'green'}" >
+          {{best.volumeLimiteur === 'sell' ? 'Oui' : 'Non'}}
+        </span>
+        </nz-card>
+      </nz-col>
+
+    </nz-row>
+
+    <nz-divider nzText="Les assets " nzOrientation="left"></nz-divider>
+    <div style="background: #ECECEC;padding:30px;">
+      <div nz-row [nzGutter]="8">
+        <div nz-col [nzSpan]="12">
+          <nz-card [nzTitle]="best.base + ' (base)'">
+            <div class="d-flex justify-content-center">
+              <button disabled class="mr-2" nz-button nzType="primary" nzShape="circle"><i nz-icon nzType="right"></i></button>
+              <button disabled nz-button nzType="danger" nzShape="circle" ><i nz-icon nzType="delete"></i></button>
+            </div>
+          </nz-card>
+        </div>
+        <div nz-col [nzSpan]="12">
+          <nz-card [nzTitle]="best.quote + ' (quote)'">
+            <div class="d-flex justify-content-center">
+              <button disabled class="mr-2" nz-button nzType="primary" nzShape="circle"><i nz-icon nzType="right"></i></button>
+              <button disabled nz-button nzType="danger" nzShape="circle"><i nz-icon nzType="delete"></i></button>
+            </div>
+          </nz-card>
+        </div>
+      </div>
+    </div>
+
+    <nz-divider nzText="Les stats " nzOrientation="left"></nz-divider>
+
+    <nz-list nzBordered nzSize="small">
+      <nz-list-item >  <nz-divider nzText="Les spreads"></nz-divider> </nz-list-item>
+
+
+      <nz-list-item>
+        <nz-list-item-meta
+          nzTitle="Spread "
+          nzDescription="Représente les gains en {{best.quote}} pour 1 {{best.base}} acheté puis revendu"
+        ></nz-list-item-meta>
+        <kbd>{{best.spread | number: '1.0-5' | replaceBy : ',' : ' '}} {{best.quote}}</kbd>
+      </nz-list-item>
+
+      <nz-list-item>
+        <nz-list-item-meta
+          nzTitle="Spread pour 1$ "
+          nzDescription="Représente les gains en $ pour 1$ misé"
+        ></nz-list-item-meta>
+        <kbd>{{best.spread_1usd | number: '1.0-2' | replaceBy : ',' : ' '}} $</kbd>
+      </nz-list-item>
+
+      <nz-list-item>
+        <nz-list-item-meta
+          nzTitle="Spread pour 15 000$"
+          nzDescription="Représente les gains en $ pour 15 000$ misés"
+        ></nz-list-item-meta>
+        <mark>{{best.spread_15kusd | number: '1.0-2' | replaceBy : ',' : ' '}} $</mark>
+      </nz-list-item>
+
+      <nz-list-item >  <nz-divider nzText="Les volumes"></nz-divider> </nz-list-item>
+
+
+      <nz-list-item>
+        <nz-list-item-meta
+          nzTitle="Volume max échangeable"
+          nzDescription="Représente le volume maximum en {{best.base}} echangeable entre les deux market "
+        ></nz-list-item-meta>
+        <kbd>{{best.volume | number: '1.0-5' | replaceBy : ',' : ' '}} {{best.base}}</kbd>
+      </nz-list-item>
+      <nz-list-item>
+        <nz-list-item-meta
+          nzTitle="Volume max échangeable en $"
+          nzDescription="Représente le volume maximum en $ echangeable entre les deux market "
+        ></nz-list-item-meta>
+        <mark>{{best.volume_usd | number: '1.0-2' | replaceBy : ',' : ' '}} $</mark>
+      </nz-list-item>
+
+      <nz-list-item >  <nz-divider nzText="Profits Max"></nz-divider> </nz-list-item>
+
+      <nz-list-item>
+        <nz-list-item-meta
+          nzTitle="Profit Maximum en $"
+          nzDescription="Représente les gains maximums possibles en investissant une somme illimitée"
+        ></nz-list-item-meta>
+        <span nz-typography>
+        <i class="mr-2" nz-icon nzType="thunderbolt" nzTheme="twotone"></i>
+        <strong style="color: #0099ff ; font-size: 120%">{{best.profitMaxi_usd | number: '1.0-2' | replaceBy : ',' : ' '}} $</strong>
+      </span>
+      </nz-list-item>
+    </nz-list>
+
+  </div>
+  </nz-spin>
+</nz-drawer>
+
+<!--Les templates -->
+
+  <ng-template #excludePair>
+    <div *ngIf="best">
+      <span class="mr-3">{{best.pair}}</span>
+      <a href="/pairs/{{best.pair}}" target="_blank" class="mr-2" nz-button nzType="primary" nzShape="circle"><i nz-icon nzType="right"></i></a>
+        <app-btn-ban-symbole class="mr-2" *ngIf="pair" [pair]="pair" [markets_id]="[best.sell.exchange, best.buy.exchange]">
+          <button nz-button nzType="default" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
+        </app-btn-ban-symbole>
+        <app-btn-ban-symbole *ngIf="pair" [pair]="pair" [markets_id]="['*']">
+          <button nz-button nzType="danger" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
+        </app-btn-ban-symbole>
+    </div>
+  </ng-template>
+
+  <ng-template #excludeBuy>
+    <a href="/markets/{{best.buy.exchange}}" nzSize="small" target="_blank" class="mr-2" nz-button nzType="primary" nzShape="circle"><i nz-icon nzType="right"></i></a>
+    <app-btn-ban-market *ngIf="marketBuy" [market]="marketBuy">
+      <button nzSize="small" nz-button nzType="danger" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
+    </app-btn-ban-market>
+  </ng-template>
+
+  <ng-template #excludeSell>
+    <a href="/markets/{{best.sell.exchange}}" nzSize="small" target="_blank" class="mr-2" nz-button nzType="primary" nzShape="circle"><i nz-icon nzType="right"></i></a>
+    <app-btn-ban-market *ngIf="marketBuy" [market]="marketSell">
+      <button nzSize="small" nz-button nzType="danger" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
+    </app-btn-ban-market>
+  </ng-template>

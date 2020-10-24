@@ -1,0 +1,19 @@
+<nz-badge class="mr-2"
+          [nzStyle]="{ backgroundColor: !!market?.exclusion.severity && color[market.exclusion.severity -1]}"
+          [nzDot]="!!market?.exclusion.severity">
+<span
+  nz-popover
+  [nzPopoverContent]="form"
+  nzPopoverPlacement="bottom"
+  nzPopoverTrigger="click"
+  [(nzPopoverVisible)]="visible">
+  <ng-content></ng-content>
+</span>
+</nz-badge>
+
+<ng-template #form>
+  <app-form-ban-market [(visible)]="visible"
+                       [(market)]="market"
+                       (afterUpdate)="afterUpdate.emit(market)"
+  ></app-form-ban-market>
+</ng-template>

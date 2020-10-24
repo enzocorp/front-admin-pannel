@@ -1,0 +1,30 @@
+.logo {
+  height: 32px;
+  margin: 16px;
+  background: rgba(64, 143, 241, 0.4);
+}
+
+.logo.active {
+  border: rgba(0,153,255,0.5) 3px solid ;
+  box-shadow: inset dodgerblue 5px 5px 25px;
+}
+
+.layout{
+  min-height: 100vh;
+}
+
+nz-sider {
+  overflow: auto;
+  min-height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.right-layout{
+  margin-left: 200px;
+  transition: margin-left 700ms;
+}
+.collapsed{
+  margin-left: 80px;
+}

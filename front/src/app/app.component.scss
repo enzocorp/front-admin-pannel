@@ -1,0 +1,26 @@
+
+.layout{
+  min-height: 100vh;
+}
+
+.right-layout{
+  margin-left: 200px;
+  transition: margin-left 1s;
+  min-height: 100vh ;
+}
+
+.collapsed{
+  margin-left: 80px;
+}
+
+nz-content {
+  margin: 0 16px;
+}
+
+.inner-content {
+  padding: 24px;
+  background: #fff;
+  min-height: 80vh;
+  margin: 0 16px;
+}
+

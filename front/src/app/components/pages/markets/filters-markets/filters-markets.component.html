@@ -1,0 +1,34 @@
+<strong style="font-size: 0.9rem" nz-typography >Filtrer par</strong><br>
+<form nz-form  [formGroup]="filterform">
+  <nz-input-group style="width: fit-content; display: flex" [nzSuffix]="suffixIconSearch">
+    <input style="min-width: 150px" type="text" nz-input formControlName="market" placeholder="Rechercher par nom" />
+  </nz-input-group>
+
+  <div class="mt-2">
+    <nz-radio-group class="mr-3" formControlName="banned" nzSize="small">
+      <label nz-radio-button>tous</label>
+      <label nz-radio-button nzValue="banned">éliminé(s)</label>
+      <label nz-radio-button nzValue="allowed">en service(s)</label>
+    </nz-radio-group>
+    <span class="mr-1">Signalé(s)</span><nz-switch class="mr-3" nzSize="small" formControlName="reported"></nz-switch>
+  </div>
+</form>
+
+<div class="mt-2">
+  <p>
+    <strong style="font-size: 0.9rem" nz-typography >Trier par</strong><br>
+    <nz-radio-group nzName="radiogroup" [(ngModel)]="sort.key" (ngModelChange)="makeUpdate()">
+      <label nz-radio nzValue="_id" class="mr-2">date</label>
+      <label nz-radio nzValue="id_exchange" class="mr-2">nom</label>
+      <label nz-radio nzValue="exclusion.exchangeIsExclude" class="mr-2">élimination</label>
+      <label nz-radio nzValue="exclusion.severity" class="mr-2">signalement</label>
+      <label nz-radio nzValue="paires_actives.total" class="mr-2"> paires actives </label>
+    </nz-radio-group>
+    <nz-switch nzSize="small" [ngModel]="true" nzCheckedChildren="croissant" nzUnCheckedChildren="décroissant" (click)="onChangeOrder()"></nz-switch>
+  </p>
+</div>
+
+<ng-template #suffixIconSearch>
+  <i nz-icon nzType="search"></i>
+</ng-template>
+

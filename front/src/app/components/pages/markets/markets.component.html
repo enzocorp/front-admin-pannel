@@ -1,0 +1,82 @@
+<h1>La liste des markets </h1>
+
+<div>
+  <button class="btn btn-outline-danger mb-4"
+          nz-popconfirm
+          (nzOnConfirm)="onResetMoyennes()"
+          nzOkText="oui"
+          nzPopconfirmPlacement="bottom"
+          nzPopconfirmTitle="Veux-tu réinitialiser les listes ( contenant les meilleur pair de chaque market ) de TOUS les markets en services ???!"
+  >RESET LES SCORES</button>
+</div>
+<button class="mb-3" nz-button nzType="primary" [nzLoading]="pagination.loading">
+  <i nz-icon nzType="search"></i>Markets trouvés <span class="badge badge-light ml-3">{{pagination.total}}</span>
+</button>
+<div>
+  <div class="mb-3">
+<app-filters-markets (onUpdate)="onUpdate()" [(request)]="request"></app-filters-markets>
+        <app-pagination
+          [(loading)]="pagination.loading"
+          (onUpdate)="onUpdate()"
+          [total]="pagination.total"
+          [(paginate)]="pagination.paginate"
+          [(index)]="pagination.index"
+        ></app-pagination>
+
+    <br>
+    <nz-spin nzSize="large" [nzSpinning]="pagination.loading">
+      <router-outlet></router-outlet>
+      <nz-table
+        [nzData]="pagination.total"
+        [nzFrontPagination]="false"
+      >
+        <thead>
+        <tr>
+          <th class="position-relative" [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)">
+            <div *ngIf="arrayCheckedMarket.length" style="color:dodgerblue ;position: absolute;transform: translate(37px,-21px);" >{{setOfCheckedId.size}}</div>
+          </th>
+          <th>Nom</th>
+          <th>Signalement</th>
+          <th>Pairs totales</th>
+          <th>Pairs Actives</th>
+          <th>Lien</th>
+          <th>
+            <app-ban-group-markets [marketsList]="arrayCheckedMarket" (afterUpdate)="afterGroupSubmit()">
+              <button nz-button nzType="danger" [disabled]="!arrayCheckedMarket.length" nzSize="small" ><i  nz-icon nzType="delete"></i></button>
+            </app-ban-group-markets>
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let market of markets">
+          <td
+            [nzChecked]="setOfCheckedId.has(market.id_exchange)"
+            (nzCheckedChange)="onItemChecked(market.id_exchange, $event)"
+          ></td>
+          <td class="btn-link" style="color: black; cursor: pointer" (click)="navigate(market.id_exchange)">{{market.id_exchange}}</td>
+          <td>
+            <nz-tag *ngIf="!market.exclusion.severity" nzColor="green"><strong>aucun</strong> signalement</nz-tag>
+            <nz-tag *ngIf="market.exclusion.severity" nzColor="{{color[market.exclusion.severity-1]}}">Signalé <strong> {{severities[market.exclusion.severity-1].description}}</strong></nz-tag>
+          </td>
+          <td> <span style="font-size: 95%"><strong style=""> {{market.paires_actives?.total ||0}}</strong></span></td>
+          <td><button nz-button nzSize="small" nzType="primary">{{market.symbolsCount}} pairs</button></td>
+          <td class="p-0"><a href="{{market.website}}" class="d-block" target="_blank">visiter</a></td>
+          <td>
+            <app-btn-ban-market (afterUpdate)="onUpdate()" *ngIf="market" [market]="market" >
+              <button nz-button nzType="danger" nzSize="small" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
+            </app-btn-ban-market>
+          </td>
+        </tr>
+        </tbody>
+      </nz-table>
+    </nz-spin>
+    <br>
+    <app-pagination
+      [(loading)]="pagination.loading"
+      (onUpdate)="onUpdate()"
+      [total]="pagination.total"
+      [(paginate)]="pagination.paginate"
+      [(index)]="pagination.index"
+    ></app-pagination>
+  </div>
+</div>

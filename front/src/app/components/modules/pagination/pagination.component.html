@@ -1,0 +1,14 @@
+<nz-pagination
+  [nzShowTotal]="totalTemplate"
+  [nzPageIndex]="index"
+  (nzPageIndexChange)="onIndexChange($event)"
+  [nzTotal]="total"
+  nzShowSizeChanger
+  [nzPageSizeOptions]="limitOptions"
+  (nzPageSizeChange)="onLimitChange($event)"
+  [nzPageSize]="paginate.limit">
+</nz-pagination>
+
+<ng-template #totalTemplate let-total>
+  <nz-tag style="cursor: pointer" (click)="onUpdate.emit(paginateValue)" nzColor="default">total : {{total}}</nz-tag>
+</ng-template>

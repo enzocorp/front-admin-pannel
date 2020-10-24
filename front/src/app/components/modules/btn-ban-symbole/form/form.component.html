@@ -1,0 +1,110 @@
+<div >
+  <nz-divider *ngIf="markets[0].market === '*'" nzText="Je veux exclure la pair {{pair.name}} elle même"></nz-divider>
+  <nz-divider *ngIf="markets[0].market !== '*'" nzText="Je veux retirer {{pair.name}} d'un market : "></nz-divider>
+  <form nz-form [formGroup]="exclusionForm">
+
+    <div nz-row class="mb-1">
+
+      <nz-form-item *ngIf="markets[0].market !== '*'">
+        <nz-form-control nzErrorTip="Selectionne le market !">
+          <nz-input-group nzAddOnBefore="market">
+            <nz-select
+              (ngModelChange)="onMarketChange($event)"
+              class="largeur"
+              nzPlaceHolder="Exclure la pair de :"
+              formControlName="market"
+              [nzDisabled]="markets.length === 1"
+            >
+              <nz-option *ngFor="let item of markets" [nzCustomContent]="!!item.severity" [nzLabel]="item.market" [nzValue]="item.market">
+                <nz-badge [nzColor]="color[item.severity -1]">{{item.market}} </nz-badge>
+              </nz-option>
+            </nz-select>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item *ngIf="markets[0].market === '*'">
+        <nz-input-group nzAddOnBefore="Exclure">
+          <nz-select
+            class="largeur"
+            nzDisabled
+            formControlName="market"
+          >
+            <nz-option nzLabel="LA PAIR" nzValue="*"></nz-option>
+          </nz-select>
+        </nz-input-group>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Séléctionne une sévérité !">
+          <nz-input-group nzAddOnBefore="Severité">
+            <nz-select
+              (ngModelChange)="onSeverityChange($event)"
+              class="largeur"
+              nzPlaceHolder="severité"
+              formControlName="severity"
+            >
+              <nz-option *ngFor="let item of severities" nzCustomContent [nzLabel]="item.description" [nzValue]="item.severity">
+                <i *ngIf="item.severity === 4" nz-icon nzType="close-circle" nzTheme="twotone" nzTwotoneColor="red"></i> {{item.description}}
+              </nz-option>
+              <nz-option *ngIf="selectedMarketIsBan" nzCustomContent nzLabel="DEBAN" [nzValue]="0">
+                <i nz-icon nzType="check-circle" nzTheme="twotone"></i> débanir
+              </nz-option>
+            </nz-select>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+
+    </div>
+
+    <nz-form-item class="mb-1" *ngIf="!unban">
+      <nz-form-control nzErrorTip="Il faut selectionner aumoins une raison !">
+        <nz-input-group nzAddOnBefore="Raisons">
+          <nz-select
+            class="select-reasons"
+            style="width: 100%"
+            nzShowSearch
+            nzAllowClear
+            [nzMaxTagCount]="1"
+            [nzDropdownRender]="renderTemplate"
+            [nzMaxTagPlaceholder]="tagPlaceHolder"
+            nzPlaceHolder="Selectionner les raisons"
+            nzMode="multiple"
+            formControlName="reasons"
+          >
+            <nz-option *ngFor="let item of reasons" [nzLabel]="item.description" [nzValue]="item.status"></nz-option>
+          </nz-select>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item *ngIf="!unban">
+    <textarea nz-input
+              placeholder="Ajouter une Note (facultatif)"
+              [nzAutosize]="{ minRows: 2, maxRows: 5 }"
+              formControlName="note"
+    >
+    </textarea>
+    </nz-form-item>
+
+  </form>
+
+  <div class="mt-3 text-right">
+    <button class="mr-1" nz-button nzSize="small" nzType="primary" (click)="onSubmitToolTip()">Envoyer</button>
+    <button nz-button nzSize="small" (click)="visible = false" >Annuler</button>
+  </div>
+
+  <!------------ Templates ----------->
+  <ng-template #renderTemplate>
+      <nz-divider class="m-0"></nz-divider>
+      <div class="addreason">
+      <input type="text" placeholder="Autre raison" nz-input #inputElement />
+      <a class="add-item" (click)="addItem(inputElement)"><i nz-icon nzType="plus"></i> Ajouter</a>
+    </div>
+  </ng-template>
+
+  <ng-template #tagPlaceHolder>
+    ... ({{ exclusionForm.value['reasons'].length - 1}})
+  </ng-template>
+
+</div>

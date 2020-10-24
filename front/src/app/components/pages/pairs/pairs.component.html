@@ -1,0 +1,93 @@
+<h1>La liste des markets </h1>
+
+<div>
+  <button (click)="makeInit()" class="mr-3 btn btn-outline-success mb-4">INITIALISATION</button>
+  <button class="btn btn-outline-danger mb-4"
+          nz-popconfirm
+          (nzOnConfirm)="onResetMoyennes()"
+          nzOkText="oui"
+          nzPopconfirmPlacement="bottom"
+          nzPopconfirmTitle="Veux-tu réinitialiser TOUTES les moyennes des Paires en services ???!"
+  >RESET LES MOYENNES</button>
+</div>
+
+<button class="mb-5" nz-button nzType="primary" [nzLoading]="pagination.loading">
+  <i nz-icon nzType="search"></i>Pairs trouvées <span class="badge badge-light ml-3">{{pagination.total}}</span>
+</button>
+<div>
+  <div class="mb-3"><app-filters-pairs (onUpdate)="onUpdate()" [(request)]="request"></app-filters-pairs></div>
+  <app-pagination
+    class="mb-5 mt-5"
+    [(loading)]="pagination.loading" (onUpdate)="onUpdate()"
+    [total]="pagination.total"
+    [(paginate)]="pagination.paginate"
+    [(index)]="pagination.index"
+  ></app-pagination>
+  <br>
+  <nz-spin nzSize="large" [nzSpinning]="pagination.loading">
+  <router-outlet></router-outlet>
+    <nz-table
+      [nzData]="pagination.total"
+      [nzFrontPagination]="false"
+    >
+      <thead>
+      <tr>
+        <th class="position-relative" [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)">
+          <div *ngIf="arrayCheckedPairs.length" style="color:dodgerblue ;position: absolute;transform: translate(37px,-21px);" >{{setOfCheckedId.size}}</div>
+        </th>
+        <th>Nom</th>
+        <th>Status</th>
+        <th>Signalements</th>
+        <th>Pour max $</th>
+        <th>Pour 15k $</th>
+        <th>
+          <app-ban-group-pairs [pairsList]="arrayCheckedPairs" (afterUpdate)="afterGroupSubmit()">
+            <button nz-button nzType="danger" [disabled]="!arrayCheckedPairs.length" nzSize="small" ><i  nz-icon nzType="delete"></i></button>
+          </app-ban-group-pairs>
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let pair of pairs">
+        <td [nzChecked]="setOfCheckedId.has(pair.name)"
+            (nzCheckedChange)="onItemChecked(pair.name, $event)"
+        ></td>
+        <td class="btn-link" style="color: black; cursor: pointer"  (click)="navigate(pair.name)">{{pair.name}}</td>
+        <td>
+          <nz-tag *ngIf="pair.exclusion.pairIsExclude" nzColor="red">éliminée</nz-tag>
+          <nz-tag *ngIf="!pair.exclusion.pairIsExclude" nzColor="green">en service</nz-tag>
+        </td>
+        <td>
+          <nz-tag *ngIf="pair.exclusion.fromMarkets.length === 0" nzColor="default"><strong>aucun</strong> signalement</nz-tag>
+          <nz-tag *ngIf="pair.exclusion.fromMarkets.length" nzColor="gold"><strong>{{pair.exclusion.fromMarkets.length}}</strong> signalements</nz-tag>
+        </td>
+        <td>
+          <span>
+            <strong style="color: #0099ff ; font-size: 100%">{{pair.ifPositiveSpread.profitMaxiMoyen_usd | number: '1.0-2' | replaceBy : ',' : ' '}} $</strong>
+          </span>
+        </td>
+        <td class="p-0">
+          <span>
+            <strong style="font-size: 100%">{{pair.ifPositiveSpread.spreadMoyen_15kusd | number: '1.0-2' | replaceBy : ',' : ' '}} $</strong>
+          </span>
+        </td>
+        <td>
+          <app-btn-ban-symbole (afterUpdate)="onUpdate()" *ngIf="pair" [pair]="pair" [markets_id]="['*']">
+            <button nz-button nzType="danger" nzSize="small" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
+          </app-btn-ban-symbole>
+        </td>
+      </tr>
+      </tbody>
+    </nz-table>
+
+  </nz-spin>
+  <br>
+  <nz-empty *ngIf="pagination.total === 0"></nz-empty>
+  <app-pagination
+    [(loading)]="pagination.loading" (onUpdate)="onUpdate()"
+    [total]="pagination.total"
+    [(paginate)]="pagination.paginate"
+    [(index)]="pagination.index"
+  ></app-pagination>
+
+</div>

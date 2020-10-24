@@ -1,0 +1,15 @@
+<nz-layout class="layout">
+  <app-sider></app-sider>
+
+  <nz-layout  [ngClass]="{'collapsed' : config.collapsed, 'right-layout' : true }" >
+    <app-header></app-header>
+    <nz-content >
+      <div class="inner-content">
+        <router-outlet></router-outlet>
+      </div>
+    </nz-content>
+
+    <app-footer></app-footer>
+  </nz-layout>
+
+</nz-layout>
