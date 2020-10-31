@@ -9,8 +9,9 @@
 
 <ng-template #form>
   <app-form-report-markets
-    [markets]="market"
+    [selectMultiple]="selectMultiple"
+    [markets]="markets"
     [(visible)]="visible"
-    (afterUpdate)="afterUpdate.emit()"
+    (afterUpdate)="afterUpdate.emit(selectMultiple)"
   ></app-form-report-markets>
 </ng-template>

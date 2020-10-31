@@ -10,11 +10,13 @@ export class ReportMarketsComponent implements OnInit {
 
   constructor() {}
   visible: boolean
-  @Input()market : Market[]
+  @Input()markets : Market[]
+  @Input()selectMultiple : boolean = false
   @Output()
-  afterUpdate : EventEmitter<void> = new EventEmitter<void>();
+  afterUpdate : EventEmitter<boolean> = new EventEmitter<boolean>();
 
   ngOnInit(): void {
   }
+
 
 }

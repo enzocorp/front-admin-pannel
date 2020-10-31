@@ -1,5 +1,5 @@
 import {Component, EventEmitter, OnInit} from '@angular/core';
-import {MarketService} from "../../../../services/http/market.service";
+import {MarketsService} from "../../../../services/http/markets.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {forkJoin, Observable} from "rxjs";
 import {map} from "rxjs/operators";

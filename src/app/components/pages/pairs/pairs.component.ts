@@ -35,7 +35,7 @@ export class PairsComponent implements OnInit,OnDestroy,AfterViewInit {
   checked = false;
   indeterminate = false;
   setOfCheckedId = new Set<string>();
-  arrayCheckedPairs : string[] = []
+  arrayCheckedPairs : Pair[] = []
 
   ngOnInit(): void {
     this.subscription.add(this.pairsService.pairsSubject.subscribe(
@@ -66,7 +66,7 @@ export class PairsComponent implements OnInit,OnDestroy,AfterViewInit {
   refreshCheckedStatus(): void {
     this.checked = this.pairs.every(({ name }) => this.setOfCheckedId.has(name));
     this.indeterminate = this.pairs.some(({ name }) => this.setOfCheckedId.has(name)) && !this.checked;
-    this.arrayCheckedPairs = [... this.setOfCheckedId.values()]
+    this.arrayCheckedPairs = this.pairs.filter(pair => this.setOfCheckedId.has(pair.name) )
   }
 
   onItemChecked(name: string, checked: boolean): void {
@@ -79,17 +79,16 @@ export class PairsComponent implements OnInit,OnDestroy,AfterViewInit {
     this.refreshCheckedStatus();
   }
 
-  afterGroupSubmit(){
+/*-----------------------On update ----------------------------------*/
+  onGroupUpdate(){
     this.onUpdate()
     this.onAllChecked(false)
   }
 
-/*-----------------------On update ----------------------------------*/
   onUpdate(){
     this.request = {...this.request,...this.pagination.paginate}
     this.pairsService.getPairs(this.request).subscribe(
       (resp) => {
-        console.log('resp.data :: ',resp.data)
         this.pairsService.emmitPairs(resp.data)
         this.pagination.total = resp.metadata[0]?.total || 0
       }
@@ -103,11 +102,6 @@ export class PairsComponent implements OnInit,OnDestroy,AfterViewInit {
 
   ngOnDestroy() {
     this.subscription.unsubscribe()
-  }
-
-  test(){
-    this.onUpdate()
-    console.log(this.request)
   }
 
 }

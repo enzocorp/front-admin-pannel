@@ -5,7 +5,7 @@ import {Pair} from "../../../../models/pair";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs";
 import {Market} from "../../../../models/market";
-import {MarketService} from "../../../../services/http/market.service";
+import {MarketsService} from "../../../../services/http/markets.service";
 import {BestsService} from "../../../../services/http/bests.service";
 
 interface exclusion {
@@ -33,7 +33,7 @@ export class ShowBestComponent implements OnInit, OnDestroy {
 
   constructor(private bestsServ : BestsService,
               private cryptoServ : CryptoService,
-              private marketServ : MarketService,
+              private marketServ : MarketsService,
               private activatedRoute : ActivatedRoute,
               private router : Router,
               ) { }

@@ -8,10 +8,10 @@
 </span>
 
 <ng-template #form>
-  <app-form-report-pairs
+  <app-form-report-assets
     [selectMultiple]="selectMultiple"
-    [pairs]="pairs"
+    [assets]="assets"
     [(visible)]="visible"
     (afterUpdate)="afterUpdate.emit(selectMultiple)"
-  ></app-form-report-pairs>
+  ></app-form-report-assets>
 </ng-template>

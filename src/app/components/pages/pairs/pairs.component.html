@@ -1,7 +1,6 @@
 <h1>La liste des markets </h1>
 
 <div>
-  <button (click)="test()">Test</button>
   <button class="btn btn-outline-danger mb-4"
           nz-popconfirm
           (nzOnConfirm)="onResetMoyennes()"
@@ -41,10 +40,9 @@
         <th>Pour max $</th>
         <th>Pour 15k $</th>
         <th>
-          BAN
-        <!--  <app-ban-group-pairs [pairsList]="arrayCheckedPairs" (afterUpdate)="afterGroupSubmit()">
-            <button nz-button nzType="danger" [disabled]="!arrayCheckedPairs.length" nzSize="small" ><i  nz-icon nzType="delete"></i></button>
-          </app-ban-group-pairs>-->
+          <app-report-pairs (afterUpdate)="onGroupUpdate()" [pairs]="arrayCheckedPairs" [selectMultiple]="true">
+            <button nz-button nzType="danger" nzSize="small" ><i  nz-icon nzType="delete"></i></button>
+          </app-report-pairs>
         </th>
       </tr>
       </thead>
@@ -73,7 +71,7 @@
           </span>
         </td>
         <td>
-          <app-report-pairs (afterUpdate)="onUpdate()" *ngIf="pair" [pair]="[pair]" >
+          <app-report-pairs (afterUpdate)="onUpdate()" *ngIf="pair" [pairs]="[pair]" >
             <button nz-button nzType="danger" nzSize="small" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
           </app-report-pairs>
         </td>

@@ -1,21 +1,21 @@
-<nz-spin [nzSpinning]="!pairs">
-  <nz-divider nzText="[Pair] : Je veux signaler une/des paire(s) "></nz-divider>
+<nz-spin [nzSpinning]="!symbols">
+  <nz-divider nzText="[symbol] : Je veux signaler une/des paire(s) dans un market "></nz-divider>
   <form nz-form [formGroup]="exclusionForm">
 
     <div nz-row class="mb-1">
 
       <nz-form-item class="mb-1">
         <nz-form-control nzErrorTip="Séléctionne aumoins un champ ! !">
-          <nz-input-group nzAddOnBefore="Paire(s)">
+          <nz-input-group nzAddOnBefore="Symbole(s)">
             <nz-select
-              nzPlaceHolder="Paire(s)"
-              formControlName="pairs"
+              nzPlaceHolder="Symbole(s)"
+              formControlName="symbols"
               style="width: 160px"
-              [nzDisabled]="pairs.length === 1 && selectMultiple === false"
+              [nzDisabled]="symbols.length === 1 && selectMultiple === false"
               [nzMode]="selectMultiple ? 'multiple' : 'default' "
               [nzMaxTagCount]="0"
             >
-              <nz-option  *ngFor="let pair of pairs" [nzLabel]="pair.name" [nzValue]="pair.name" > </nz-option>
+              <nz-option  *ngFor="let symbol of symbols" [nzLabel]="symbol.name" [nzValue]="symbol.name" > </nz-option>
 
             </nz-select>
           </nz-input-group>

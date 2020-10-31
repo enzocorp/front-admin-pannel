@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import {Subject, Subscribable} from "rxjs";
 import {Symbol} from "../../models/symbol";
 import {HttpClient} from "@angular/common/http";
-import {Market} from "../../models/market";
 
 @Injectable({
   providedIn: 'root'
@@ -28,9 +27,9 @@ export class SymbolsService {
   }
 
   unreportGroupSymbol(names : string[]) : Subscribable<any>{
-    return this.http.post(`${this.url}/symbols/unreport/group`,{list : names})
+    return this.http.post(`${this.url}/unreport`,{data : names})
   }
-  reportGroupSymbol(names : string[], data : Omit<Symbol['exclusion'],'excludeBy'|'isExclude'>) : Subscribable<any>{
-    return this.http.post(`${this.url}/symbols/report/group`,{list : names,data})
+  reportGroupSymbol(data : Omit<Symbol['exclusion'],'excludeBy'|'isExclude'>&string[]) : Subscribable<any>{
+    return this.http.post(`${this.url}/report`, {data})
   }
 }

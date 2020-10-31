@@ -6,7 +6,7 @@ import {Market} from "../../models/market";
 @Injectable({
   providedIn: 'root'
 })
-export class MarketService {
+export class MarketsService {
 
   marketsSubject = new Subject<Market[]>()
   url = location.protocol +'//'+ location.host + '/api1/markets'
@@ -27,9 +27,9 @@ export class MarketService {
   }
 
   unreportGroupMarket(names : string[]) : Subscribable<any>{
-    return this.http.post(`${this.url}/markets/unreport/group`,{list : names})
+    return this.http.post(`${this.url}/unreport`,{data : names})
   }
-  reportGroupMarket(data : Omit<Market['exclusion'],'excludeBy'|'isExclude'> & string[] ) : Subscribable<any>{
-    return this.http.post(`${this.url}/markets/report/group`,{list : data})
+  reportGroupMarket(data : Omit<Market['exclusion'],'excludeBy'|'isExclude'>&string[]) : Subscribable<any>{
+    return this.http.post(`${this.url}/report`, {data})
   }
 }

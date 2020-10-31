@@ -2,7 +2,7 @@ import {Component, EventEmitter, OnInit} from '@angular/core';
 import {Pair} from "../../../../models/pair";
 import {forkJoin, Subscribable} from "rxjs";
 import {CryptoService} from "../../../../services/http/crypto.service";
-import {MarketService} from "../../../../services/http/market.service";
+import {MarketsService} from "../../../../services/http/markets.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {map} from "rxjs/operators";
 import {MongoPaginate} from "../../../../models/pagination";

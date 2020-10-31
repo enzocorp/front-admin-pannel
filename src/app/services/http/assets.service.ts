@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import {Subject, Subscribable} from "rxjs";
 import {Asset} from "../../models/asset";
 import {HttpClient} from "@angular/common/http";
-import {Market} from "../../models/market";
 
 @Injectable({
   providedIn: 'root'
@@ -28,9 +27,9 @@ export class AssetsService {
   }
 
   unreportGroupAsset(names : string[]) : Subscribable<any>{
-    return this.http.post(`${this.url}/assets/unreport/group`,{list : names})
+    return this.http.post(`${this.url}/unreport`,{data : names})
   }
-  reportGroupAsset(names : string[], data : Omit<Asset['exclusion'],'excludeBy'|'isExclude'>) : Subscribable<any>{
-    return this.http.post(`${this.url}/assets/report/group`,{list : names,data})
+  reportGroupAsset(data : Omit<Asset['exclusion'],'excludeBy'|'isExclude'>&string[]) : Subscribable<any>{
+    return this.http.post(`${this.url}/report`, {data})
   }
 }

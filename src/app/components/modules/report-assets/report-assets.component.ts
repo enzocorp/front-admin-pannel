@@ -1,16 +1,16 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Pair} from "../../../models/pair";
+import {Asset} from "../../../models/asset";
 
 @Component({
-  selector: 'app-report-pairs',
-  templateUrl: './report-pairs.component.html',
-  styleUrls: ['./report-pairs.component.scss']
+  selector: 'app-report-assets',
+  templateUrl: './report-assets.component.html',
+  styleUrls: ['./report-assets.component.scss']
 })
-export class ReportPairsComponent implements OnInit {
+export class ReportAssetsComponent implements OnInit {
 
   constructor() {}
   visible: boolean
-  @Input()pairs : Pair[]
+  @Input()assets : Asset[]
   @Input()selectMultiple : boolean = false
   @Output()
   afterUpdate : EventEmitter<boolean> = new EventEmitter<boolean>();

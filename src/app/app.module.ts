@@ -62,10 +62,14 @@ import {NgxPaginationModule} from "ngx-pagination";
 import { ExponentielPipe } from './services/pipes/exponentiel.pipe';
 import {CoinapiInterceptorProvider} from "./services/interceptors/coinapi.interceptor";
 import {MessageInterceptorProvider} from "./services/interceptors/message.interceptor";
-import { ReportMarketsComponent } from './components/modules/report-markets/report-markets.component';
-import { FormReportMarketsComponent } from './components/modules/report-markets/form-report-markets/form-report-markets.component';
 import { ReportPairsComponent } from './components/modules/report-pairs/report-pairs.component';
 import { FormReportPairsComponent } from './components/modules/report-pairs/form-report-pairs/form-report-pairs.component';
+import { ReportMarketsComponent } from './components/modules/report-markets/report-markets.component';
+import { FormReportMarketsComponent } from './components/modules/report-markets/form-report-markets/form-report-markets.component';
+import { ReportAssetsComponent } from './components/modules/report-assets/report-assets.component';
+import { FormReportAssetsComponent } from './components/modules/report-assets/form-report-assets/form-report-assets.component';
+import { ReportSymbolsComponent } from './components/modules/report-Symbols/report-Symbols.component';
+import { FormReportSymbolsComponent } from './components/modules/report-Symbols/form-report-Symbols/form-report-Symbols.component';
 
 registerLocaleData(fr);
 
@@ -94,10 +98,14 @@ registerLocaleData(fr);
     MarketComponent,
     FiltersMarketsComponent,
     ExponentielPipe,
+    ReportPairsComponent,
+    FormReportPairsComponent,
     ReportMarketsComponent,
     FormReportMarketsComponent,
-    ReportPairsComponent,
-    FormReportPairsComponent
+    ReportAssetsComponent,
+    FormReportAssetsComponent,
+    ReportSymbolsComponent,
+    FormReportSymbolsComponent
   ],
   imports: [
     BrowserModule,

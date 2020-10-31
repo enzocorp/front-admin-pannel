@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import {Subject, Subscribable} from "rxjs";
 import {Pair} from "../../models/pair";
 import {HttpClient} from "@angular/common/http";
-import {Market} from "../../models/market";
 
 @Injectable({
   providedIn: 'root'
@@ -28,10 +27,10 @@ export class PairsService {
   }
 
   unreportGroupPair(names : string[]) : Subscribable<any>{
-    return this.http.post(`${this.url}/pairs/unreport/group`,{list : names})
+    return this.http.post(`${this.url}/unreport`,{data : names})
   }
   reportGroupPair(data : Omit<Pair['exclusion'],'excludeBy'|'isExclude'>&string[]) : Subscribable<any>{
-    return this.http.post(`${this.url}/pairs/report/group`,{list : data})
+    return this.http.post(`${this.url}/report`, {data})
   }
   resetMoyennes() : Subscribable<any>{
     return this.http.get(`${this.url}/resetMoyennes`)

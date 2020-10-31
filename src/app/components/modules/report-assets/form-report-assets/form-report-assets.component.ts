@@ -4,30 +4,29 @@ import {CryptoService} from "../../../../services/http/crypto.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Reason} from "../../../../models/reason";
 import {Severity} from "../../../../models/severity";
-import {Pair} from "../../../../models/pair";
-import {PairsService} from "../../../../services/http/pairs.service";
-import {debounceTime} from "rxjs/operators";
+import {Asset} from "../../../../models/asset";
+import {AssetsService} from "../../../../services/http/assets.service";
 
 @Component({
-  selector: 'app-form-report-pairs',
-  templateUrl: './form-report-pairs.component.html',
-  styleUrls: ['./form-report-pairs.component.scss']
+  selector: 'app-form-report-assets',
+  templateUrl: './form-report-assets.component.html',
+  styleUrls: ['./form-report-assets.component.scss']
 })
-export class FormReportPairsComponent implements OnInit {
+export class FormReportAssetsComponent implements OnInit {
 
   constructor(private http: HttpClient,
-              private pairServ : PairsService,
+              private assetServ : AssetsService,
               private cryptoServ : CryptoService,
               private formBuilder : FormBuilder) {}
 
   @Output()
   afterUpdate : EventEmitter<void> = new EventEmitter<void>();
   exclusionForm : FormGroup
-  for : string = 'pair'
+  for : string = 'asset'
   unbanIsSelect : boolean = false
   reasons : Array<Reason> = []
   severities : Array<Severity> = []
-  @Input() pairs : Pair[]
+  @Input() assets : Asset[]
   @Input() selectMultiple : boolean = false
 
   visibleValue : boolean = false
@@ -50,18 +49,18 @@ export class FormReportPairsComponent implements OnInit {
   }
 
   initForm(){
-    let pair : Pair = null
-    let strPairs : string[] = null
-    if(this.pairs.length === 1 && this.selectMultiple === false )
-      pair = this.pairs[0]
+    let asset : Asset = null
+    let strAssets : string[] = null
+    if(this.assets.length === 1 && this.selectMultiple === false )
+      asset = this.assets[0]
     else if(this.selectMultiple)
-      strPairs = this.pairs.map(pair => pair.name)
+      strAssets = this.assets.map(asset => asset.name)
 
     this.exclusionForm = this.formBuilder.group({
-      pairs : [pair?.name || strPairs || null,Validators.required],
-      reasons : [pair?.exclusion.reasons ||null,[Validators.required]],
-      note : [pair?.exclusion.note || null ],
-      severity : [pair?.exclusion.severity ||null,[Validators.required]],
+      assets : [asset?.name || strAssets || null,Validators.required],
+      reasons : [asset?.exclusion.reasons ||null,[Validators.required]],
+      note : [asset?.exclusion.note || null ],
+      severity : [asset?.exclusion.severity ||null,[Validators.required]],
     })
   }
 
@@ -82,14 +81,14 @@ export class FormReportPairsComponent implements OnInit {
   subscribeFilters(){
     //Banned
     if (!this.selectMultiple)
-      this.exclusionForm.controls['pairs'].valueChanges.subscribe(
-        strPair => {
-          const pair = this.pairs.find(pair => pair.name === strPair)
-          if (pair && pair.exclusion.severity)
+      this.exclusionForm.controls['assets'].valueChanges.subscribe(
+        strAsset => {
+          const asset = this.assets.find(asset => asset.name === strAsset)
+          if (asset && asset.exclusion.severity)
             this.exclusionForm.patchValue({
-              note: pair.exclusion.note || '',
-              severity: pair.exclusion.severity || null,
-              reasons : pair.exclusion.reasons || []
+              note: asset.exclusion.note || '',
+              severity: asset.exclusion.severity || null,
+              reasons : asset.exclusion.reasons || []
             })
         }
       )
@@ -110,21 +109,21 @@ export class FormReportPairsComponent implements OnInit {
         this.exclusionForm.controls[i].markAsDirty();
         this.exclusionForm.controls[i].updateValueAndValidity();
       }
-    }else if(this.exclusionForm.controls['pairs'].invalid){
-      this.exclusionForm.controls['pairs'].markAsDirty();
-      this.exclusionForm.controls['pairs'].updateValueAndValidity();
+    }else if(this.exclusionForm.controls['assets'].invalid){
+      this.exclusionForm.controls['assets'].markAsDirty();
+      this.exclusionForm.controls['assets'].updateValueAndValidity();
     }
     else
       this.onSubmitToolTip()
   }
 
   onSubmitToolTip(){
-    const formRefacto : Omit<Pair['exclusion'],'excludeBy'|'isExclude'>&string[] = {
+    const formRefacto : Omit<Asset['exclusion'],'excludeBy'|'isExclude'>&string[] = {
       ...this.exclusionForm.value,
-      pairs : this.selectMultiple ? this.exclusionForm.controls['pairs'].value : [this.exclusionForm.controls['pairs'].value]
+      assets : this.selectMultiple ? this.exclusionForm.controls['assets'].value : [this.exclusionForm.controls['assets'].value]
     }
     if (this.unbanIsSelect){
-      this.pairServ.unreportGroupPair(formRefacto['pairs']).subscribe(
+      this.assetServ.unreportGroupAsset(formRefacto['assets']).subscribe(
         () => {
           this.afterUpdate.emit()
           this.visible = false
@@ -132,7 +131,7 @@ export class FormReportPairsComponent implements OnInit {
       )
     }
     else
-      this.pairServ.reportGroupPair( formRefacto).subscribe(
+      this.assetServ.reportGroupAsset( formRefacto).subscribe(
         () => {
           this.afterUpdate.emit()
           this.visible = false

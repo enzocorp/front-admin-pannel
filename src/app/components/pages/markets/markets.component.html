@@ -1,15 +1,5 @@
-<!--
 <h1>La liste des markets </h1>
 
-<div>
-  <button class="btn btn-outline-danger mb-4"
-          nz-popconfirm
-          (nzOnConfirm)="onResetMoyennes()"
-          nzOkText="oui"
-          nzPopconfirmPlacement="bottom"
-          nzPopconfirmTitle="Veux-tu réinitialiser les listes ( contenant les meilleur pair de chaque market ) de TOUS les markets en services ???!"
-  >RESET LES SCORES</button>
-</div>
 <button class="mb-3" nz-button nzType="primary" [nzLoading]="pagination.loading">
   <i nz-icon nzType="search"></i>Markets trouvés <span class="badge badge-light ml-3">{{pagination.total}}</span>
 </button>
@@ -34,42 +24,53 @@
         <thead>
         <tr>
           <th class="position-relative" [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)">
-            <div *ngIf="arrayCheckedMarket.length" style="color:dodgerblue ;position: absolute;transform: translate(37px,-21px);" >{{setOfCheckedId.size}}</div>
+            <div *ngIf="arrayCheckedMarkets.length" style="color:dodgerblue ;position: absolute;transform: translate(37px,-21px);" >{{setOfCheckedId.size}}</div>
           </th>
           <th>Nom</th>
-          <th>Signalement</th>
-          <th>Pairs totales</th>
-          <th>Pairs Actives</th>
-          <th>Lien</th>
+          <th>Status</th>
+          <th>Signalements</th>
+          <th>Pour max $</th>
+          <th>Pour 15k $</th>
           <th>
-            <app-ban-group-markets [marketsList]="arrayCheckedMarket" (afterUpdate)="afterGroupSubmit()">
-              <button nz-button nzType="danger" [disabled]="!arrayCheckedMarket.length" nzSize="small" ><i  nz-icon nzType="delete"></i></button>
-            </app-ban-group-markets>
+            <app-report-markets (afterUpdate)="onGroupUpdate()" [markets]="arrayCheckedMarkets" [selectMultiple]="true">
+              <button nz-button nzType="danger" nzSize="small" ><i  nz-icon nzType="delete"></i></button>
+            </app-report-markets>
           </th>
         </tr>
         </thead>
         <tbody>
         <tr *ngFor="let market of markets">
-          <td
-            [nzChecked]="setOfCheckedId.has(market.id_exchange)"
-            (nzCheckedChange)="onItemChecked(market.id_exchange, $event)"
+          <td [nzChecked]="setOfCheckedId.has(market.name)"
+              (nzCheckedChange)="onItemChecked(market.name, $event)"
           ></td>
-          <td class="btn-link" style="color: black; cursor: pointer" (click)="navigate(market.id_exchange)">{{market.id_exchange}}</td>
+          <td class="btn-link" style="color: black; cursor: pointer"  (click)="navigate(market.name)">{{market.name}}</td>
           <td>
-            <nz-tag *ngIf="!market.exclusion.severity" nzColor="green"><strong>aucun</strong> signalement</nz-tag>
-            <nz-tag *ngIf="market.exclusion.severity" nzColor="{{color[market.exclusion.severity-1]}}">Signalé <strong> {{severities[market.exclusion.severity-1].description}}</strong></nz-tag>
+            <nz-tag *ngIf="market.exclusion.isExclude" nzColor="red">éliminée</nz-tag>
+            <nz-tag *ngIf="!market.exclusion.isExclude" nzColor="green">en service</nz-tag>
           </td>
-          <td> <span style="font-size: 95%"><strong style=""> {{market.paires_actives?.total ||0}}</strong></span></td>
-          <td><button nz-button nzSize="small" nzType="primary">{{market.symbolsCount}} pairs</button></td>
-          <td class="p-0"><a href="{{market.website}}" class="d-block" target="_blank">visiter</a></td>
           <td>
-            <app-btn-ban-market (afterUpdate)="onUpdate()" *ngIf="market" [market]="market" >
+            <nz-tag *ngIf="market.exclusion.reasons.length === 0" nzColor="default"><strong>aucun</strong> signalement</nz-tag>
+            <nz-tag *ngIf="market.exclusion.reasons.length" nzColor="gold"><strong>{{market.exclusion.reasons.length}}</strong> signalements</nz-tag>
+          </td>
+          <td>
+          <span>
+            <strong style="color: #0099ff ; font-size: 100%">{{market.for30k.spreadMoyen_usd | number: '1.0-2' | replaceBy : ',' : ' '}} $</strong>
+          </span>
+          </td>
+          <td class="p-0">
+          <span>
+            <strong style="font-size: 100%">{{market.for1k.spreadMoyen_usd | number: '1.0-2' | replaceBy : ',' : ' '}} $</strong>
+          </span>
+          </td>
+          <td>
+            <app-report-markets (afterUpdate)="onUpdate()" *ngIf="market" [markets]="[market]" >
               <button nz-button nzType="danger" nzSize="small" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
-            </app-btn-ban-market>
+            </app-report-markets>
           </td>
         </tr>
         </tbody>
       </nz-table>
+
     </nz-spin>
     <br>
     <app-pagination
@@ -81,4 +82,3 @@
     ></app-pagination>
   </div>
 </div>
--->

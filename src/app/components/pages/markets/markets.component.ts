@@ -1,84 +1,54 @@
-
-import { Component, OnInit } from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {ActivatedRoute, Router} from "@angular/router";
+import {Market} from "../../../models/market";
 import {Subscription} from "rxjs";
 import {MongoPaginate, Paginate} from "../../../models/pagination";
-import {Market} from "../../../models/market";
-import {MarketService} from "../../../services/http/market.service";
-
-/*interface lookup_market extends Market{
-  paires_actives : { total : number }
-}*/
+import {ActivatedRoute, Router} from "@angular/router";
+import {MarketsService} from "../../../services/http/markets.service";
 
 @Component({
   selector: 'app-markets',
   templateUrl: './markets.component.html',
   styleUrls: ['./markets.component.scss']
 })
-export class MarketsComponent implements OnInit {
-ngOnInit() {
-}
 
-  /*constructor(
+export class MarketsComponent implements OnInit,OnDestroy,AfterViewInit {
+
+  constructor(
     private http : HttpClient,
-    private marketService : MarketService,
+    private marketsService : MarketsService,
     private activatedRoute : ActivatedRoute,
-    private exclusionServ : ExclusionService,
     private router : Router
   ) { }
 
-  severities : Severity[] = []
-  reasons : Reason[] = []
-  color = ['default','gold','orange','red']
-
   private subscription : Subscription = new Subscription()
-  markets : lookup_market[] = []
+  markets : Market[] = []
   pagination : {total : number, loading : boolean, paginate : Paginate, index : number} = {
     total : null,
     loading : false,
     paginate : {limit : 20, skip : 0 },
     index : 1
   }
-  request : MongoPaginate = {
+  request : Partial<MongoPaginate> = {
     sort : {_id : 1},
-    lookups :
-      [{
-        from: "pairs",
-        let : {exid : "$id_exchange"},
-        pipeline : [
-          { $match: { $expr: { $in: [ "$$exid", "$exchanges.id" ] }, "exclusion.pairIsExclude" : false} },
-          { $match: { $expr: { $not: [{ $in: [ "$$exid", "$exclusion.fromMarkets.market" ] }]} } },
-          { $count: "total" }
-        ],
-        as: "total"
-      }],
-    addFields : {paires_actives : {$arrayElemAt: ["$total",0]} }
   }
   checked = false;
   indeterminate = false;
   setOfCheckedId = new Set<string>();
-  arrayCheckedMarket : string[] = []
+  arrayCheckedMarkets : Market[] = []
 
   ngOnInit(): void {
-    this.exclusionServ.getSeverities().subscribe(
-      resp => this.severities = resp.reverse()
-    )
-    this.subscription.add(this.marketService.marketsSubject.subscribe(
-      (markets : lookup_market[])=> {
+    this.subscription.add(this.marketsService.marketsSubject.subscribe(
+      (markets : Market[])=> {
         this.markets = markets
         this.pagination.loading = false
       }))
+  }
+  ngAfterViewInit(){
     this.onUpdate()
   }
 
-  onResetMoyennes(){
-    this.marketService.resetMoyennes().subscribe(
-      () => this.onUpdate()
-    )
-  }
-
-  /!*----------------------Tableau---------------------*!/
+  /*----------------------Tableau---------------------*/
   updateCheckedSet(name: string, checked: boolean): void {
     if (checked) {
       this.setOfCheckedId.add(name);
@@ -88,9 +58,9 @@ ngOnInit() {
   }
 
   refreshCheckedStatus(): void {
-    this.checked = this.markets.every(({ id_exchange }) => this.setOfCheckedId.has(id_exchange));
-    this.indeterminate = this.markets.some(({ id_exchange }) => this.setOfCheckedId.has(id_exchange)) && !this.checked;
-    this.arrayCheckedMarket = [... this.setOfCheckedId.values()]
+    this.checked = this.markets.every(({ name }) => this.setOfCheckedId.has(name));
+    this.indeterminate = this.markets.some(({ name }) => this.setOfCheckedId.has(name)) && !this.checked;
+    this.arrayCheckedMarkets = this.markets.filter(market => this.setOfCheckedId.has(market.name) )
   }
 
   onItemChecked(name: string, checked: boolean): void {
@@ -99,22 +69,21 @@ ngOnInit() {
   }
 
   onAllChecked(checked: boolean): void {
-    this.markets.forEach(({ id_exchange }) => this.updateCheckedSet(id_exchange, checked));
+    this.markets.forEach(({ name }) => this.updateCheckedSet(name, checked));
     this.refreshCheckedStatus();
   }
 
-  afterGroupSubmit(){
+  /*-----------------------On update ----------------------------------*/
+  onGroupUpdate(){
     this.onUpdate()
     this.onAllChecked(false)
   }
 
-  /!*-------------------- Rafraichir -------------------------*!/
   onUpdate(){
     this.request = {...this.request,...this.pagination.paginate}
-    this.marketService.getMarkets(this.request).subscribe(
+    this.marketsService.getMarkets(this.request).subscribe(
       (resp) => {
-        this.marketService.emmitMarkets(resp.data)
-        this.refreshCheckedStatus()
+        this.marketsService.emmitMarkets(resp.data)
         this.pagination.total = resp.metadata[0]?.total || 0
       }
     )
@@ -122,11 +91,11 @@ ngOnInit() {
 
   navigate(str : string){ //Pour mettre a jour la liste des markets depuis la page "market"
     const request = JSON.stringify(this.request)
-    this.router.navigate([str], {relativeTo : this.activatedRoute ,queryParams : {request}})
+    this.router.navigate([str], {relativeTo : this.activatedRoute ,queryParams : {request}}).then()
   }
 
   ngOnDestroy() {
     this.subscription.unsubscribe()
   }
-*/
+
 }

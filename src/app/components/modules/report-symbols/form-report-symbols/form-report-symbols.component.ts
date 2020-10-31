@@ -4,30 +4,29 @@ import {CryptoService} from "../../../../services/http/crypto.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Reason} from "../../../../models/reason";
 import {Severity} from "../../../../models/severity";
-import {Pair} from "../../../../models/pair";
-import {PairsService} from "../../../../services/http/pairs.service";
-import {debounceTime} from "rxjs/operators";
+import {Symbol} from "../../../../models/symbol";
+import {SymbolsService} from "../../../../services/http/symbols.service";
 
 @Component({
-  selector: 'app-form-report-pairs',
-  templateUrl: './form-report-pairs.component.html',
-  styleUrls: ['./form-report-pairs.component.scss']
+  selector: 'app-form-report-symbols',
+  templateUrl: './form-report-symbols.component.html',
+  styleUrls: ['./form-report-symbols.component.scss']
 })
-export class FormReportPairsComponent implements OnInit {
+export class FormReportSymbolsComponent implements OnInit {
 
   constructor(private http: HttpClient,
-              private pairServ : PairsService,
+              private symbolServ : SymbolsService,
               private cryptoServ : CryptoService,
               private formBuilder : FormBuilder) {}
 
   @Output()
   afterUpdate : EventEmitter<void> = new EventEmitter<void>();
   exclusionForm : FormGroup
-  for : string = 'pair'
+  for : string = 'symbol'
   unbanIsSelect : boolean = false
   reasons : Array<Reason> = []
   severities : Array<Severity> = []
-  @Input() pairs : Pair[]
+  @Input() symbols : Symbol[]
   @Input() selectMultiple : boolean = false
 
   visibleValue : boolean = false
@@ -50,18 +49,18 @@ export class FormReportPairsComponent implements OnInit {
   }
 
   initForm(){
-    let pair : Pair = null
-    let strPairs : string[] = null
-    if(this.pairs.length === 1 && this.selectMultiple === false )
-      pair = this.pairs[0]
+    let symbol : Symbol = null
+    let strSymbols : string[] = null
+    if(this.symbols.length === 1 && this.selectMultiple === false )
+      symbol = this.symbols[0]
     else if(this.selectMultiple)
-      strPairs = this.pairs.map(pair => pair.name)
+      strSymbols = this.symbols.map(symbol => symbol.name)
 
     this.exclusionForm = this.formBuilder.group({
-      pairs : [pair?.name || strPairs || null,Validators.required],
-      reasons : [pair?.exclusion.reasons ||null,[Validators.required]],
-      note : [pair?.exclusion.note || null ],
-      severity : [pair?.exclusion.severity ||null,[Validators.required]],
+      symbols : [symbol?.name || strSymbols || null,Validators.required],
+      reasons : [symbol?.exclusion.reasons ||null,[Validators.required]],
+      note : [symbol?.exclusion.note || null ],
+      severity : [symbol?.exclusion.severity ||null,[Validators.required]],
     })
   }
 
@@ -82,14 +81,14 @@ export class FormReportPairsComponent implements OnInit {
   subscribeFilters(){
     //Banned
     if (!this.selectMultiple)
-      this.exclusionForm.controls['pairs'].valueChanges.subscribe(
-        strPair => {
-          const pair = this.pairs.find(pair => pair.name === strPair)
-          if (pair && pair.exclusion.severity)
+      this.exclusionForm.controls['symbols'].valueChanges.subscribe(
+        strSymbol => {
+          const symbol = this.symbols.find(symbol => symbol.name === strSymbol)
+          if (symbol && symbol.exclusion.severity)
             this.exclusionForm.patchValue({
-              note: pair.exclusion.note || '',
-              severity: pair.exclusion.severity || null,
-              reasons : pair.exclusion.reasons || []
+              note: symbol.exclusion.note || '',
+              severity: symbol.exclusion.severity || null,
+              reasons : symbol.exclusion.reasons || []
             })
         }
       )
@@ -110,21 +109,21 @@ export class FormReportPairsComponent implements OnInit {
         this.exclusionForm.controls[i].markAsDirty();
         this.exclusionForm.controls[i].updateValueAndValidity();
       }
-    }else if(this.exclusionForm.controls['pairs'].invalid){
-      this.exclusionForm.controls['pairs'].markAsDirty();
-      this.exclusionForm.controls['pairs'].updateValueAndValidity();
+    }else if(this.exclusionForm.controls['symbols'].invalid){
+      this.exclusionForm.controls['symbols'].markAsDirty();
+      this.exclusionForm.controls['symbols'].updateValueAndValidity();
     }
     else
       this.onSubmitToolTip()
   }
 
   onSubmitToolTip(){
-    const formRefacto : Omit<Pair['exclusion'],'excludeBy'|'isExclude'>&string[] = {
+    const formRefacto : Omit<Symbol['exclusion'],'excludeBy'|'isExclude'>&string[] = {
       ...this.exclusionForm.value,
-      pairs : this.selectMultiple ? this.exclusionForm.controls['pairs'].value : [this.exclusionForm.controls['pairs'].value]
+      symbols : this.selectMultiple ? this.exclusionForm.controls['symbols'].value : [this.exclusionForm.controls['symbols'].value]
     }
     if (this.unbanIsSelect){
-      this.pairServ.unreportGroupPair(formRefacto['pairs']).subscribe(
+      this.symbolServ.unreportGroupSymbol(formRefacto['symbols']).subscribe(
         () => {
           this.afterUpdate.emit()
           this.visible = false
@@ -132,7 +131,7 @@ export class FormReportPairsComponent implements OnInit {
       )
     }
     else
-      this.pairServ.reportGroupPair( formRefacto).subscribe(
+      this.symbolServ.reportGroupSymbol( formRefacto).subscribe(
         () => {
           this.afterUpdate.emit()
           this.visible = false
