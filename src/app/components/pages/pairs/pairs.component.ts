@@ -1,10 +1,10 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {CryptoService} from "../../../services/http/crypto.service";
 import {Pair} from "../../../models/pair";
 import {Subscription} from "rxjs";
 import {MongoPaginate, Paginate} from "../../../models/pagination";
 import {ActivatedRoute, Router} from "@angular/router";
+import {PairsService} from "../../../services/http/pairs.service";
 
 @Component({
   selector: 'app-pairs',
@@ -12,11 +12,11 @@ import {ActivatedRoute, Router} from "@angular/router";
   styleUrls: ['./pairs.component.scss']
 })
 
-export class PairsComponent implements OnInit,OnDestroy {
+export class PairsComponent implements OnInit,OnDestroy,AfterViewInit {
 
   constructor(
     private http : HttpClient,
-    private cryptoService : CryptoService,
+    private pairsService : PairsService,
     private activatedRoute : ActivatedRoute,
     private router : Router
   ) { }
@@ -29,8 +29,8 @@ export class PairsComponent implements OnInit,OnDestroy {
     paginate : {limit : 20, skip : 0 },
     index : 1
   }
-  request : MongoPaginate = {
-    sort : {_id : 1}
+  request : Partial<MongoPaginate> = {
+    sort : {_id : 1},
   }
   checked = false;
   indeterminate = false;
@@ -38,28 +38,22 @@ export class PairsComponent implements OnInit,OnDestroy {
   arrayCheckedPairs : string[] = []
 
   ngOnInit(): void {
-    this.subscription.add(this.cryptoService.pairsSubject.subscribe(
+    this.subscription.add(this.pairsService.pairsSubject.subscribe(
       (pairs : Pair[])=> {
         this.pairs = pairs
         this.pagination.loading = false
       }))
   }
+  ngAfterViewInit(){
+    this.onUpdate()
+  }
 
   onResetMoyennes(){
-    this.cryptoService.resetMoyennes().subscribe(
+    this.pairsService.resetMoyennes().subscribe(
       () => this.onUpdate()
     )
   }
 
-  makeInit(){
-    this.pagination.loading = true
-    this.pairs = []
-    this.pagination.total = null
-    this.cryptoService.makeInit().subscribe(
-      () =>
-        this.onUpdate()
-    )
-  }
   /*----------------------Tableau---------------------*/
   updateCheckedSet(name: string, checked: boolean): void {
     if (checked) {
@@ -93,9 +87,10 @@ export class PairsComponent implements OnInit,OnDestroy {
 /*-----------------------On update ----------------------------------*/
   onUpdate(){
     this.request = {...this.request,...this.pagination.paginate}
-    this.cryptoService.getPairsv2(this.request).subscribe(
+    this.pairsService.getPairs(this.request).subscribe(
       (resp) => {
-        this.cryptoService.emmitPairs(resp.data)
+        console.log('resp.data :: ',resp.data)
+        this.pairsService.emmitPairs(resp.data)
         this.pagination.total = resp.metadata[0]?.total || 0
       }
     )
@@ -103,11 +98,16 @@ export class PairsComponent implements OnInit,OnDestroy {
 
   navigate(str : string){ //Pour mettre a jour la liste des pairs depuis la page "pair"
     const request = JSON.stringify(this.request)
-    this.router.navigate([str], {relativeTo : this.activatedRoute ,queryParams : {request}})
+    this.router.navigate([str], {relativeTo : this.activatedRoute ,queryParams : {request}}).then()
   }
 
   ngOnDestroy() {
     this.subscription.unsubscribe()
+  }
+
+  test(){
+    this.onUpdate()
+    console.log(this.request)
   }
 
 }

@@ -9,29 +9,29 @@
 
 <ng-template #form>
 
-  <nz-spin [nzSpinning]="!marketsList">
+  <nz-spin [nzSpinning]="!markets">
     <nz-divider nzText="Je veux signaler un groupe de markets "></nz-divider>
     <form nz-form [formGroup]="exclusionForm">
 
-        <nz-form-item class="mb-1">
-          <nz-form-control nzErrorTip="Séléctionne une sévérité !">
-            <nz-input-group nzAddOnBefore="Severité">
-              <nz-select
-                (ngModelChange)="onSeverityChange($event)"
-                nzPlaceHolder="severité"
-                formControlName="severity"
-                style="width: 100%"
-              >
-                <nz-option *ngFor="let item of severities" nzCustomContent [nzLabel]="item.description" [nzValue]="item.severity">
-                  <i *ngIf="item.severity === 4" nz-icon nzType="close-circle" nzTheme="twotone" nzTwotoneColor="red"></i> {{item.description}}
-                </nz-option>
-                <nz-option nzCustomContent nzLabel="DEBAN" [nzValue]="0">
-                  <i nz-icon nzType="check-circle" nzTheme="twotone"></i> débanir
-                </nz-option>
-              </nz-select>
-            </nz-input-group>
-          </nz-form-control>
-        </nz-form-item>
+      <nz-form-item class="mb-1">
+        <nz-form-control nzErrorTip="Séléctionne une sévérité !">
+          <nz-input-group nzAddOnBefore="Severité">
+            <nz-select
+              (ngModelChange)="onSeverityChange($event)"
+              nzPlaceHolder="severité"
+              formControlName="severity"
+              style="width: 100%"
+            >
+              <nz-option *ngFor="let item of severities" nzCustomContent [nzLabel]="item.description" [nzValue]="item.severity">
+                <i *ngIf="item.severity === 4" nz-icon nzType="close-circle" nzTheme="twotone" nzTwotoneColor="red"></i> {{item.description}}
+              </nz-option>
+              <nz-option nzCustomContent nzLabel="DEBAN" [nzValue]="0">
+                <i nz-icon nzType="check-circle" nzTheme="twotone"></i> débanir
+              </nz-option>
+            </nz-select>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
 
       <nz-form-item class="mb-1" *ngIf="!unbanIsSelect">
         <nz-form-control nzErrorTip="Il faut selectionner aumoins une raison !">

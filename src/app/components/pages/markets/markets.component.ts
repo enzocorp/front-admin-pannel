@@ -4,14 +4,12 @@ import {HttpClient} from "@angular/common/http";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs";
 import {MongoPaginate, Paginate} from "../../../models/pagination";
-import {Exchange} from "../../../models/exchange";
+import {Market} from "../../../models/market";
 import {MarketService} from "../../../services/http/market.service";
-import {Reason, Severity} from "../../../models/exclusionPair";
-import {ExclusionService} from "../../../services/http/exclusion.service";
 
-interface lookup_market extends Exchange{
+/*interface lookup_market extends Market{
   paires_actives : { total : number }
-}
+}*/
 
 @Component({
   selector: 'app-markets',
@@ -19,8 +17,10 @@ interface lookup_market extends Exchange{
   styleUrls: ['./markets.component.scss']
 })
 export class MarketsComponent implements OnInit {
+ngOnInit() {
+}
 
-  constructor(
+  /*constructor(
     private http : HttpClient,
     private marketService : MarketService,
     private activatedRoute : ActivatedRoute,
@@ -78,7 +78,7 @@ export class MarketsComponent implements OnInit {
     )
   }
 
-  /*----------------------Tableau---------------------*/
+  /!*----------------------Tableau---------------------*!/
   updateCheckedSet(name: string, checked: boolean): void {
     if (checked) {
       this.setOfCheckedId.add(name);
@@ -108,7 +108,7 @@ export class MarketsComponent implements OnInit {
     this.onAllChecked(false)
   }
 
-  /*-------------------- Rafraichir -------------------------*/
+  /!*-------------------- Rafraichir -------------------------*!/
   onUpdate(){
     this.request = {...this.request,...this.pagination.paginate}
     this.marketService.getMarkets(this.request).subscribe(
@@ -128,5 +128,5 @@ export class MarketsComponent implements OnInit {
   ngOnDestroy() {
     this.subscription.unsubscribe()
   }
-
+*/
 }

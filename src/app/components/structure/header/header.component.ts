@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ConfigService} from "../../../services/autre/config.service";
-import {IGlobal} from "../../../models/global";
+import {Global} from "../../../models/global";
+import {CryptoService} from "../../../services/http/crypto.service";
 
 @Component({
   selector: 'app-header',
@@ -9,17 +10,18 @@ import {IGlobal} from "../../../models/global";
 })
 export class HeaderComponent implements OnInit {
 
-  constructor(private configServ : ConfigService) { }
+  constructor(private configServ : ConfigService,
+              private cryptoServ : CryptoService) { }
   config : {collapsed: boolean, theme : boolean}
-  coinapi : IGlobal['coinapi']
+  coinapi : Global['coinapi']
   ngOnInit(): void {
     this.configServ.configSubject.subscribe(
       conf => this.config = conf
     )
-    this.configServ.coinapiSubject.subscribe(
+    this.cryptoServ.coinapiSubject.subscribe(
       coinApiInfo => this.coinapi = coinApiInfo
     )
-    this.configServ.get_coinapi()
+    this.cryptoServ.get_coinapi()
   }
 
 }

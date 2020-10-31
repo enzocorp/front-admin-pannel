@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BtnBanMarketComponent } from './btn-ban-market.component';
+import { ReportMarketsComponent } from './report-markets.component';
 
-describe('BtnBanMarketComponent', () => {
-  let component: BtnBanMarketComponent;
-  let fixture: ComponentFixture<BtnBanMarketComponent>;
+describe('ReportMarketsComponent', () => {
+  let component: ReportMarketsComponent;
+  let fixture: ComponentFixture<ReportMarketsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BtnBanMarketComponent ]
+      declarations: [ ReportMarketsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BtnBanMarketComponent);
+    fixture = TestBed.createComponent(ReportMarketsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

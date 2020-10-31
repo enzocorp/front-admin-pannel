@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Subject, Subscribable} from "rxjs";
 import {Pair} from "../../models/pair";
+import {Severity} from "../../models/severity";
+import {Reason} from "../../models/reason";
+import {Global} from "../../models/global";
 
 @Injectable({
   providedIn: 'root'
@@ -10,26 +13,33 @@ import {Pair} from "../../models/pair";
 export class CryptoService {
 
 
+  constructor(private http : HttpClient) { }
   pairsSubject = new Subject<Pair[]>()
+  coinapiSubject = new Subject<Global['coinapi']>()
+
   url = location.protocol +'//'+ location.host + '/api1/crypto'
 
-  constructor(private http : HttpClient) { }
-
-  emmitPairs(content : Pair[]) {
-    this.pairsSubject.next(content)
+  emmitCoinapi(content : Global['coinapi']) {
+    this.coinapiSubject.next(content)
   }
 
-  getPairsv2(filters = {}): Subscribable<{data :Array<any>, metadata : Array<{total : number}>}>{
-    const filtersStr : string = JSON.stringify(filters)
-    return this.http.get(`${this.url}/pairsv2`, {params: {filters : filtersStr}})
+  get_coinapi() : void{
+    this.http.get<{data : Global['coinapi']}>(`${this.url}/coinapi`).subscribe(
+      ({data} : {data : any}) => this.emmitCoinapi( data.coinapi)
+    )
   }
 
-  getPair(name) : Subscribable<Pair>{
-    return this.http.get(`${this.url}/pairs/${name}`)
+  getSeverities() : Subscribable<{data : Severity[]}> {
+    return this.http.get(`${this.url}/exclusion/severities`)
   }
 
-  resetMoyennes() : Subscribable<any>{
-    return this.http.get(`${this.url}/pairs/resetMoyennes`)
+  getReasons(queryParams = undefined) : Subscribable<{data : Reason[]}>{
+    const obj = queryParams ? {for : queryParams} : {}
+    return this.http.get(`${this.url}/exclusion/reasons`,{params : obj })
+  }
+
+  addReasons(body : Reason) : Subscribable<{data : Reason}> {
+    return this.http.post(`${this.url}/exclusion/reasons`,body)
   }
 
   makeInit() : Subscribable<any>{

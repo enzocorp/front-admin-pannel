@@ -4,7 +4,7 @@ import {CryptoService} from "../../../../services/http/crypto.service";
 import {Pair} from "../../../../models/pair";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs";
-import {Exchange} from "../../../../models/exchange";
+import {Market} from "../../../../models/market";
 import {MarketService} from "../../../../services/http/market.service";
 import {BestsService} from "../../../../services/http/bests.service";
 
@@ -27,8 +27,8 @@ export class ShowBestComponent implements OnInit, OnDestroy {
   best : Best
   visible : boolean = false
   body : exclusion
-  marketBuy : Exchange = undefined
-  marketSell : Exchange = undefined
+  marketBuy : Market = undefined
+  marketSell : Market = undefined
 
 
   constructor(private bestsServ : BestsService,
@@ -39,7 +39,7 @@ export class ShowBestComponent implements OnInit, OnDestroy {
               ) { }
 
   ngOnInit(): void {
-    const id = this.activatedRoute.snapshot.paramMap.get('id')
+ /*   const id = this.activatedRoute.snapshot.paramMap.get('id')
     this.bestsServ.getBest(id).subscribe(
       best => {
         this.visible = true
@@ -47,14 +47,14 @@ export class ShowBestComponent implements OnInit, OnDestroy {
         this.cryptoServ.getPair(best.pair).subscribe(
           pair => this.pair = pair
         )
-        this.marketServ.getMarket(this.best.buy.exchange).subscribe(
+        this.marketServ.getMarket(this.best.buy.market).subscribe(
           market => this.marketBuy = market
         )
-        this.marketServ.getMarket(this.best.sell.exchange).subscribe(
+        this.marketServ.getMarket(this.best.sell.market).subscribe(
           market => this.marketSell = market
         )
       })
-
+*/
   }
 
   close(): void {

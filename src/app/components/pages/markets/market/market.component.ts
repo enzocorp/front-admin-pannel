@@ -1,17 +1,17 @@
 import {Component, EventEmitter, OnInit} from '@angular/core';
-import {Reason, Severity} from "../../../../models/exclusionPair";
 import {MarketService} from "../../../../services/http/market.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {ExclusionService} from "../../../../services/http/exclusion.service";
 import {forkJoin, Observable} from "rxjs";
 import {map} from "rxjs/operators";
-import {Exchange} from "../../../../../../../API/src/models/interphace/exchange";
 import {MongoPaginate} from "../../../../models/pagination";
 import {Pair} from "../../../../models/pair";
 import {CryptoService} from "../../../../services/http/crypto.service";
+import {Market} from "../../../../models/market";
+import {Reason} from "../../../../models/reason";
+import {Severity} from "../../../../models/severity";
 
 
-interface lookup_market extends Exchange{
+interface lookup_market extends Market{
   reasonsText : Reason[]
   total : [{total : number}],
   isBestFor : number
@@ -29,7 +29,10 @@ interface lookup_pair extends Pair{
 })
 export class MarketComponent implements OnInit {
 
-  page : number = 1
+  ngOnInit() {
+  }
+
+  /*page : number = 1
   sorter = {
     moyenne : 'prixMoyen_for1kusd_quote',
     side : 'positionBuy'
@@ -44,7 +47,7 @@ export class MarketComponent implements OnInit {
   listeLoading = true
   visible : boolean = false
   isDirty : EventEmitter<void> = new EventEmitter<void>()
-  request : MongoPaginate = {
+  request : Partial<MongoPaginate> = {
     lookups :
         [{
           from: "reasons",
@@ -53,23 +56,22 @@ export class MarketComponent implements OnInit {
           as: "reasonsText"
         },{
           from: "pairs",
-          let : {exid : "$id_exchange"},
+          let : {exid : "$id_market"},
           pipeline : [
-            { $match: { $expr: { $in: [ "$$exid", "$exchanges.id" ] }, "exclusion.pairIsExclude" : false} },
+            { $match: { $expr: { $in: [ "$$exid", "$markets.id" ] }, "exclusion.pairIsExclude" : false} },
             { $match: { $expr: { $not: [{ $in: [ "$$exid", "$exclusion.fromMarkets.market" ] }]} } },
             { $count: "total" }
           ],
           as: "total"
         }],
     limit : 1,
-    match : {id_exchange : this.activatedRoute.snapshot.paramMap.get('id')}
+    match : {id_market : this.activatedRoute.snapshot.paramMap.get('id')}
   }
   constructor(
               private marketServ : MarketService,
               private cryptoServ : CryptoService,
               private activatedRoute : ActivatedRoute,
               private router : Router,
-              private exclusionService : ExclusionService
   ) { }
 
   ngOnInit(): void {
@@ -135,6 +137,6 @@ export class MarketComponent implements OnInit {
         this.makeBestFor()
         this.listeLoading = false
     })
-  }
+  }*/
 
 }

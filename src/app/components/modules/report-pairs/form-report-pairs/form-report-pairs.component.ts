@@ -1,58 +1,57 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {ExclusionService} from "../../../../services/http/exclusion.service";
+import {CryptoService} from "../../../../services/http/crypto.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {ExclusionPair, Reason, Severity} from "../../../../models/exclusionPair";
+import {Reason} from "../../../../models/reason";
+import {Severity} from "../../../../models/severity";
+import {Pair} from "../../../../models/pair";
+import {PairsService} from "../../../../services/http/pairs.service";
 
 @Component({
-  selector: 'app-ban-group-pairs',
-  templateUrl: './ban-group-pairs.component.html',
-  styleUrls: ['./ban-group-pairs.component.scss']
+  selector: 'app-form-report-pairs',
+  templateUrl: './form-report-pairs.component.html',
+  styleUrls: ['./form-report-pairs.component.scss']
 })
-export class BanGroupPairsComponent implements OnInit {
+export class FormReportPairsComponent implements OnInit {
 
   constructor(private http: HttpClient,
-              private exclusionService : ExclusionService,
+              private pairServ : PairsService,
+              private cryptoServ : CryptoService,
               private formBuilder : FormBuilder) {}
 
   @Output()
   afterUpdate : EventEmitter<void> = new EventEmitter<void>();
   exclusionForm : FormGroup
-  for : string = 'symbole'
+  for : string = 'pair'
   unbanIsSelect : boolean = false
   reasons : Array<Reason> = []
   severities : Array<Severity> = []
-  @Input() pairsList : string[]
+  @Input() pairs : Pair[]
+
   visibleValue : boolean = false
+  @Output()
+  visibleChange : EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Input()
   get visible(){
     return this.visibleValue;
   }
   set visible(bool : boolean) {
-    bool ? this.onOpen() : null
     this.visibleValue = bool;
+    this.visibleChange.emit(this.visibleValue);
   }
+
   ngOnInit(): void {
-    this.exclusionService.getReasons(this.for).subscribe(cont => this.reasons = cont)
-    this.exclusionService.getSeverities().subscribe(cont => this.severities = cont)
+    this.cryptoServ.getReasons(this.for).subscribe(({data}) => this.reasons = data)
+    this.cryptoServ.getSeverities().subscribe(({data}) => this.severities = data)
     this.initForm()
   }
 
   initForm(){
     this.exclusionForm = this.formBuilder.group({
-      market : ['*'],
+      pairs : [null,Validators.required],
       reasons : [null,[Validators.required]],
       note : [null],
       severity : [null,[Validators.required]],
-    })
-  }
-
-  onOpen(){
-    this.unbanIsSelect  = false
-    this.exclusionForm.reset({
-      market : '*',
-      reasons : null,
-      note : null,
-      severity : null,
     })
   }
 
@@ -64,7 +63,7 @@ export class BanGroupPairsComponent implements OnInit {
       status : status
     }
     if (this.reasons.map(item => item.description).indexOf(input.value) === -1 && input.value.length) {
-      this.exclusionService.addReasons(newReasons).subscribe(
+      this.cryptoServ.addReasons(newReasons).subscribe(
         (resp) => this.reasons.push(resp.data)
       )
     }
@@ -84,11 +83,9 @@ export class BanGroupPairsComponent implements OnInit {
       }
       return
     }
-    const formValues : ExclusionPair = this.exclusionForm.value
-    console.log(formValues)
     if (this.unbanIsSelect){
-      console.log('unban')
-      this.exclusionService.unreportGroupPair(this.pairsList).subscribe(
+      const strPairs = this.exclusionForm.get('pairs').value
+      this.pairServ.unreportGroupPair(strPairs).subscribe(
         () => {
           this.afterUpdate.emit()
           this.visible = false
@@ -96,8 +93,7 @@ export class BanGroupPairsComponent implements OnInit {
       )
     }
     else{
-      console.log('ban ban')
-      this.exclusionService.reportGroupPair(this.pairsList, formValues).subscribe(
+      this.pairServ.reportGroupPair( this.exclusionForm.value).subscribe(
         () => {
           this.afterUpdate.emit()
           this.visible = false
@@ -105,6 +101,4 @@ export class BanGroupPairsComponent implements OnInit {
       )
     }
   }
-
-
 }

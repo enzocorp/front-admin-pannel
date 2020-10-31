@@ -37,7 +37,7 @@ export class FiltersPairsComponent implements OnInit, AfterViewChecked {
   ngOnInit(): void {
     this.initForms()
     this.subscribeFilters()
-    this.makeUpdate()
+    this.request = {...this.request, match: this.match,sort : {[this.sort.key] : this.sort.order}}
   }
   ngAfterViewChecked(){
     this.changeDetector.detectChanges();

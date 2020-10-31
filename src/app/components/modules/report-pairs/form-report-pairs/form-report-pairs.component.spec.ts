@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FormBanMarketComponent } from './form-ban-market.component';
+import { FormReportPairsComponent } from './form-report-pairs.component';
 
-describe('FormBanMarketComponent', () => {
-  let component: FormBanMarketComponent;
-  let fixture: ComponentFixture<FormBanMarketComponent>;
+describe('FormReportPairsComponent', () => {
+  let component: FormReportPairsComponent;
+  let fixture: ComponentFixture<FormReportPairsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FormBanMarketComponent ]
+      declarations: [ FormReportPairsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FormBanMarketComponent);
+    fixture = TestBed.createComponent(FormReportPairsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

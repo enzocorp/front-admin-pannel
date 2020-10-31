@@ -7,15 +7,15 @@ import {
   HttpResponse
 } from "@angular/common/http";
 import {Observable} from "rxjs";
-import {ConfigService} from "../autre/config.service";
-import {catchError, tap} from "rxjs/operators";
+import { tap} from "rxjs/operators";
 import {Injectable} from "@angular/core";
+import {CryptoService} from "../http/crypto.service";
 
 
 @Injectable ()
 export class CoinapiInterceptor implements HttpInterceptor{
   constructor(
-    private configServ : ConfigService
+    private cryptoServ : CryptoService
   ) {
   }
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -23,7 +23,7 @@ export class CoinapiInterceptor implements HttpInterceptor{
       tap(res => {
         if (res instanceof HttpResponse) {
           if(res.body?.coinapi){
-            this.configServ.emmitCoinapi(res.body.coinapi)
+            this.cryptoServ.emmitCoinapi(res.body.coinapi)
           }
         }
       })

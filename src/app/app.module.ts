@@ -53,10 +53,6 @@ import {BestsComponent} from "./components/pages/bests/bests.component";
 import { MarketsComponent } from './components/pages/markets/markets.component';
 import {BestsHistoricComponent} from "./components/pages/bests-historic/bests-historic.component";
 import { ShowBestComponent } from './components/pages/bests/show-best/show-best.component';
-import {BtnBanSymboleComponent} from "./components/modules/btn-ban-symbole/btn-ban-symbole.component";
-import { BtnBanMarketComponent } from './components/modules/btn-ban-market/btn-ban-market.component';
-import { FormComponent } from './components/modules/btn-ban-symbole/form/form.component';
-import { FormBanMarketComponent } from './components/modules/btn-ban-market/form-ban-market/form-ban-market.component';
 import { PaginationComponent } from './components/modules/pagination/pagination.component';
 import { FiltersBestsComponent } from './components/pages/bests/filters-bests/filters-bests.component';
 import {FiltersPairsComponent} from "./components/pages/pairs/filters-pairs/filters-pairs.component";
@@ -66,8 +62,10 @@ import {NgxPaginationModule} from "ngx-pagination";
 import { ExponentielPipe } from './services/pipes/exponentiel.pipe';
 import {CoinapiInterceptorProvider} from "./services/interceptors/coinapi.interceptor";
 import {MessageInterceptorProvider} from "./services/interceptors/message.interceptor";
-import { BanGroupMarketsComponent } from './components/pages/markets/ban-group-markets/ban-group-markets.component';
-import { BanGroupPairsComponent } from './components/pages/pairs/ban-group-pairs/ban-group-pairs.component';
+import { ReportMarketsComponent } from './components/modules/report-markets/report-markets.component';
+import { FormReportMarketsComponent } from './components/modules/report-markets/form-report-markets/form-report-markets.component';
+import { ReportPairsComponent } from './components/modules/report-pairs/report-pairs.component';
+import { FormReportPairsComponent } from './components/modules/report-pairs/form-report-pairs/form-report-pairs.component';
 
 registerLocaleData(fr);
 
@@ -90,18 +88,16 @@ registerLocaleData(fr);
     MarketsComponent,
     BestsHistoricComponent,
     ShowBestComponent,
-    BtnBanSymboleComponent,
-    BtnBanMarketComponent,
-    FormComponent,
-    FormBanMarketComponent,
     PaginationComponent,
     FiltersBestsComponent,
     FiltersPairsComponent,
     MarketComponent,
     FiltersMarketsComponent,
     ExponentielPipe,
-    BanGroupMarketsComponent,
-    BanGroupPairsComponent
+    ReportMarketsComponent,
+    FormReportMarketsComponent,
+    ReportPairsComponent,
+    FormReportPairsComponent
   ],
   imports: [
     BrowserModule,

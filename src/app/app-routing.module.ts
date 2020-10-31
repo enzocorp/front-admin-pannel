@@ -16,9 +16,9 @@ import {MarketComponent} from "./components/pages/markets/market/market.componen
 const routes: Routes = [
   {path : 'home', component : HomeComponent},
   {path : 'pairs', component : PairsComponent,children : [
-      {path : ':id', component : PairComponent},
+      // {path : ':id', component : PairComponent},
     ]},
-  {path : 'markets', component : MarketsComponent, children : [
+/*  {path : 'markets', component : MarketsComponent, children : [
       {path : ':id', component : MarketComponent}
     ]},
   {path : 'bests',children : [
@@ -33,7 +33,7 @@ const routes: Routes = [
     ]},
   {path : 'utilisateur',children : [
       {path : 'compte', component : AccountComponent},
-    ]},
+    ]},*/
   {path: '', pathMatch : 'full', redirectTo : "/home" },
   {path : '**', component : Error404Component}
 ]

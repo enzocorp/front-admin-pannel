@@ -24,7 +24,7 @@ export class BestsComponent implements OnInit, OnDestroy{
     paginate : {limit : 30, skip : 0 },
     index : 1
   }
-  request : MongoPaginate = {
+  request : Partial<MongoPaginate> = {
     sort : {_id : 1},
     match: {}
   }

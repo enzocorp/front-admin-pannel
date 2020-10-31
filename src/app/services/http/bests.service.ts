@@ -3,14 +3,6 @@ import {Subject, Subscribable} from "rxjs";
 import {Best} from "../../models/best";
 import {HttpClient} from "@angular/common/http";
 
-interface resp_getBests {
-  message : string,
-  resPairs : Object
-  resExchanges : Object
-  bests : Best[]
-}
-
-
 @Injectable({
   providedIn: 'root'
 })

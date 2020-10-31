@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ExclusionService } from './exclusion.service';
+import { AssetsService } from './assets.service';
 
-describe('ExclusionService', () => {
-  let service: ExclusionService;
+describe('AssetsService', () => {
+  let service: AssetsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(ExclusionService);
+    service = TestBed.inject(AssetsService);
   });
 
   it('should be created', () => {

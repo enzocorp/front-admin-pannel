@@ -1,18 +1,15 @@
 export interface Paginate {limit : number, skip : number}
 
-export interface MongoPaginate{
-  limit? : number,
-  skip? : number
+export interface MongoPaginate extends Paginate{
   match? : Object
   sort? : Object
   project? : Object
   lookups? : Array<Object>,
-  addFields? : any
+  addFields? : Object
 }
 
-export interface MongoPaginatev2{
-  limit? : number,
-  skip? : number
-  aggregate? : Array<Record<string,Object>>
-  facet? : Array<Record<string,Object>>
+export interface MongoPaginatev2 extends Paginate{
+  aggregate : Array<Record<string,Object>>
+  facet : Array<Record<string,Object>>
 }
+

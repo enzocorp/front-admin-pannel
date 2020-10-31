@@ -1,46 +1,30 @@
-export interface Best {
-  _id? : string
-  pair : string
-  quote : string
-  base : string
+export interface BestFor {
   buy : {
-    exchange : string
+    market : string
+    symbol : string
     website: string
-    symbol_id : string
-    price : number
-    volume : number
-    volume_usd : number
-
-    price_for1kusd_quote : number
-    price_for15kusd_quote : number
-    price_for30kusd_quote : number
-    volume_for1kusd : number
-    volume_for15kusd : number
-    volume_for30kusd : number
-  },
+    price_quote : number
+    volume_base : number
+  }
   sell : {
-    exchange : string
+    price_quote : number
+    market : string
+    symbol : string
     website: string
-    symbol_id : string
-    price : number
-    volume : number
-    volume_usd : number
+    volume_base : number
+  }
+  spread_quote : number
+  spread_usd : number
+}
 
-    price_for1kusd_quote : number
-    price_for15kusd_quote : number
-    price_for30kusd_quote : number
-    volume_for1kusd : number
-    volume_for15kusd : number
-    volume_for30kusd : number
-  },
-  spread : number
-  volume : number
-  volume_usd : number
-  volumeLimiteur : 'buy' | 'sell'
-  spread_1usd : number
-  spread_15kusd : number
-  profitMaxi_usd : number
+export interface Best {
+  pair : string
+  base : string
+  quote : string
   groupId : string
-  _createdBy : string,
+  createdBy : string,
+  for1k : BestFor
+  for15k : BestFor
+  for30k : BestFor
   date? : Date
 }

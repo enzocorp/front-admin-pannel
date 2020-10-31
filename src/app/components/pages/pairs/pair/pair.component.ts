@@ -4,15 +4,11 @@ import {forkJoin, Subscribable} from "rxjs";
 import {CryptoService} from "../../../../services/http/crypto.service";
 import {MarketService} from "../../../../services/http/market.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {ExclusionPair, Reason, Severity} from "../../../../models/exclusionPair";
-import {ExclusionService} from "../../../../services/http/exclusion.service";
 import {map} from "rxjs/operators";
 import {MongoPaginate} from "../../../../models/pagination";
-import {Average} from "../../../../models/average";
-import {Exchange} from "../../../../models/exchange";
 
 
-interface lookup_market extends Exchange{
+/*interface lookup_market extends Exchange{
   excludeFromPair : ExclusionPair,
   exclusion : Exchange['exclusion'] & {textSeverity : Severity, textReasons : Reason[]}
 }
@@ -21,7 +17,7 @@ interface lookup_pair extends Pair{
   averages : Array<Average & {exclude : boolean}>
   markets : lookup_market[]
   reported : ExclusionPair & {severityText : Severity, reasonsText : Reason[]}
-}
+}*/
 
 @Component({
   selector: 'app-pair',
@@ -31,7 +27,10 @@ interface lookup_pair extends Pair{
 
 export class PairComponent implements OnInit {
 
-  sorter : {moyenne : string, side : 'buy' | 'sell'} = {
+  ngOnInit() {
+  }
+
+  /*sorter : {moyenne : string, side : 'buy' | 'sell'} = {
     moyenne : '15k',
     side : 'buy'
   }
@@ -160,6 +159,6 @@ export class PairComponent implements OnInit {
         this.dataLoading = false
       }
     )
-  }
+  }*/
 
 }

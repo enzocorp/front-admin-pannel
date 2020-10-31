@@ -1,0 +1,16 @@
+<span
+  nz-popover
+  [nzPopoverContent]="form"
+  nzPopoverPlacement="bottom"
+  nzPopoverTrigger="click"
+  [(nzPopoverVisible)]="visible">
+  <ng-content></ng-content>
+</span>
+
+<ng-template #form>
+  <app-form-report-markets
+    [markets]="market"
+    [(visible)]="visible"
+    (afterUpdate)="afterUpdate.emit()"
+  ></app-form-report-markets>
+</ng-template>

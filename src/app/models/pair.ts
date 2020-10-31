@@ -1,37 +1,31 @@
+export interface PairFor{
+  positiveFreq : number
+  negativeFreq : number
+  isBestFreq : number
+  notEnoughtVolFreq : number
+  errorFreq : number
+
+  spreadMoyen_quote : number
+  spreadMoyen_usd : number
+  volumeMoyen_base : number
+  hightestSpread_usd : number
+}
+
+
 export interface Pair {
-  _id: string
   name: string
   base : string
   quote : string
-  exchanges: Array<{ id : string, symbol_id : string }>
-  frequences :{
-    positive : number
-    negative: number
-    isBest : number
-  },
-  ifPositiveSpread : {
-    volumeMoyen : number
-    volumeMoyen_usd : number
-    spreadMoyen : number
-    spreadMoyen_1usd : number
-    spreadMoyen_15kusd : number
-    profitMaxiMoyen_usd : number
-    ecartType : number
-    variance : number
-    esperance : number
-    medianne : number
-    hightestSpread_15kusd : number
-  },
+  for1k : PairFor
+  for15k : PairFor
+  for30k : PairFor
   exclusion : {
-    pairIsExclude : boolean
-    fromMarkets :    Array<{
-      market : string
-      reasons : string[]
-      severity : number
-      excludeBy? : string
-      note? : string
-      date? : Date
-    }>
+    isExclude : boolean
+    reasons : string[]
+    severity : number
+    note? : string
+    excludeBy : string
+    date? : Date
   }
   date? : Date
 }

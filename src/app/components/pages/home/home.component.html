@@ -1,38 +1,6 @@
 <div class="container pt-5">
-Bienvenu sur la page "Home" une vraie page vide comme on les aimes
+Bienvenu sur la page "Home" une vraie page vide comme on les aimes ( FUTURE TABLEAU DE BORD )
 </div>
-<br>
-<app-pagination
-  class="mb-5 mt-5"
-  [(loading)]="pagination.loading"
-  (onUpdate)="onUpdate()"
-  [total]="pagination.total"
-  [(paginate)]="pagination.paginate"
-  [(index)]="pagination.index"
-></app-pagination>
-<br>
-<button (click)="test()">Test</button>
-<nz-table
-  [nzFrontPagination]="false"
-  [nzData]="pairs"
->
-  <thead>
-  <tr>
-    <th [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></th>
-    <th>Name</th>
-    <th>Age</th>
-    <th>Address</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr *ngFor="let data of pairs">
-    <td
-      [nzChecked]="setOfCheckedId.has(data.name)"
-      (nzCheckedChange)="onItemChecked(data.name, $event)"
-    ></td>
-    <td>{{ data.name }}</td>
-    <td>{{ data.base }}</td>
-    <td>{{ data.quote }}</td>
-  </tr>
-  </tbody>
-</nz-table>
+<div>
+  <button (click)="makeInit()" class="mr-3 btn btn-outline-success mb-4">INITIALISATION</button>
+</div>
