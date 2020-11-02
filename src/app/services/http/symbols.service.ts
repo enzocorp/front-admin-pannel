@@ -17,9 +17,9 @@ export class SymbolsService {
     this.symbolsSubject.next(content)
   }
 
-  getSymbols(filters = {}) : Subscribable<{data :Array<any&Symbol>, metadata : Array<{total : number}>}>{
-    const filtersStr : string = JSON.stringify(filters)
-    return this.http.get(`${this.url}`,{params: {filters : filtersStr}})
+  getSymbols(request = {}) : Subscribable<{data :any[], metadata?:any}>{
+    const strRequest : string = JSON.stringify(request)
+    return this.http.get(`${this.url}`,{params: {request : strRequest}})
   }
 
   getSymbol(name :string) : Subscribable<{ data : Symbol }>{

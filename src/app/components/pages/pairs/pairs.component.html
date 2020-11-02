@@ -1,92 +1,82 @@
-<h1>La liste des markets </h1>
-
-<div>
-  <button class="btn btn-outline-danger mb-4"
-          nz-popconfirm
-          (nzOnConfirm)="onResetMoyennes()"
-          nzOkText="oui"
-          nzPopconfirmPlacement="bottom"
-          nzPopconfirmTitle="Veux-tu réinitialiser TOUTES les moyennes des Paires en services ???!"
-  >RESET LES MOYENNES</button>
-</div>
-
-<button class="mb-5" nz-button nzType="primary" [nzLoading]="pagination.loading">
-  <i nz-icon nzType="search"></i>Pairs trouvées <span class="badge badge-light ml-3">{{pagination.total}}</span>
+<h1>La liste des pairs </h1>
+<button class="mb-3" nz-button nzType="primary" [nzLoading]="loading">
+  <i nz-icon nzType="search"></i>Pairs trouvés <span class="badge badge-light ml-3">{{pagination.total}}</span>
 </button>
 <div>
-  <div class="mb-3"><app-filters-pairs (onUpdate)="onUpdate()" [(request)]="request"></app-filters-pairs></div>
-  <app-pagination
-    class="mb-5 mt-5"
-    [(loading)]="pagination.loading" (onUpdate)="onUpdate()"
-    [total]="pagination.total"
-    [(paginate)]="pagination.paginate"
-    [(index)]="pagination.index"
-  ></app-pagination>
-  <br>
-  <nz-spin nzSize="large" [nzSpinning]="pagination.loading">
-  <router-outlet></router-outlet>
-    <nz-table
-      [nzData]="pagination.total"
-      [nzFrontPagination]="false"
-    >
-      <thead>
-      <tr>
-        <th class="position-relative" [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)">
-          <div *ngIf="arrayCheckedPairs.length" style="color:dodgerblue ;position: absolute;transform: translate(37px,-21px);" >{{setOfCheckedId.size}}</div>
-        </th>
-        <th>Nom</th>
-        <th>Status</th>
-        <th>Signalements</th>
-        <th>Pour max $</th>
-        <th>Pour 15k $</th>
-        <th>
-          <app-report-pairs (afterUpdate)="onGroupUpdate()" [pairs]="arrayCheckedPairs" [selectMultiple]="true">
-            <button nz-button nzType="danger" nzSize="small" ><i  nz-icon nzType="delete"></i></button>
-          </app-report-pairs>
-        </th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let pair of pairs">
-        <td [nzChecked]="setOfCheckedId.has(pair.name)"
-            (nzCheckedChange)="onItemChecked(pair.name, $event)"
-        ></td>
-        <td class="btn-link" style="color: black; cursor: pointer"  (click)="navigate(pair.name)">{{pair.name}}</td>
-        <td>
-          <nz-tag *ngIf="pair.exclusion.isExclude" nzColor="red">éliminée</nz-tag>
-          <nz-tag *ngIf="!pair.exclusion.isExclude" nzColor="green">en service</nz-tag>
-        </td>
-        <td>
-          <nz-tag *ngIf="pair.exclusion.reasons.length === 0" nzColor="default"><strong>aucun</strong> signalement</nz-tag>
-          <nz-tag *ngIf="pair.exclusion.reasons.length" nzColor="gold"><strong>{{pair.exclusion.reasons.length}}</strong> signalements</nz-tag>
-        </td>
-        <td>
-          <span>
-            <strong style="color: #0099ff ; font-size: 100%">{{pair.for30k.spreadMoyen_usd | number: '1.0-2' | replaceBy : ',' : ' '}} $</strong>
-          </span>
-        </td>
-        <td class="p-0">
-          <span>
-            <strong style="font-size: 100%">{{pair.for1k.spreadMoyen_usd | number: '1.0-2' | replaceBy : ',' : ' '}} $</strong>
-          </span>
-        </td>
-        <td>
-          <app-report-pairs (afterUpdate)="onUpdate()" *ngIf="pair" [pairs]="[pair]" >
-            <button nz-button nzType="danger" nzSize="small" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
-          </app-report-pairs>
-        </td>
-      </tr>
-      </tbody>
-    </nz-table>
+  <div class="mb-3">
+    <app-filters-pairs (onUpdate)="onUpdate()" [(request)]="request"></app-filters-pairs>
+    <app-pagination
+      (onUpdate)="onUpdate()"
+      [total]="pagination.total"
+      [(paginate)]="pagination.paginate"
+      [(index)]="pagination.index"
+    ></app-pagination>
 
-  </nz-spin>
-  <br>
-  <nz-empty *ngIf="pagination.total === 0"></nz-empty>
-  <app-pagination
-    [(loading)]="pagination.loading" (onUpdate)="onUpdate()"
-    [total]="pagination.total"
-    [(paginate)]="pagination.paginate"
-    [(index)]="pagination.index"
-  ></app-pagination>
+    <br>
+    <nz-spin nzSize="large" [nzSpinning]="loading">
+      <router-outlet></router-outlet>
+      <nz-table
+        [nzWidthConfig]="['5%','15%','10%','15%','15%','15%','10%','10%','5%']"
+        nzBordered
+        [nzData]="pagination.total"
+        [nzFrontPagination]="false"
+      >
+        <thead>
+        <tr>
+          <th rowspan="4" class="position-relative" [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)">
+            <div *ngIf="arrayCheckedPairs.length" style="color:dodgerblue ;position: absolute;transform: translate(37px,-21px);" >{{setOfCheckedId.size}}</div>
+          </th>
+          <th  rowspan="4">Nom</th>
+          <th rowspan="4">Status</th>
+          <th colspan="3">Le Spread pour</th>
+          <th  colSpan="2" >In the markets </th>
+          <th rowSpan="4" style="text-align: center;">
+            <app-report-pairs (afterUpdate)="onGroupUpdate()" [pairs]="arrayCheckedPairs" [selectMultiple]="true">
+              <button nz-button nzType="danger" nzSize="small" ><i  nz-icon nzType="delete"></i></button>
+            </app-report-pairs>
+          </th>
+        </tr>
+        <tr>
+          <th>1k $</th>
+          <th>15k $</th>
+          <th>30k $</th>
+          <th > Présentes </th>
+          <th> En services </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let pair of pairs">
 
+          <td [nzChecked]="setOfCheckedId.has(pair.name)"
+              (nzCheckedChange)="onItemChecked(pair.name, $event)">
+          </td>
+          <td class="btn-link" style="color: black; cursor: pointer"  (click)="navigate(pair.name)">{{pair.name}}</td>
+          <td>
+            <nz-tag [nzColor]="colors[pair.exclusion.severity]">
+              {{pair.exclusion.severity ? strSeverities[pair.exclusion.severity - 1] : "en service"}}
+            </nz-tag>
+          </td>
+          <td><span><strong > test 1</strong></span></td>
+          <td><span><strong> test 2 </strong></span></td>
+          <td><span><strong style="color: #0099ff ; font-size: 100%"> {{pair.used}}</strong></span></td>
+          <td>test 3</td>
+          <td>test 4</td>
+          <td style="text-align: center;">
+            <app-report-pairs (afterUpdate)="onUpdate()" *ngIf="pair" [pairs]="[pair]" >
+              <button nz-button nzType="danger" nzSize="small" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
+            </app-report-pairs>
+          </td>
+        </tr>
+        </tbody>
+      </nz-table>
+
+    </nz-spin>
+    <br>
+    <app-pagination
+      (onUpdate)="onUpdate()"
+      [total]="pagination.total"
+      [(paginate)]="pagination.paginate"
+      [(index)]="pagination.index"
+    ></app-pagination>
+  </div>
 </div>

@@ -29,18 +29,6 @@ export class PaginationComponent implements OnInit {
     this.paginateChange.emit(this.paginateValue)
   }
 
-  loadingValue : boolean = true
-  @Output()
-  loadingChange : EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Input()
-  get loading(){
-    return this.loadingValue;
-  }
-  set loading(bool : boolean ) {
-    this.loadingValue = bool;
-    this.loadingChange.emit(bool)
-  }
-
   indexValue : number = 1
   @Output()
   indexChange : EventEmitter<number> = new EventEmitter<number>();
@@ -53,12 +41,9 @@ export class PaginationComponent implements OnInit {
     this.indexChange.emit(bool)
   }
 
-  ngOnInit(): void {
-    // this.onUpdate.emit(this.paginateValue)
-  }
+  ngOnInit(): void {}
 
   makeUpdata(){
-    this.loading = true
     this.onUpdate.emit(this.paginateValue)
   }
 

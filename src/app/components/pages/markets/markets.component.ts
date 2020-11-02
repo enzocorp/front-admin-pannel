@@ -1,10 +1,22 @@
-import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Market} from "../../../models/market";
-import {Subscription} from "rxjs";
+import {forkJoin, Observable, Subscription} from "rxjs";
 import {MongoPaginate, Paginate} from "../../../models/pagination";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MarketsService} from "../../../services/http/markets.service";
+import {CryptoService} from "../../../services/http/crypto.service";
+import {RequesterApi} from "../../../services/autre/requesterApi";
+import {map} from "rxjs/operators";
+import {SymbolsService} from "../../../services/http/symbols.service";
+interface MarketPlus extends Market{
+  selected: number
+  used: number
+}
 
 @Component({
   selector: 'app-markets',
@@ -12,26 +24,38 @@ import {MarketsService} from "../../../services/http/markets.service";
   styleUrls: ['./markets.component.scss']
 })
 
-export class MarketsComponent implements OnInit,OnDestroy,AfterViewInit {
+export class MarketsComponent implements OnInit,OnDestroy {
 
   constructor(
     private http : HttpClient,
     private marketsService : MarketsService,
+    private symbolsServ : SymbolsService,
+    private cryptoServ : CryptoService,
     private activatedRoute : ActivatedRoute,
     private router : Router
   ) { }
 
   private subscription : Subscription = new Subscription()
-  markets : Market[] = []
-  pagination : {total : number, loading : boolean, paginate : Paginate, index : number} = {
+  markets : Array<MarketPlus> = []
+  colors = ['green','default','gold','orange','red']
+  strSeverities  : string[]
+  pagination : {total : number,paginate : Paginate, index : number} = {
     total : null,
-    loading : false,
     paginate : {limit : 20, skip : 0 },
     index : 1
   }
-  request : Partial<MongoPaginate> = {
-    sort : {_id : 1},
+  loading : boolean = false
+  request : Record<number, Object>&Paginate= {
+    ...this.pagination.paginate ,
+    0 : {$match : {}},
+    1 : {$sort : {_id : 1}}
   }
+  request2 = [
+    {$group : {
+      _id: "$market",
+      exclusions: { $push: "$exclusion.isExclude" }
+    }}
+  ]
   checked = false;
   indeterminate = false;
   setOfCheckedId = new Set<string>();
@@ -39,14 +63,49 @@ export class MarketsComponent implements OnInit,OnDestroy,AfterViewInit {
 
   ngOnInit(): void {
     this.subscription.add(this.marketsService.marketsSubject.subscribe(
-      (markets : Market[])=> {
+      (markets : MarketPlus[])=> {
         this.markets = markets
-        this.pagination.loading = false
-      }))
-  }
-  ngAfterViewInit(){
+        this.loading = false
+      } ))
+    this.cryptoServ.getSeverities().subscribe(
+      ({data})=> this.strSeverities = data.sort((a,b)=> a.severity - b.severity).map(severity => severity.description)
+    )
     this.onUpdate()
   }
+
+  /*-----------------------On update ----------------------------------*/
+
+  onGroupUpdate(){
+    this.onUpdate()
+    this.onAllChecked(false)
+  }
+
+  onUpdate(){
+    if (!this.loading)
+      this.loading = true
+
+    this.request = {...this.request,...this.pagination.paginate}
+    const $gethttp : Observable<{ markets: {data : Market[], metadata? : any },pairsByMarket: {data : any[]} }> = forkJoin(
+      this.marketsService.getMarkets(this.request),
+      this.symbolsServ.getSymbols(this.request2),
+    ).pipe(
+      map(([markets,pairsByMarket])=>({markets,pairsByMarket})))
+    $gethttp.subscribe(
+      ({markets,pairsByMarket}) =>  {
+        const exclusions : Array<{_id: string, exclusions : boolean[]}> = pairsByMarket.data
+        const marketsPlus : MarketPlus[] = markets.data.map(market => {
+          const obj =  exclusions.find(forMarket => forMarket._id === market.name)
+          return {
+            ...market,
+            selected : obj?.exclusions.length,
+            used : obj?.exclusions.filter(bool => bool=== false).length
+          }
+        })
+        this.marketsService.emmitMarkets(marketsPlus)
+        this.pagination.total = markets.metadata?.total || 0
+      })
+  }
+
 
   /*----------------------Tableau---------------------*/
   updateCheckedSet(name: string, checked: boolean): void {
@@ -73,21 +132,7 @@ export class MarketsComponent implements OnInit,OnDestroy,AfterViewInit {
     this.refreshCheckedStatus();
   }
 
-  /*-----------------------On update ----------------------------------*/
-  onGroupUpdate(){
-    this.onUpdate()
-    this.onAllChecked(false)
-  }
-
-  onUpdate(){
-    this.request = {...this.request,...this.pagination.paginate}
-    this.marketsService.getMarkets(this.request).subscribe(
-      (resp) => {
-        this.marketsService.emmitMarkets(resp.data)
-        this.pagination.total = resp.metadata[0]?.total || 0
-      }
-    )
-  }
+  /*--------------------- Navigation ------------------------*/
 
   navigate(str : string){ //Pour mettre a jour la liste des markets depuis la page "market"
     const request = JSON.stringify(this.request)
@@ -97,5 +142,4 @@ export class MarketsComponent implements OnInit,OnDestroy,AfterViewInit {
   ngOnDestroy() {
     this.subscription.unsubscribe()
   }
-
 }

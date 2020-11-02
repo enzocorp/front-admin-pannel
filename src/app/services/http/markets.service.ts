@@ -17,9 +17,9 @@ export class MarketsService {
     this.marketsSubject.next(content)
   }
 
-  getMarkets(filters = {}) : Subscribable<{data :Array<any&Market>, metadata : Array<{total : number}>}>{
-    const filtersStr : string = JSON.stringify(filters)
-    return this.http.get(`${this.url}`,{params: {filters : filtersStr}})
+  getMarkets(request = {}) : Subscribable<{data :any[], metadata?:any}>{
+    const strRequest : string = JSON.stringify(request)
+    return this.http.get(`${this.url}`,{params: {request : strRequest}})
   }
 
   getMarket(name :string) : Subscribable<{ data : Market }>{

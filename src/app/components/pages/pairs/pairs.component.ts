@@ -1,10 +1,19 @@
-import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Pair} from "../../../models/pair";
-import {Subscription} from "rxjs";
-import {MongoPaginate, Paginate} from "../../../models/pagination";
+import {forkJoin, Observable, Subscription} from "rxjs";
+import {Paginate} from "../../../models/pagination";
 import {ActivatedRoute, Router} from "@angular/router";
 import {PairsService} from "../../../services/http/pairs.service";
+import {SymbolsService} from "../../../services/http/symbols.service";
+import {CryptoService} from "../../../services/http/crypto.service";
+import {Pair} from "../../../models/pair";
+import {map} from "rxjs/operators";
+
+
+interface PairPlus extends Pair{
+  selected: number
+  used: number
+}
 
 @Component({
   selector: 'app-pairs',
@@ -12,26 +21,38 @@ import {PairsService} from "../../../services/http/pairs.service";
   styleUrls: ['./pairs.component.scss']
 })
 
-export class PairsComponent implements OnInit,OnDestroy,AfterViewInit {
+export class PairsComponent implements OnInit,OnDestroy {
 
   constructor(
     private http : HttpClient,
     private pairsService : PairsService,
+    private symbolsServ : SymbolsService,
+    private cryptoServ : CryptoService,
     private activatedRoute : ActivatedRoute,
     private router : Router
   ) { }
 
   private subscription : Subscription = new Subscription()
-  pairs : Pair[] = []
-  pagination : {total : number, loading : boolean, paginate : Paginate, index : number} = {
+  pairs : Array<PairPlus> = []
+  colors = ['green','default','gold','orange','red']
+  strSeverities  : string[]
+  pagination : {total : number,paginate : Paginate, index : number} = {
     total : null,
-    loading : false,
     paginate : {limit : 20, skip : 0 },
     index : 1
   }
-  request : Partial<MongoPaginate> = {
-    sort : {_id : 1},
+  loading : boolean = false
+  request : Record<number, Object>&Paginate= {
+    ...this.pagination.paginate ,
+    0 : {$match : {}},
+    1 : {$sort : {_id : 1}}
   }
+  request2 = [
+    {$group : {
+        _id: "$pair",
+        exclusions: { $push: "$exclusion.isExclude" }
+      }}
+  ]
   checked = false;
   indeterminate = false;
   setOfCheckedId = new Set<string>();
@@ -39,20 +60,49 @@ export class PairsComponent implements OnInit,OnDestroy,AfterViewInit {
 
   ngOnInit(): void {
     this.subscription.add(this.pairsService.pairsSubject.subscribe(
-      (pairs : Pair[])=> {
+      (pairs : PairPlus[])=> {
         this.pairs = pairs
-        this.pagination.loading = false
-      }))
-  }
-  ngAfterViewInit(){
+        this.loading = false
+      } ))
+    this.cryptoServ.getSeverities().subscribe(
+      ({data})=> this.strSeverities = data.sort((a,b)=> a.severity - b.severity).map(severity => severity.description)
+    )
     this.onUpdate()
   }
 
-  onResetMoyennes(){
-    this.pairsService.resetMoyennes().subscribe(
-      () => this.onUpdate()
-    )
+  /*-----------------------On update ----------------------------------*/
+
+  onGroupUpdate(){
+    this.onUpdate()
+    this.onAllChecked(false)
   }
+
+  onUpdate(){
+    if (!this.loading)
+      this.loading = true
+
+    this.request = {...this.request,...this.pagination.paginate}
+    const $gethttp : Observable<{ pairs: {data : Pair[], metadata? : any },pairsByPair: {data : any[]} }> = forkJoin(
+      this.pairsService.getPairs(this.request),
+      this.symbolsServ.getSymbols(this.request2),
+    ).pipe(
+      map(([pairs,pairsByPair])=>({pairs,pairsByPair})))
+    $gethttp.subscribe(
+      ({pairs,pairsByPair}) =>  {
+        const exclusions : Array<{_id: string, exclusions : boolean[]}> = pairsByPair.data
+        const pairsPlus : PairPlus[] = pairs.data.map(pair => {
+          const obj =  exclusions.find(forPair => forPair._id === pair.name)
+          return {
+            ...pair,
+            selected : obj?.exclusions.length,
+            used : obj?.exclusions.filter(bool => bool=== false).length
+          }
+        })
+        this.pairsService.emmitPairs(pairsPlus)
+        this.pagination.total = pairs.metadata?.total || 0
+      })
+  }
+
 
   /*----------------------Tableau---------------------*/
   updateCheckedSet(name: string, checked: boolean): void {
@@ -79,21 +129,7 @@ export class PairsComponent implements OnInit,OnDestroy,AfterViewInit {
     this.refreshCheckedStatus();
   }
 
-/*-----------------------On update ----------------------------------*/
-  onGroupUpdate(){
-    this.onUpdate()
-    this.onAllChecked(false)
-  }
-
-  onUpdate(){
-    this.request = {...this.request,...this.pagination.paginate}
-    this.pairsService.getPairs(this.request).subscribe(
-      (resp) => {
-        this.pairsService.emmitPairs(resp.data)
-        this.pagination.total = resp.metadata[0]?.total || 0
-      }
-    )
-  }
+  /*--------------------- Navigation ------------------------*/
 
   navigate(str : string){ //Pour mettre a jour la liste des pairs depuis la page "pair"
     const request = JSON.stringify(this.request)

@@ -18,11 +18,10 @@
   <p>
     <strong style="font-size: 0.9rem" nz-typography >Trier par</strong><br>
     <nz-radio-group nzName="radiogroup" [(ngModel)]="sort.key" (ngModelChange)="makeUpdate()">
-      <label nz-radio nzValue="_id" class="mr-2">date</label>
-      <label nz-radio nzValue="id_exchange" class="mr-2">nom</label>
-      <label nz-radio nzValue="exclusion.exchangeIsExclude" class="mr-2">élimination</label>
+      <label nz-radio nzValue="_id" class="mr-2">date d'ajout</label>
+      <label nz-radio nzValue="name" class="mr-2">nom</label>
+      <label nz-radio nzValue="exclusion.isExclude" class="mr-2">élimination</label>
       <label nz-radio nzValue="exclusion.severity" class="mr-2">signalement</label>
-      <label nz-radio nzValue="paires_actives.total" class="mr-2"> paires actives </label>
     </nz-radio-group>
     <nz-switch nzSize="small" [ngModel]="true" nzCheckedChildren="croissant" nzUnCheckedChildren="décroissant" (click)="onChangeOrder()"></nz-switch>
   </p>

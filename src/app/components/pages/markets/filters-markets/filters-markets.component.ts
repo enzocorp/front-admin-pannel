@@ -1,34 +1,33 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {MongoPaginate} from "../../../../models/pagination";
 import {debounceTime} from "rxjs/operators";
+import {Paginate} from "../../../../models/pagination";
 
 @Component({
   selector: 'app-filters-markets',
   templateUrl: './filters-markets.component.html',
   styleUrls: ['./filters-markets.component.scss']
 })
+
 export class FiltersMarketsComponent implements OnInit {
 
   constructor(
-    private formBuilder : FormBuilder,
-    private changeDetector : ChangeDetectorRef // inutile mais pour enlever un avertissement dans la console
+    private formBuilder : FormBuilder
   ) { }
 
+  @Output() onUpdate : EventEmitter<void> = new EventEmitter<void>()
   filterform : FormGroup
   match : any = {}
   sort : { key : string, order : number } = { key : '_id', order : 1}
 
-  requestValue : MongoPaginate
-  @Output() onUpdate : EventEmitter<void> = new EventEmitter<void>();
-
+  requestValue : Paginate&Record<number,Object>
   @Output()
-  requestChange : EventEmitter<MongoPaginate> = new EventEmitter<MongoPaginate>();
+  requestChange : EventEmitter<Paginate&Record<number,Object>> = new EventEmitter<Paginate&Record<number,Object>>();
   @Input()
   get request(){
     return this.requestValue;
   }
-  set request(obj : MongoPaginate ) {
+  set request(obj : Paginate&Record<number,Object> ) {
     this.requestValue = obj;
     this.requestChange.emit(this.requestValue)
   }
@@ -36,10 +35,14 @@ export class FiltersMarketsComponent implements OnInit {
   ngOnInit(): void {
     this.initForms()
     this.subscribeFilters()
-    this.request = {...this.request, match: this.match,sort : {[this.sort.key] : this.sort.order}}
   }
-  ngAfterViewChecked(){
-    this.changeDetector.detectChanges();
+
+  editRequest () {
+    this.request = {
+      ...this.request,
+      0 : { $match: this.match},
+      1 : { $sort : {[this.sort.key] : this.sort.order}},
+    }
   }
 
   initForms (){
@@ -50,12 +53,8 @@ export class FiltersMarketsComponent implements OnInit {
     })
   }
 
-  onRadioChange(str : string){
-    this.makeUpdate()
-  }
-
   makeUpdate(){
-    this.request = {...this.request, match: this.match,sort : {[this.sort.key] : this.sort.order}}
+    this.editRequest()
     this.onUpdate.emit()
   }
 
@@ -68,18 +67,18 @@ export class FiltersMarketsComponent implements OnInit {
     //Name
     this.filterform.controls['market'].valueChanges.pipe(
       debounceTime(400),
-    ).subscribe((id) => {
-      if (!id) delete this.match.id_exchange
-      else this.match.id_exchange = {$regex:  `${id}`, $options: 'i'}
+    ).subscribe((name) => {
+      if (!name) delete this.match['name']
+      else this.match['name'] = {$regex:  `${name}`, $options: 'i'}
       this.makeUpdate()
     })
 
     //Banned
     this.filterform.controls['banned'].valueChanges.subscribe(
       val => {
-        if(val === 'banned') this.match["exclusion.exchangeIsExclude"] = true
-        else if(val === 'allowed') this.match["exclusion.exchangeIsExclude"] = false
-        else delete this.match["exclusion.exchangeIsExclude"]
+        if(val === 'banned') this.match["exclusion.isExclude"] = true
+        else if(val === 'allowed') this.match["exclusion.isExclude"] = false
+        else delete this.match["exclusion.isExclude"]
         this.makeUpdate()
       }
     )

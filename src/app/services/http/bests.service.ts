@@ -25,9 +25,9 @@ export class BestsService {
     return this.http.get(`${this.url}/reset`)
   }
 
-  getBests(filters = {}) : Subscribable<{data :Array<Best>, metadata : Array<{total : number}>}>{
-    const filtersStr : string = JSON.stringify(filters)
-    return this.http.get(`${this.url}`, {params: {filters : filtersStr}})
+  getBests(request = {}) : Subscribable<{data :any[], metadata?:any}>{
+    const strRequest : string = JSON.stringify(request)
+    return this.http.get(`${this.url}`,{params: {request : strRequest}})
   }
 
   getBest(id) : Subscribable<Best>{
