@@ -18,7 +18,7 @@ export class FiltersMarketsComponent implements OnInit {
   @Output() onUpdate : EventEmitter<void> = new EventEmitter<void>()
   filterform : FormGroup
   match : any = {}
-  sort : { key : string, order : number } = { key : '_id', order : 1}
+  sort : { key : string, order : number } = { key : 'market.name', order : 1}
 
   requestValue : Paginate&Record<number,Object>
   @Output()
@@ -40,8 +40,8 @@ export class FiltersMarketsComponent implements OnInit {
   editRequest () {
     this.request = {
       ...this.request,
-      0 : { $match: this.match},
-      1 : { $sort : {[this.sort.key] : this.sort.order}},
+      3 : { $match: this.match},
+      4 : { $sort : {[this.sort.key] : this.sort.order}},
     }
   }
 
@@ -68,25 +68,21 @@ export class FiltersMarketsComponent implements OnInit {
     this.filterform.controls['market'].valueChanges.pipe(
       debounceTime(400),
     ).subscribe((name) => {
-      if (!name) delete this.match['name']
-      else this.match['name'] = {$regex:  `${name}`, $options: 'i'}
+      if (!name) delete this.match['market.name']
+      else this.match['market.name'] = {$regex:  `${name}`, $options: 'i'}
       this.makeUpdate()
     })
 
     //Banned
     this.filterform.controls['banned'].valueChanges.subscribe(
       val => {
-        if(val === 'banned') this.match["exclusion.isExclude"] = true
-        else if(val === 'allowed') this.match["exclusion.isExclude"] = false
-        else delete this.match["exclusion.isExclude"]
-        this.makeUpdate()
-      }
-    )
-    //Reported
-    this.filterform.controls['reported'].valueChanges.subscribe(
-      val => {
-        if(val) this.match["exclusion.severity"] = { $gt: 0 }
-        else delete this.match["exclusion.severity"]
+        if(val === 'banned') this.match["market.exclusion.isExclude"] = true
+        else if(val === 'allowed') this.match["market.exclusion.isExclude"] = false
+        else delete this.match["market.exclusion.isExclude"]
+
+        if(val === 'reported')this.match["market.exclusion.severity"] = { $gt: 0 }
+        else delete this.match["market.exclusion.severity"]
+
         this.makeUpdate()
       }
     )

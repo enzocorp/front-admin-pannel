@@ -13,11 +13,17 @@ import {CryptoService} from "../../../services/http/crypto.service";
 import {RequesterApi} from "../../../services/autre/requesterApi";
 import {map} from "rxjs/operators";
 import {SymbolsService} from "../../../services/http/symbols.service";
+import {log, mergeDateConfig} from "ng-zorro-antd";
 interface MarketPlus extends Market{
   selected: number
   used: number
 }
 
+interface resp_data {
+  metadata : {total : number},
+  data : Array<{pairs : string[],market : Market, _id : string}>
+  excl : Array<{_id : string}>
+}
 @Component({
   selector: 'app-markets',
   templateUrl: './markets.component.html',
@@ -45,23 +51,23 @@ export class MarketsComponent implements OnInit,OnDestroy {
     index : 1
   }
   loading : boolean = false
-  request : Record<number, Object>&Paginate= {
-    ...this.pagination.paginate ,
-    0 : {$match : {}},
-    1 : {$sort : {_id : 1}}
+  request : Array<any>
+  nestedRequest : Object = {
+    0 : {$group: {_id: "$market", pairs: {$push: "$pair"}}},
+    1 : {$lookup: {from: "markets",localField: "_id", foreignField: "name", as: "market"}},
+    2 : {$unwind: "$market"},
+    3 : {$match : {}},
+    4 : {$sort : {_id : 1}},
   }
-  request2 = [
-    {$group : {
-      _id: "$market",
-      exclusions: { $push: "$exclusion.isExclude" }
-    }}
-  ]
   checked = false;
   indeterminate = false;
   setOfCheckedId = new Set<string>();
-  arrayCheckedMarkets : Market[] = []
+  arrChecked : Market[] = []
 
   ngOnInit(): void {
+    this.cryptoServ.getSeverities().subscribe(
+      ({data})=> this.strSeverities = data.sort((a,b)=> a.severity - b.severity).map(severity => severity.description)
+    )
     this.subscription.add(this.marketsService.marketsSubject.subscribe(
       (markets : MarketPlus[])=> {
         this.markets = markets
@@ -75,35 +81,61 @@ export class MarketsComponent implements OnInit,OnDestroy {
 
   /*-----------------------On update ----------------------------------*/
 
+  makeRequest () : void{
+    this.request = [
+      {$facet: {
+          metadata: [
+            ...Object.values(this.nestedRequest)/*.slice(0,-3),*/,
+            {$count : "total"}
+            ],
+          data: [
+            ...Object.values(this.nestedRequest),
+            {$skip: this.pagination.paginate.skip},
+            {$limit: this.pagination.paginate.limit}
+          ],
+          excl: [
+            {$match: {"exclusion.isExclude": false}},
+            {$group: {_id: "$pair"}},
+            {$lookup: {from: "pairs", localField: "_id", foreignField: "name", as: "pair"}},
+            {$unwind: "$pair"},
+            {$match: {"pair.exclusion.isExclude": true}},
+            {$project:  {_id : 1}}
+          ]
+        }},
+      {$unwind : "$metadata"}
+    ]
+  }
+
   onGroupUpdate(){
     this.onUpdate()
-    this.onAllChecked(false)
+    this.setOfCheckedId.clear()
+    this.arrChecked = []
+    this.setOfCheckedId.clear()
+    this.refreshCheckedStatus()
   }
 
   onUpdate(){
     if (!this.loading)
       this.loading = true
 
-    this.request = {...this.request,...this.pagination.paginate}
-    const $gethttp : Observable<{ markets: {data : Market[], metadata? : any },pairsByMarket: {data : any[]} }> = forkJoin(
-      this.marketsService.getMarkets(this.request),
-      this.symbolsServ.getSymbols(this.request2),
-    ).pipe(
-      map(([markets,pairsByMarket])=>({markets,pairsByMarket})))
-    $gethttp.subscribe(
-      ({markets,pairsByMarket}) =>  {
-        const exclusions : Array<{_id: string, exclusions : boolean[]}> = pairsByMarket.data
-        const marketsPlus : MarketPlus[] = markets.data.map(market => {
-          const obj =  exclusions.find(forMarket => forMarket._id === market.name)
+    this.makeRequest()
+    this.symbolsServ.getSymbols(this.request).subscribe(
+      ({data : tabdata}: { data : any  }) => {
+        const [objdata] = tabdata
+        const {metadata,data,excl} : resp_data = objdata
+        let marketPlus : MarketPlus[] = data.map(item => {
+          const exclus : number = item.pairs.filter(name => excl.find(item2=> item2._id === name)).length
           return {
-            ...market,
-            selected : obj?.exclusions.length,
-            used : obj?.exclusions.filter(bool => bool=== false).length
+            ...item.market,
+            selected : item.pairs.length,
+            used : item.pairs.length - exclus
           }
         })
-        this.marketsService.emmitMarkets(marketsPlus)
-        this.pagination.total = markets.metadata?.total || 0
-      })
+        this.marketsService.emmitMarkets(marketPlus)
+        this.pagination.total = metadata.total
+        this.refreshCheckedStatus()
+      }
+    )
   }
 
 
@@ -111,15 +143,17 @@ export class MarketsComponent implements OnInit,OnDestroy {
   updateCheckedSet(name: string, checked: boolean): void {
     if (checked) {
       this.setOfCheckedId.add(name);
+      this.arrChecked.push(this.markets.find(market => market.name === name))
     } else {
       this.setOfCheckedId.delete(name);
+      this.arrChecked = this.arrChecked.filter(market => market.name !== name)
     }
   }
 
   refreshCheckedStatus(): void {
     this.checked = this.markets.every(({ name }) => this.setOfCheckedId.has(name));
-    this.indeterminate = this.markets.some(({ name }) => this.setOfCheckedId.has(name)) && !this.checked;
-    this.arrayCheckedMarkets = this.markets.filter(market => this.setOfCheckedId.has(market.name) )
+    this.indeterminate = (!!this.arrChecked.length && !this.checked) ||
+      (!!this.arrChecked.length && !this.markets.some(({ name }) => this.setOfCheckedId.has(name)))
   }
 
   onItemChecked(name: string, checked: boolean): void {
@@ -135,7 +169,7 @@ export class MarketsComponent implements OnInit,OnDestroy {
   /*--------------------- Navigation ------------------------*/
 
   navigate(str : string){ //Pour mettre a jour la liste des markets depuis la page "market"
-    const request = JSON.stringify(this.request)
+    const request = JSON.stringify(this.nestedRequest)
     this.router.navigate([str], {relativeTo : this.activatedRoute ,queryParams : {request}}).then()
   }
 

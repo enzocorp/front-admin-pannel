@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {forkJoin, Observable, Subscription} from "rxjs";
 import {Paginate} from "../../../models/pagination";
@@ -36,6 +36,7 @@ export class PairsComponent implements OnInit,OnDestroy {
   pairs : Array<PairPlus> = []
   colors = ['green','default','gold','orange','red']
   strSeverities  : string[]
+  @Input() isFor : 'for1k' | 'for15k' | 'for30k' = 'for1k'
   pagination : {total : number,paginate : Paginate, index : number} = {
     total : null,
     paginate : {limit : 20, skip : 0 },
@@ -82,14 +83,14 @@ export class PairsComponent implements OnInit,OnDestroy {
       this.loading = true
 
     this.request = {...this.request,...this.pagination.paginate}
-    const $gethttp : Observable<{ pairs: {data : Pair[], metadata? : any },pairsByPair: {data : any[]} }> = forkJoin(
+    const $gethttp : Observable<{ pairs: {data : Pair[], metadata? : any },marketsByPair: {data : any[]} }> = forkJoin(
       this.pairsService.getPairs(this.request),
       this.symbolsServ.getSymbols(this.request2),
     ).pipe(
-      map(([pairs,pairsByPair])=>({pairs,pairsByPair})))
+      map(([pairs,marketsByPair])=>({pairs,marketsByPair})))
     $gethttp.subscribe(
-      ({pairs,pairsByPair}) =>  {
-        const exclusions : Array<{_id: string, exclusions : boolean[]}> = pairsByPair.data
+      ({pairs,marketsByPair}) =>  {
+        const exclusions : Array<{_id: string, exclusions : boolean[]}> = marketsByPair.data
         const pairsPlus : PairPlus[] = pairs.data.map(pair => {
           const obj =  exclusions.find(forPair => forPair._id === pair.name)
           return {

@@ -36,7 +36,7 @@
   </button>
 </div>
 
-<app-filters-bests (onUpdate)="onUpdate()" [(request)]="request"></app-filters-bests>
+<app-filters-bests (onUpdate)="onUpdate()" [(nestedRequest)]="nestedRequest"></app-filters-bests>
 <app-pagination
   [(loading)]="pagination.loading" (onUpdate)="onUpdate()"
   [total]="pagination.total"

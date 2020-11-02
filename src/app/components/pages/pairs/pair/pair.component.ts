@@ -49,7 +49,7 @@ export class PairComponent implements OnInit {
   pair : lookup_pair = undefined
   visible : boolean = false
   isDirty : EventEmitter<void> = new EventEmitter<void>()
-  request : MongoPaginate = {
+  nestedRequest : MongoPaginate = {
     match : {name : this.activatedRoute.snapshot.paramMap.get('id')},
     lookups :
       [{
@@ -92,7 +92,7 @@ export class PairComponent implements OnInit {
     const $gethttp : Subscribable<{severities : Severity[], reasons : Reason[], pair : any}> = forkJoin(
       this.exclusionServ.getSeverities(),
       this.exclusionServ.getReasons('symbole'),
-      this.cryptoServ.getPairsv2(this.request)
+      this.cryptoServ.getPairsv2(this.nestedRequest)
     ).pipe( // forkJoin returns an array of values, here we map those values to an object
       map(([severities,reasons,pair])=>({severities,reasons,pair})))
 
@@ -137,8 +137,8 @@ export class PairComponent implements OnInit {
 
   close(): void {
     this.visible = false
-    if (this.dirty && this.activatedRoute.snapshot.queryParamMap.get('request')){
-      const req = JSON.parse( this.activatedRoute.snapshot.queryParamMap.get('request'))
+    if (this.dirty && this.activatedRoute.snapshot.queryParamMap.get('nestedRequest')){
+      const req = JSON.parse( this.activatedRoute.snapshot.queryParamMap.get('nestedRequest'))
       this.cryptoServ.getPairsv2(req).subscribe(
         resp => this.cryptoServ.emmitPairs(resp.data)
       )
@@ -151,7 +151,7 @@ export class PairComponent implements OnInit {
   onValuesChanges(){
     this.dirty = true
     this.dataLoading = true
-    this.cryptoServ.getPairsv2(this.request).subscribe(
+    this.cryptoServ.getPairsv2(this.nestedRequest).subscribe(
       resp => {
         this.pair = resp.data[0]
         this.exclusionFromPair()

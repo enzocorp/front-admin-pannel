@@ -4,7 +4,7 @@
 </button>
 <div>
   <div class="mb-3">
-<app-filters-markets (onUpdate)="onUpdate()" [(request)]="request"></app-filters-markets>
+<app-filters-markets (onUpdate)="onUpdate()" [(request)]="nestedRequest"></app-filters-markets>
         <app-pagination
           (onUpdate)="onUpdate()"
           [total]="pagination.total"
@@ -21,8 +21,8 @@
       >
         <thead>
         <tr>
-          <th class="position-relative" [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)">
-            <div *ngIf="arrayCheckedMarkets.length" style="color:dodgerblue ;position: absolute;transform: translate(37px,-21px);" >{{setOfCheckedId.size}}</div>
+          <th nzWidth="100px" class="position-relative" [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)">
+            <div *ngIf="arrChecked.length" style="color:dodgerblue ;position: absolute;transform: translate(44px,-21px);" >{{setOfCheckedId.size}}</div>
           </th>
           <th>Nom</th>
           <th>Status</th>
@@ -31,7 +31,7 @@
           <th>[P] actives</th>
           <th>Lien</th>
           <th>
-            <app-report-markets (afterUpdate)="onGroupUpdate()" [markets]="arrayCheckedMarkets" [selectMultiple]="true">
+            <app-report-markets (afterUpdate)="onGroupUpdate()" [markets]="arrChecked" [selectMultiple]="true">
               <button nz-button nzType="danger" nzSize="small" ><i  nz-icon nzType="delete"></i></button>
             </app-report-markets>
           </th>

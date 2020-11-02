@@ -47,7 +47,7 @@ export class MarketComponent implements OnInit {
   listeLoading = true
   visible : boolean = false
   isDirty : EventEmitter<void> = new EventEmitter<void>()
-  request : Partial<MongoPaginate> = {
+  nestedRequest : Partial<MongoPaginate> = {
     lookups :
         [{
           from: "reasons",
@@ -83,7 +83,7 @@ export class MarketComponent implements OnInit {
         this.listeLoading = false
       })
    const $gethttp : Observable<{ market: {data : lookup_market[] },severities: Severity[] }> = forkJoin(
-     this.marketServ.getMarkets(this.request),
+     this.marketServ.getMarkets(this.nestedRequest),
      this.exclusionService.getSeverities(),
    ).pipe(
      map(([market,severities])=>({market,severities})))
@@ -100,8 +100,8 @@ export class MarketComponent implements OnInit {
 
   close(): void {
     this.visible = false
-    if (this.dirty && this.activatedRoute.snapshot.queryParamMap.get('request')){
-      const req = JSON.parse( this.activatedRoute.snapshot.queryParamMap.get('request'))
+    if (this.dirty && this.activatedRoute.snapshot.queryParamMap.get('nestedRequest')){
+      const req = JSON.parse( this.activatedRoute.snapshot.queryParamMap.get('nestedRequest'))
       this.marketServ.getMarkets(req).subscribe(
         resp => this.marketServ.emmitMarkets(resp.data)
       )
@@ -128,7 +128,7 @@ export class MarketComponent implements OnInit {
   onValuesChanges(){
     this.dirty = true
     this.listeLoading = true
-    this.marketServ.getMarkets(this.request).subscribe(
+    this.marketServ.getMarkets(this.nestedRequest).subscribe(
       resp => this.market = resp.data[0]
     )
     this.marketServ.getPodiumPairs(this.activatedRoute.snapshot.paramMap.get('id'),this.sorter.moyenne, this.sorter.side).subscribe(
