@@ -94,19 +94,18 @@ export class MarketsComponent implements OnInit,OnDestroy {
 
     this.request = {...this.request,skip : this.pagination.paginate.skip, limit : this.pagination.paginate.limit}
     this.symbolsServ.getSymbols(this.request).subscribe(
-      ({data, metadata}: resp_data) => {
-        let marketPlus : MarketPlus[] = data.map(({market,pairsUsed}) => ({
+      (resp: resp_data) => {
+        let marketPlus : MarketPlus[] = resp ? resp.data.map(({market,pairsUsed}) => ({
           ...market,
           pairsUsed
-        }))
+        })) : []
         this.marketsService.emmitMarkets(marketPlus)
-        this.pagination.total = metadata.total
+        this.pagination.total = resp?.metadata.total || 0
         this.refreshCheckedStatus()
         this.loading = false
       }
     )
   }
-
 
   /*----------------------Tableau---------------------*/
   updateCheckedSet(name: string, checked: boolean): void {

@@ -4,7 +4,8 @@
 </button>
 <div>
   <div class="mb-3">
-<!--    <app-filters-pairs (onUpdate)="onUpdate()" [(request)]="request"></app-filters-pairs>-->
+    <app-filters-pairs (isForChange)="isFor = $event" (onUpdate)="onUpdate()" [(request)]="request"></app-filters-pairs>
+    <br>
     <app-pagination
       (onUpdate)="onUpdate()"
       [total]="pagination.total"
@@ -16,7 +17,7 @@
     <nz-spin nzSize="large" [nzSpinning]="loading">
       <router-outlet></router-outlet>
       <nz-table
-        [nzWidthConfig]="['8%','17%','10%','15%','10%','7.5%','7.5%','10%','10%','5%']"
+        [nzWidthConfig]="['7%','15%','11%','16%','10%','8.5%','8.5%','9%','9%','7%']"
         nzBordered
         [nzData]="pagination.total"
         [nzFrontPagination]="false"
@@ -24,7 +25,7 @@
         <thead>
         <tr>
           <th rowspan="4" class="position-relative" [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)">
-            <div *ngIf="arrChecked.length" style="color:dodgerblue ;position: absolute;transform: translate(24px,-21px);" >{{setOfCheckedId.size}}</div>
+            <div *ngIf="arrChecked.length" style="color:dodgerblue ;position: absolute;transform: translate(37px,-21px);" >{{setOfCheckedId.size}}</div>
           </th>
           <th  rowspan="4">Nom</th>
           <th rowspan="4">Status</th>
@@ -38,11 +39,11 @@
         </tr>
         <tr>
           <th >Spread $ moyen</th>
-          <th >Frequences + vs -</th>
+          <th >Freq + vs -</th>
           <th >Freq no volume </th>
-          <th >Nombre de top 1 </th>
-          <th > Contenu dans </th>
-          <th > En services dans</th>
+          <th >Freq top 1 </th>
+          <th > Présente dans [M] </th>
+          <th > Utilisée dans [M]</th>
         </tr>
 
         </thead>
@@ -62,7 +63,7 @@
           </td>
           <!--Spread moyen-->
           <td *ngIf="pair[isFor].spreadMoyen_usd; else negativSpread">
-            <button nz-button nzType="primary" nzGhost>{{pair[isFor].spreadMoyen_usd | exponentiel : 0 | replaceBy : ',' : ' '}} $</button>
+            <button nz-button nzType="primary" nzGhost>{{pair[isFor].spreadMoyen_usd | exponentiel : 0 | number |replaceBy : ',' : ' '}} $</button>
           </td>
           <ng-template #negativSpread><td><button nz-button nzSize="small" nzType="dashed">Pas de data</button></td></ng-template>
 
@@ -73,14 +74,14 @@
 
           </td>
           <!--freq no volume-->
-          <td>{{pair[isFor].notEnoughtVolFreq}}</td>
+          <td><span style="color: black; font-weight: 500">{{pair[isFor].notEnoughtVolFreq}}</span> / {{pair[isFor].positiveFreq + pair[isFor].negativeFreq}}</td>
           <!--freq Top -->
           <td>
-            {{pair[isFor].isBestFreq}}
-            <i class="iconeTab" *ngIf="pair[isFor].isBestFreq" nz-icon nzType="crown" [nzTwotoneColor]="'#ffcc54'" nzTheme="twotone"></i>
+            <strong>{{pair[isFor].isBestFreq}}</strong>
+            <i class="iconeTab" *ngIf="pair[isFor].isBestFreq" nz-icon nzType="crown" nzTwotoneColor="orange" nzTheme="twotone"></i>
           </td>
           <!--nb markets-->
-          <td><strong> {{pair.marketsForThis}}</strong></td>
+          <td>{{pair.marketsForThis}}</td>
           <!--nb market use-->
           <td>
             <strong [ngStyle]="{color : pair.marketsUsed > 1 ? '#0099ff' : 'red'}"> {{pair.marketsUsed}} </strong>

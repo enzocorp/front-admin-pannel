@@ -1,35 +1,36 @@
-import {AfterViewChecked, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime} from "rxjs/operators";
-import {MongoPaginate, Paginate} from "../../../../models/pagination";
+import {Paginate} from "../../../../models/pagination";
 
 @Component({
   selector: 'app-filters-pairs',
   templateUrl: './filters-pairs.component.html',
   styleUrls: ['./filters-pairs.component.scss']
 })
-export class FiltersPairsComponent implements OnInit, AfterViewChecked {
+export class FiltersPairsComponent implements OnInit {
 
   constructor(
     private formBuilder : FormBuilder,
-    private changeDetector : ChangeDetectorRef // inutile mais pour enlever un avertissement dans la console
   ) { }
 
   filterform : FormGroup
   match : any = {}
-  sort : { key : string, order : number } = { key : '_id', order : 1}
+  sort : { key : string, order : number } = { key : 'pair._id', order : 1}
   searchMod : 'startWith'| 'endWith' = 'startWith'
+  isFor : 'for1k' | 'for15k' | 'for30k' = "for15k"
+  @Output() isForChange : EventEmitter<string> = new EventEmitter<string>();
 
-  requestValue : MongoPaginate
+  requestValue : Paginate&Record<number,Object>
   @Output() onUpdate : EventEmitter<void> = new EventEmitter<void>();
 
   @Output()
-  requestChange : EventEmitter<MongoPaginate> = new EventEmitter<MongoPaginate>();
+  requestChange : EventEmitter<Paginate&Record<number,Object> > = new EventEmitter<Paginate&Record<number,Object> >();
   @Input()
   get request(){
     return this.requestValue;
   }
-  set request(obj : MongoPaginate ) {
+  set request(obj : Paginate&Record<number,Object>  ) {
     this.requestValue = obj;
     this.requestChange.emit(this.requestValue)
   }
@@ -37,31 +38,29 @@ export class FiltersPairsComponent implements OnInit, AfterViewChecked {
   ngOnInit(): void {
     this.initForms()
     this.subscribeFilters()
-    this.request = {...this.request, match: this.match,sort : {[this.sort.key] : this.sort.order}}
+    this.isForChange.emit(this.isFor)
   }
-  ngAfterViewChecked(){
-    this.changeDetector.detectChanges();
+
+  editRequest () {
+    this.request = {
+      ...this.request,
+      3 : { $match: this.match},
+      8 : { $sort : {[this.sort.key] : this.sort.order}},
+    }
   }
 
   initForms (){
     this.filterform = this.formBuilder.group({
       pair : [null],
-      reported : [null],
       banned : [null],
+      for1k : [null],
+      for15k : [null],
+      for30k : [null],
     })
   }
 
-  onRadioChange(str : string){
-    if(str === 'banLenght'){
-      this.request.addFields = {banLenght: {$size: "$exclusion.fromMarkets"}}
-    }
-    else
-      delete this.request.addFields;
-    this.makeUpdate()
-  }
-
   makeUpdate(){
-    this.request = {...this.request, match: this.match,sort : {[this.sort.key] : this.sort.order}}
+    this.editRequest()
     this.onUpdate.emit()
   }
 
@@ -70,34 +69,36 @@ export class FiltersPairsComponent implements OnInit, AfterViewChecked {
     this.makeUpdate()
   }
 
+  onIsForChange(){
+    this.isForChange.emit(this.isFor)
+    this.makeUpdate()
+  }
+
   subscribeFilters(){
     //Name
     this.filterform.controls['pair'].valueChanges.pipe(
       debounceTime(400),
-    ).subscribe((id) => {
-      if (!id) delete this.match.name
-      else if(this.searchMod === 'startWith') this.match.name = {$regex:  `^${id}`, $options: 'i'}
-      else if(this.searchMod === 'endWith') this.match.name = {$regex:  `${id}$`, $options: 'i'}
+    ).subscribe((name) => {
+      if (!name) delete this.match['pair.name']
+      else if(this.searchMod === 'startWith') this.match['pair.name']  = {$regex:  `^${name}`, $options: 'i'}
+      else if(this.searchMod === 'endWith') this.match['pair.name']  = {$regex:  `${name}$`, $options: 'i'}
       this.makeUpdate()
     })
 
-    //Banned
+    //Filtre all/en services/signalées/éleminée
     this.filterform.controls['banned'].valueChanges.subscribe(
       val => {
-        if(val === 'banned') this.match["exclusion.pairIsExclude"] = true
-        else if(val === 'allowed') this.match["exclusion.pairIsExclude"] = false
-        else delete this.match["exclusion.pairIsExclude"]
+        if(val === 'banned') this.match["pair.exclusion.isExclude"] = true
+        else if(val === 'allowed') this.match["pair.exclusion.isExclude"] = false
+        else delete this.match["pair.exclusion.isExclude"]
+
+        if(val === 'reported')this.match["pair.exclusion.severity"] = { $gt: 0 }
+        else delete this.match["pair.exclusion.severity"]
+
         this.makeUpdate()
-      }
-    )
-    //Reported
-    this.filterform.controls['reported'].valueChanges.subscribe(
-      val => {
-        if(val) this.match["exclusion.fromMarkets"] = {$not: {$size: 0}}
-        else delete this.match["exclusion.fromMarkets"]
-        this.makeUpdate()
-      }
-    )
+      })
+
   }
+
 
 }

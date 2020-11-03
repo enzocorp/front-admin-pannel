@@ -1,4 +1,6 @@
-<strong style="font-size: 0.9rem" nz-typography >Filtrer par</strong><br>
+
+<div class="mb-2"><strong style="font-size: 0.9rem" nz-typography >Filtrer par :</strong></div>
+
 <form nz-form  [formGroup]="filterform">
   <nz-input-group [nzAddOnBefore]="addOnBeforeTemplate" style="width: fit-content; display: flex" [nzSuffix]="suffixIconSearch">
     <input style="min-width: 150px" type="text" nz-input formControlName="pair" placeholder="Rechercher par nom" />
@@ -6,35 +8,58 @@
 
   <div class="mt-2">
     <nz-radio-group class="mr-3" formControlName="banned" nzSize="small">
-      <label nz-radio-button>toutes</label>
-      <label nz-radio-button nzValue="banned">éliminée(s)</label>
+      <label nz-radio-button>tous</label>
       <label nz-radio-button nzValue="allowed">en service(s)</label>
+      <label nz-radio-button nzValue="reported">signalé(s)</label>
+      <label nz-radio-button nzValue="banned">éliminé(s)</label>
     </nz-radio-group>
-    <span class="mr-1">Signalée(s)</span><nz-switch class="mr-3" nzSize="small" formControlName="reported"></nz-switch>
   </div>
 </form>
 
-  <div class="mt-2">
-    <p>
-      <strong style="font-size: 0.9rem" nz-typography >Trier par</strong><br>
-      <nz-radio-group nzName="radiogroup" [(ngModel)]="sort.key" (ngModelChange)="onRadioChange($event)">
-        <label nz-radio nzValue="_id" class="mr-2">date</label>
-        <label nz-radio nzValue="name" class="mr-2">nom</label>
-        <label nz-radio nzValue="exclusion.pairIsExclude" class="mr-2">élimination</label>
-        <label nz-radio nzValue="banLenght" class="mr-2">signalement</label>
-        <label nz-radio nzValue="ifPositiveSpread.profitMaxiMoyen_usd" class="mr-2">gains max</label>
-        <label nz-radio nzValue="ifPositiveSpread.spreadMoyen_15kusd" class="mr-2">gains 15k$</label>
+<section class="mt-2">
+  <div>
+
+    <strong style="font-size: 0.9rem" nz-typography >Trier par :</strong>
+    <br>
+    <nz-switch nzSize="small" [ngModel]="true" nzCheckedChildren="croissant" nzUnCheckedChildren="décroissant" (click)="onChangeOrder()"></nz-switch>
+    <br>
+    <nz-radio-group nzName="radiogroup" [(ngModel)]="sort.key" (ngModelChange)="makeUpdate()">
+      <aside>
+        <label nz-radio nzValue="pair._id" class="mr-2">date d'ajout</label>
+        <label nz-radio nzValue="pair.name" class="mr-2">nom</label>
+        <label nz-radio nzValue="pair.exclusion.isExclude" class="mr-2">élimination</label>
+        <label nz-radio nzValue="pair.exclusion.severity" class="mr-2">signalement</label>
+        <label nz-radio nzValue="pair.marketsForThis" class="mr-2">présente dans [M]</label>
+        <label nz-radio nzValue="marketsUsed" class="mr-2">utilisée dans [M]</label>
+      </aside>
+
+      <div class="mt-2">
+        <label nz-radio [nzValue]="'pair.'+isFor+'.spreadMoyen_usd'" class="mr-2">spread($)</label>
+        <label nz-radio [nzValue]="'pair.'+isFor+'.negativeFreq'" class="mr-2">negatif</label>
+        <label nz-radio [nzValue]="'pair.'+isFor+'.positiveFreq'" class="mr-2">positif</label>
+        <label nz-radio [nzValue]="'pair.'+isFor+'.notEnoughtVolFreq'" class="mr-2">no volume</label>
+        <label nz-radio [nzValue]="'pair.'+isFor+'.isBestFreq'" class="mr-2">top 1</label>
+      </div>
+    </nz-radio-group>
+
+    <div class="mt-2"><strong style="font-size: 0.9rem" nz-typography >Pour :</strong></div>
+    <aside class="mt-2">
+      <nz-radio-group nzName="isFor" [(ngModel)]="isFor" (ngModelChange)="onIsForChange()">
+        <label nz-radio-button nzValue="for1k">1000 $</label>
+        <label nz-radio-button nzValue="for15k">15 000 $</label>
+        <label nz-radio-button nzValue="for30k">30 000 $</label>
       </nz-radio-group>
-      <nz-switch nzSize="small" [ngModel]="true" nzCheckedChildren="croissant" nzUnCheckedChildren="décroissant" (click)="onChangeOrder()"></nz-switch>
-    </p>
-  </div>
+    </aside>
+
+   </div>
+</section>
 
 <ng-template #suffixIconSearch>
   <i nz-icon nzType="search"></i>
 </ng-template>
 
 <ng-template #addOnBeforeTemplate>
-  <nz-select style="width: 150px" [(ngModel)]="searchMod" >
+  <nz-select style="width: 150px" [(ngModel)]="searchMod" (ngModelChange)="this.filterform.controls['pair'].updateValueAndValidity({onlySelf : true})" >
     <nz-option nzLabel="Commence par" nzValue="startWith"></nz-option>
     <nz-option nzLabel="Termine par" nzValue="endWith"></nz-option>
   </nz-select>

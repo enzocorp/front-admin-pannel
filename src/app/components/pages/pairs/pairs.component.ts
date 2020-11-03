@@ -40,7 +40,7 @@ export class PairsComponent implements OnInit,OnDestroy {
   pairs : Array<PairPlus> = []
   colors = ['green','default','gold','orange','red']
   strSeverities  : string[]
-  isFor : 'for1k' | 'for15k' | 'for30k' = 'for15k'
+  isFor : 'for1k' | 'for15k' | 'for30k'
   pagination : {total : number,paginate : Paginate, index : number} = {
     total : null,
     paginate : {limit : 20, skip : 0 },
@@ -94,14 +94,13 @@ export class PairsComponent implements OnInit,OnDestroy {
 
     this.request = {...this.request,skip : this.pagination.paginate.skip, limit : this.pagination.paginate.limit}
     this.symbolsServ.getSymbols(this.request).subscribe(
-      ({data, metadata}: resp_data) => {
-        console.log(data)
-        let pairPlus : PairPlus[] = data.map(({pair,marketsUsed}) => ({
+      (resp: resp_data ) => {
+        let pairPlus : PairPlus[] = resp ? resp.data.map(({pair,marketsUsed}) => ({
           ...pair,
           marketsUsed
-        }))
+        })) : []
         this.pairsService.emmitPairs(pairPlus)
-        this.pagination.total = metadata.total
+        this.pagination.total = resp?.metadata.total || 0
         this.refreshCheckedStatus()
         this.loading = false
       }
