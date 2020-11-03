@@ -4,7 +4,7 @@
 </button>
 <div>
   <div class="mb-3">
-    <app-filters-pairs (onUpdate)="onUpdate()" [(request)]="request"></app-filters-pairs>
+<!--    <app-filters-pairs (onUpdate)="onUpdate()" [(request)]="request"></app-filters-pairs>-->
     <app-pagination
       (onUpdate)="onUpdate()"
       [total]="pagination.total"
@@ -16,7 +16,7 @@
     <nz-spin nzSize="large" [nzSpinning]="loading">
       <router-outlet></router-outlet>
       <nz-table
-        [nzWidthConfig]="['5%','15%','10%','15%','15%','7.5%','7.5%','10%','10%','5%']"
+        [nzWidthConfig]="['8%','17%','10%','15%','10%','7.5%','7.5%','10%','10%','5%']"
         nzBordered
         [nzData]="pagination.total"
         [nzFrontPagination]="false"
@@ -24,51 +24,75 @@
         <thead>
         <tr>
           <th rowspan="4" class="position-relative" [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)">
-            <div *ngIf="arrayCheckedPairs.length" style="color:dodgerblue ;position: absolute;transform: translate(37px,-21px);" >{{setOfCheckedId.size}}</div>
+            <div *ngIf="arrChecked.length" style="color:dodgerblue ;position: absolute;transform: translate(24px,-21px);" >{{setOfCheckedId.size}}</div>
           </th>
           <th  rowspan="4">Nom</th>
           <th rowspan="4">Status</th>
-          <th colspan="4">Le Spread pour</th>
+          <th colspan="4">Les moyennes pour <nz-tag nzColor="blue"><strong>{{isFor}}</strong></nz-tag> USD</th>
           <th  colSpan="2" >Markets </th>
           <th rowSpan="4" style="text-align: center;">
-            <app-report-pairs (afterUpdate)="onGroupUpdate()" [pairs]="arrayCheckedPairs" [selectMultiple]="true">
+            <app-report-pairs (afterUpdate)="onGroupUpdate()" [pairs]="arrChecked" [selectMultiple]="true">
               <button nz-button nzType="danger" nzSize="small" ><i  nz-icon nzType="delete"></i></button>
             </app-report-pairs>
           </th>
         </tr>
         <tr>
-          <th >Spread usd</th>
+          <th >Spread $ moyen</th>
           <th >Frequences + vs -</th>
-          <th >no volume </th>
-          <th >Top 1 </th>
-          <th > En DataBase </th>
-          <th > En services </th>
+          <th >Freq no volume </th>
+          <th >Nombre de top 1 </th>
+          <th > Contenu dans </th>
+          <th > En services dans</th>
         </tr>
 
         </thead>
         <tbody>
         <tr *ngFor="let pair of pairs">
-
+          <!--checkbox-->
           <td [nzChecked]="setOfCheckedId.has(pair.name)"
               (nzCheckedChange)="onItemChecked(pair.name, $event)">
           </td>
+          <!--Nom-->
           <td class="btn-link" style="color: black; cursor: pointer"  (click)="navigate(pair.name)">{{pair.name}}</td>
+          <!--Status-->
           <td>
-            <nz-tag [nzColor]="colors[pair.exclusion.severity]">
+            <nz-tag class="m-0" [nzColor]="colors[pair.exclusion.severity]">
               {{pair.exclusion.severity ? strSeverities[pair.exclusion.severity - 1] : "en service"}}
             </nz-tag>
           </td>
-          <td><span><strong > test 1</strong></span></td>
+          <!--Spread moyen-->
+          <td *ngIf="pair[isFor].spreadMoyen_usd; else negativSpread">
+            <button nz-button nzType="primary" nzGhost>{{pair[isFor].spreadMoyen_usd | exponentiel : 0 | replaceBy : ',' : ' '}} $</button>
+          </td>
+          <ng-template #negativSpread><td><button nz-button nzSize="small" nzType="dashed">Pas de data</button></td></ng-template>
+
+          <!--Freq + et -  -->
+          <td>
+            <nz-tag  nzColor="red"> {{pair[isFor].negativeFreq }} </nz-tag>
+            <nz-tag class="m-0" nzColor="green"> {{pair[isFor].positiveFreq }} </nz-tag>
+
+          </td>
+          <!--freq no volume-->
           <td>{{pair[isFor].notEnoughtVolFreq}}</td>
-          <td>{{pair[isFor].isBestFreq}}</td>
-          <td>{{pairs.length}}</td>
-          <td><strong> {{pair.used}}</strong></td>
-          <td><strong style="color: #0099ff ;"> {{pair.selected}}</strong></td>
+          <!--freq Top -->
+          <td>
+            {{pair[isFor].isBestFreq}}
+            <i class="iconeTab" *ngIf="pair[isFor].isBestFreq" nz-icon nzType="crown" [nzTwotoneColor]="'#ffcc54'" nzTheme="twotone"></i>
+          </td>
+          <!--nb markets-->
+          <td><strong> {{pair.marketsForThis}}</strong></td>
+          <!--nb market use-->
+          <td>
+            <strong [ngStyle]="{color : pair.marketsUsed > 1 ? '#0099ff' : 'red'}"> {{pair.marketsUsed}} </strong>
+            <i class="iconeTab" *ngIf="pair.marketsUsed <= 1" nz-icon nzType="warning" nzTwotoneColor="red" nzTheme="twotone"></i>
+          </td>
+          <!--Delete-->
           <td style="text-align: center;">
             <app-report-pairs (afterUpdate)="onUpdate()" *ngIf="pair" [pairs]="[pair]" >
               <button nz-button nzType="danger" nzSize="small" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
             </app-report-pairs>
           </td>
+
         </tr>
         </tbody>
       </nz-table>

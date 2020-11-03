@@ -5,24 +5,20 @@ import {
 } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Market} from "../../../models/market";
-import {forkJoin, Observable, Subscription} from "rxjs";
-import {MongoPaginate, Paginate} from "../../../models/pagination";
+import {Subscription} from "rxjs";
+import {Paginate} from "../../../models/pagination";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MarketsService} from "../../../services/http/markets.service";
 import {CryptoService} from "../../../services/http/crypto.service";
-import {RequesterApi} from "../../../services/autre/requesterApi";
-import {map} from "rxjs/operators";
 import {SymbolsService} from "../../../services/http/symbols.service";
-import {log, mergeDateConfig} from "ng-zorro-antd";
+
 interface MarketPlus extends Market{
-  selected: number
-  used: number
+  pairsUsed: number
 }
 
 interface resp_data {
   metadata : {total : number},
-  data : Array<{pairs : string[],market : Market, _id : string}>
-  excl : Array<{_id : string}>
+  data : Array<{market : Market,pairsUsed : number}>
 }
 @Component({
   selector: 'app-markets',
@@ -51,13 +47,22 @@ export class MarketsComponent implements OnInit,OnDestroy {
     index : 1
   }
   loading : boolean = false
-  request : Array<any>
-  nestedRequest : Object = {
-    0 : {$group: {_id: "$market", pairs: {$push: "$pair"}}},
-    1 : {$lookup: {from: "markets",localField: "_id", foreignField: "name", as: "market"}},
-    2 : {$unwind: "$market"},
-    3 : {$match : {}},
-    4 : {$sort : {_id : 1}},
+  request : Paginate&Record<number,Object> = {
+    skip : this.pagination.paginate.skip,
+    limit : this.pagination.paginate.limit,
+    0 : {$group :{_id: "$market", pairs: { $push: {pair :"$pair", excl : "$exclusion.isExclude"} }}},
+    1 :{$lookup: { from: "markets",localField: "_id",foreignField: "name", as: "market"}},
+    2 :{$unwind: "$market"},
+    3 :{$match: {}},
+    4 :{$addFields: {pairs : {$filter: {input: "$pairs",as: "item",cond: { $eq: [ "$$item.excl", false ] }}}  }},
+    5 :{$lookup: {from: "pairs", localField: "pairs.pair", foreignField: "name", as: "pairs"}},
+    6 :{$addFields: { pairs : { $filter: {
+            input: "$pairs",
+            as: "item",
+            cond: { $eq: [ "$$item.exclusion.isExclude", false ]}
+    }}}},
+    7:{$project: { market :1,_id :0,pairsUsed : {$size: "$pairs"}}},
+    8:{$sort : {"market._id" : 1}}
   }
   checked = false;
   indeterminate = false;
@@ -65,46 +70,15 @@ export class MarketsComponent implements OnInit,OnDestroy {
   arrChecked : Market[] = []
 
   ngOnInit(): void {
+    this.subscription.add(this.marketsService.marketsSubject.subscribe((markets : MarketPlus[])=> this.markets = markets ))
     this.cryptoServ.getSeverities().subscribe(
-      ({data})=> this.strSeverities = data.sort((a,b)=> a.severity - b.severity).map(severity => severity.description)
-    )
-    this.subscription.add(this.marketsService.marketsSubject.subscribe(
-      (markets : MarketPlus[])=> {
-        this.markets = markets
-        this.loading = false
-      } ))
-    this.cryptoServ.getSeverities().subscribe(
-      ({data})=> this.strSeverities = data.sort((a,b)=> a.severity - b.severity).map(severity => severity.description)
-    )
-    this.onUpdate()
+      ({data})=> {
+        this.onUpdate()
+        this.strSeverities = data.sort((a, b) => a.severity - b.severity).map(severity => severity.description)
+      })
   }
 
   /*-----------------------On update ----------------------------------*/
-
-  makeRequest () : void{
-    this.request = [
-      {$facet: {
-          metadata: [
-            ...Object.values(this.nestedRequest)/*.slice(0,-3),*/,
-            {$count : "total"}
-            ],
-          data: [
-            ...Object.values(this.nestedRequest),
-            {$skip: this.pagination.paginate.skip},
-            {$limit: this.pagination.paginate.limit}
-          ],
-          excl: [
-            {$match: {"exclusion.isExclude": false}},
-            {$group: {_id: "$pair"}},
-            {$lookup: {from: "pairs", localField: "_id", foreignField: "name", as: "pair"}},
-            {$unwind: "$pair"},
-            {$match: {"pair.exclusion.isExclude": true}},
-            {$project:  {_id : 1}}
-          ]
-        }},
-      {$unwind : "$metadata"}
-    ]
-  }
 
   onGroupUpdate(){
     this.onUpdate()
@@ -118,22 +92,17 @@ export class MarketsComponent implements OnInit,OnDestroy {
     if (!this.loading)
       this.loading = true
 
-    this.makeRequest()
+    this.request = {...this.request,skip : this.pagination.paginate.skip, limit : this.pagination.paginate.limit}
     this.symbolsServ.getSymbols(this.request).subscribe(
-      ({data : tabdata}: { data : any  }) => {
-        const [objdata] = tabdata
-        const {metadata,data,excl} : resp_data = objdata
-        let marketPlus : MarketPlus[] = data.map(item => {
-          const exclus : number = item.pairs.filter(name => excl.find(item2=> item2._id === name)).length
-          return {
-            ...item.market,
-            selected : item.pairs.length,
-            used : item.pairs.length - exclus
-          }
-        })
+      ({data, metadata}: resp_data) => {
+        let marketPlus : MarketPlus[] = data.map(({market,pairsUsed}) => ({
+          ...market,
+          pairsUsed
+        }))
         this.marketsService.emmitMarkets(marketPlus)
         this.pagination.total = metadata.total
         this.refreshCheckedStatus()
+        this.loading = false
       }
     )
   }
@@ -169,7 +138,7 @@ export class MarketsComponent implements OnInit,OnDestroy {
   /*--------------------- Navigation ------------------------*/
 
   navigate(str : string){ //Pour mettre a jour la liste des markets depuis la page "market"
-    const request = JSON.stringify(this.nestedRequest)
+    const request = JSON.stringify(this.request)
     this.router.navigate([str], {relativeTo : this.activatedRoute ,queryParams : {request}}).then()
   }
 

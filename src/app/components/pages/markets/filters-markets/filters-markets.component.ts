@@ -18,7 +18,7 @@ export class FiltersMarketsComponent implements OnInit {
   @Output() onUpdate : EventEmitter<void> = new EventEmitter<void>()
   filterform : FormGroup
   match : any = {}
-  sort : { key : string, order : number } = { key : 'market.name', order : 1}
+  sort : { key : string, order : number } = { key : 'market._id', order : 1}
 
   requestValue : Paginate&Record<number,Object>
   @Output()
@@ -41,7 +41,7 @@ export class FiltersMarketsComponent implements OnInit {
     this.request = {
       ...this.request,
       3 : { $match: this.match},
-      4 : { $sort : {[this.sort.key] : this.sort.order}},
+      8 : { $sort : {[this.sort.key] : this.sort.order}},
     }
   }
 
@@ -73,7 +73,7 @@ export class FiltersMarketsComponent implements OnInit {
       this.makeUpdate()
     })
 
-    //Banned
+    //Filtre all/en services/signalées/éleminée
     this.filterform.controls['banned'].valueChanges.subscribe(
       val => {
         if(val === 'banned') this.match["market.exclusion.isExclude"] = true

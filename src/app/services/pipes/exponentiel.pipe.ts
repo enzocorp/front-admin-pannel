@@ -8,7 +8,7 @@ export class ExponentielPipe implements PipeTransform {
 
   transform(value: number,arr : number = 6): string | number {
     try {
-      let len : number = Math.trunc(value).toString().length
+      let len : number = Math.trunc(value).toString().length //Longeur de la partie entiere
       if(len >= 2 && len <= arr )
         arr = arr - len
       else if (len > arr)

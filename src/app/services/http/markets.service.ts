@@ -13,7 +13,7 @@ export class MarketsService {
 
   constructor(private http : HttpClient) { }
 
-  emmitMarkets(content : Market[]) {
+  emmitMarkets(content : Array<Market&any>) {
     this.marketsSubject.next(content)
   }
 

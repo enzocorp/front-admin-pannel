@@ -4,7 +4,7 @@
 </button>
 <div>
   <div class="mb-3">
-<app-filters-markets (onUpdate)="onUpdate()" [(request)]="nestedRequest"></app-filters-markets>
+<app-filters-markets (onUpdate)="onUpdate()" [(request)]="request"></app-filters-markets>
         <app-pagination
           (onUpdate)="onUpdate()"
           [total]="pagination.total"
@@ -27,7 +27,7 @@
           <th>Nom</th>
           <th>Status</th>
           <th>[P] totales</th>
-          <th>[P] gardées</th>
+          <th>[P] selection</th>
           <th>[P] actives</th>
           <th>Lien</th>
           <th>
@@ -50,8 +50,8 @@
             </nz-tag>
           </td>
           <td><span><strong > {{market.pairsCount}}</strong></span></td>
-          <td><span><strong> {{market.selected}}</strong></span></td>
-          <td><span><strong style="color: #0099ff ; font-size: 100%"> {{market.used}}</strong></span></td>
+          <td><span><strong> {{market.pairsForThis}}</strong></span></td>
+          <td><span><strong style="color: #0099ff ; font-size: 100%"> {{market.pairsUsed}}</strong></span></td>
           <td><a target="_blank" href="{{market.website}}">Lien</a> </td>
           <td>
             <app-report-markets (afterUpdate)="onUpdate()" *ngIf="market" [markets]="[market]" >

@@ -1,18 +1,21 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {forkJoin, Observable, Subscription} from "rxjs";
+import {Subscription} from "rxjs";
 import {Paginate} from "../../../models/pagination";
 import {ActivatedRoute, Router} from "@angular/router";
-import {PairsService} from "../../../services/http/pairs.service";
 import {SymbolsService} from "../../../services/http/symbols.service";
 import {CryptoService} from "../../../services/http/crypto.service";
 import {Pair} from "../../../models/pair";
-import {map} from "rxjs/operators";
+import {PairsService} from "../../../services/http/pairs.service";
 
 
 interface PairPlus extends Pair{
-  selected: number
-  used: number
+  marketsUsed: number
+}
+
+interface resp_data {
+  metadata : {total : number},
+  data : Array<{pair : Pair,marketsUsed : number}>
 }
 
 @Component({
@@ -22,6 +25,7 @@ interface PairPlus extends Pair{
 })
 
 export class PairsComponent implements OnInit,OnDestroy {
+
 
   constructor(
     private http : HttpClient,
@@ -36,72 +40,72 @@ export class PairsComponent implements OnInit,OnDestroy {
   pairs : Array<PairPlus> = []
   colors = ['green','default','gold','orange','red']
   strSeverities  : string[]
-  @Input() isFor : 'for1k' | 'for15k' | 'for30k' = 'for1k'
+  isFor : 'for1k' | 'for15k' | 'for30k' = 'for15k'
   pagination : {total : number,paginate : Paginate, index : number} = {
     total : null,
     paginate : {limit : 20, skip : 0 },
     index : 1
   }
   loading : boolean = false
-  request : Record<number, Object>&Paginate= {
-    ...this.pagination.paginate ,
-    0 : {$match : {}},
-    1 : {$sort : {_id : 1}}
+  request : Paginate&Record<number,Object> = {
+    skip : this.pagination.paginate.skip,
+    limit : this.pagination.paginate.limit,
+    0 :{$group :{_id: "$pair", markets: { $push: {market :"$market", excl : "$exclusion.isExclude"} }}},
+    1 :{$lookup: { from: "pairs",localField: "_id",foreignField: "name", as: "pair"}},
+    2 :{$unwind: "$pair"},
+    3 :{$match: {}},
+    4 :{$addFields: {markets : {$filter: {input: "$markets",as: "item",cond: { $eq: [ "$$item.excl", false ] }}}  }},
+    5 :{$lookup: {from: "markets", localField: "markets.market", foreignField: "name", as: "markets"}},
+    6 :{$addFields: { markets : { $filter: {
+            input: "$markets",
+            as: "item",
+            cond: { $eq: [ "$$item.exclusion.isExclude", false ]}
+          }}}},
+    7:{$project: {pair :1,_id :0, marketsUsed : {$size: "$markets"}}},
+    8:{$sort : {"pair._id" : 1}}
   }
-  request2 = [
-    {$group : {
-        _id: "$pair",
-        exclusions: { $push: "$exclusion.isExclude" }
-      }}
-  ]
   checked = false;
   indeterminate = false;
   setOfCheckedId = new Set<string>();
-  arrayCheckedPairs : Pair[] = []
+  arrChecked : Pair[] = []
 
   ngOnInit(): void {
-    this.subscription.add(this.pairsService.pairsSubject.subscribe(
-      (pairs : PairPlus[])=> {
-        this.pairs = pairs
-        this.loading = false
-      } ))
+    this.subscription.add(this.pairsService.pairsSubject.subscribe((pairs : PairPlus[])=> this.pairs = pairs ))
     this.cryptoServ.getSeverities().subscribe(
-      ({data})=> this.strSeverities = data.sort((a,b)=> a.severity - b.severity).map(severity => severity.description)
-    )
-    this.onUpdate()
+      ({data})=> {
+        this.onUpdate()
+        this.strSeverities = data.sort((a, b) => a.severity - b.severity).map(severity => severity.description)
+      })
   }
 
   /*-----------------------On update ----------------------------------*/
 
   onGroupUpdate(){
     this.onUpdate()
-    this.onAllChecked(false)
+    this.setOfCheckedId.clear()
+    this.arrChecked = []
+    this.setOfCheckedId.clear()
+    this.refreshCheckedStatus()
   }
 
   onUpdate(){
     if (!this.loading)
       this.loading = true
 
-    this.request = {...this.request,...this.pagination.paginate}
-    const $gethttp : Observable<{ pairs: {data : Pair[], metadata? : any },marketsByPair: {data : any[]} }> = forkJoin(
-      this.pairsService.getPairs(this.request),
-      this.symbolsServ.getSymbols(this.request2),
-    ).pipe(
-      map(([pairs,marketsByPair])=>({pairs,marketsByPair})))
-    $gethttp.subscribe(
-      ({pairs,marketsByPair}) =>  {
-        const exclusions : Array<{_id: string, exclusions : boolean[]}> = marketsByPair.data
-        const pairsPlus : PairPlus[] = pairs.data.map(pair => {
-          const obj =  exclusions.find(forPair => forPair._id === pair.name)
-          return {
-            ...pair,
-            selected : obj?.exclusions.length,
-            used : obj?.exclusions.filter(bool => bool=== false).length
-          }
-        })
-        this.pairsService.emmitPairs(pairsPlus)
-        this.pagination.total = pairs.metadata?.total || 0
-      })
+    this.request = {...this.request,skip : this.pagination.paginate.skip, limit : this.pagination.paginate.limit}
+    this.symbolsServ.getSymbols(this.request).subscribe(
+      ({data, metadata}: resp_data) => {
+        console.log(data)
+        let pairPlus : PairPlus[] = data.map(({pair,marketsUsed}) => ({
+          ...pair,
+          marketsUsed
+        }))
+        this.pairsService.emmitPairs(pairPlus)
+        this.pagination.total = metadata.total
+        this.refreshCheckedStatus()
+        this.loading = false
+      }
+    )
   }
 
 
@@ -109,15 +113,17 @@ export class PairsComponent implements OnInit,OnDestroy {
   updateCheckedSet(name: string, checked: boolean): void {
     if (checked) {
       this.setOfCheckedId.add(name);
+      this.arrChecked.push(this.pairs.find(pair => pair.name === name))
     } else {
       this.setOfCheckedId.delete(name);
+      this.arrChecked = this.arrChecked.filter(pair => pair.name !== name)
     }
   }
 
   refreshCheckedStatus(): void {
     this.checked = this.pairs.every(({ name }) => this.setOfCheckedId.has(name));
-    this.indeterminate = this.pairs.some(({ name }) => this.setOfCheckedId.has(name)) && !this.checked;
-    this.arrayCheckedPairs = this.pairs.filter(pair => this.setOfCheckedId.has(pair.name) )
+    this.indeterminate = (!!this.arrChecked.length && !this.checked) ||
+      (!!this.arrChecked.length && !this.pairs.some(({ name }) => this.setOfCheckedId.has(name)))
   }
 
   onItemChecked(name: string, checked: boolean): void {

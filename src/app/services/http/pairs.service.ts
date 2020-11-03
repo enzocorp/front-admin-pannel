@@ -13,7 +13,7 @@ export class PairsService {
 
   constructor(private http : HttpClient) { }
 
-  emmitPairs(content : Pair[]) {
+  emmitPairs(content : Array<Pair&any>) {
     this.pairsSubject.next(content)
   }
 
