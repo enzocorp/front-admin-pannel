@@ -84,8 +84,7 @@ export class FiltersMarketsComponent implements OnInit {
         else delete this.match["market.exclusion.severity"]
 
         this.makeUpdate()
-      }
-    )
+      })
   }
 
 }

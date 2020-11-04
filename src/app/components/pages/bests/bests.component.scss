@@ -78,3 +78,15 @@
     transition: .13s ease-in-out;
   }
 }
+
+th,td{
+  text-align: center!important;
+}
+
+.my-tabs{
+  -moz-box-shadow: 5px 10px 25px -15px #838383;
+  -webkit-box-shadow: 5px 10px 25px -15px #838383;
+  -o-box-shadow: 5px 10px 25px -15px #838383;
+  box-shadow: 5px 10px 25px -15px #838383;
+  filter:progid:DXImageTransform.Microsoft.Shadow(color=#838383, Direction=153, Strength=25);
+}

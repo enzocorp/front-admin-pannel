@@ -17,7 +17,7 @@ export class PairsService {
     this.pairsSubject.next(content)
   }
 
-  getPairs(request = {}) : Subscribable<{data :any[], metadata?:any}>{
+  getPairs(request = {}) : Subscribable<{data : Object}&any>{
     const strRequest : string = JSON.stringify(request)
     return this.http.get(`${this.url}`,{params: {request : strRequest}})
   }

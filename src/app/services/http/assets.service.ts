@@ -17,7 +17,7 @@ export class AssetsService {
     this.assetsSubject.next(content)
   }
 
-  getAssets(request = {}) : Subscribable<{data :any[], metadata?:any}>{
+  getAssets(request = {}) : Subscribable<{data : Object}&any>{
     const strRequest : string = JSON.stringify(request)
     return this.http.get(`${this.url}`,{params: {request : strRequest}})
   }

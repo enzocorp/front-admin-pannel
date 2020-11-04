@@ -50,7 +50,7 @@ export class MarketsComponent implements OnInit,OnDestroy {
   request : Paginate&Record<number,Object> = {
     skip : this.pagination.paginate.skip,
     limit : this.pagination.paginate.limit,
-    0 : {$group :{_id: "$market", pairs: { $push: {pair :"$pair", excl : "$exclusion.isExclude"} }}},
+    0 :{$group :{_id: "$market", pairs: { $push: {pair :"$pair", excl : "$exclusion.isExclude"} }}},
     1 :{$lookup: { from: "markets",localField: "_id",foreignField: "name", as: "market"}},
     2 :{$unwind: "$market"},
     3 :{$match: {}},

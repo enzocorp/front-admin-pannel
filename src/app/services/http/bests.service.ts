@@ -25,9 +25,13 @@ export class BestsService {
     return this.http.get(`${this.url}/reset`)
   }
 
-  getBests(request = {}) : Subscribable<{data :any[], metadata?:any}>{
+  getBests(request = {}) : Subscribable<{data : Object}&any>{
     const strRequest : string = JSON.stringify(request)
     return this.http.get(`${this.url}`,{params: {request : strRequest}})
+  }
+
+  getLastGroupId() : Subscribable<{ data : string }>{
+    return this.http.get(`${this.url}/groupId`)
   }
 
   getBest(id) : Subscribable<Best>{

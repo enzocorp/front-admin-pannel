@@ -21,7 +21,7 @@ const routes: Routes = [
   {path : 'markets', component : MarketsComponent, children : [
       {path : ':id', component : MarketComponent}
     ]},
-/*  {path : 'bests',children : [
+  {path : 'bests',children : [
       {path : 'calculer', component : BestsComponent, children : [
           {path : ':id', component : ShowBestComponent},
         ]},
@@ -33,7 +33,7 @@ const routes: Routes = [
     ]},
   {path : 'utilisateur',children : [
       {path : 'compte', component : AccountComponent},
-    ]},*/
+    ]},
   {path: '', pathMatch : 'full', redirectTo : "/home" },
   {path : '**', component : Error404Component}
 ]

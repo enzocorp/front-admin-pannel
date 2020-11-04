@@ -1,9 +1,9 @@
-<!--
+
+
+
+
 <router-outlet ></router-outlet>
 <h1>Les bests</h1>
-<button class="btn btn-outline-primary" (click)="getLasts()">
-  <i class="mr-2" nz-icon nzType="field-time" nzTheme="outline"></i>Actualiser(inutile)
-</button>
 <button class="ml-5"
         nz-button
         nzDanger
@@ -36,59 +36,119 @@
   </button>
 </div>
 
-<app-filters-bests (onUpdate)="onUpdate()" [(nestedRequest)]="nestedRequest"></app-filters-bests>
+<!--<app-filters-bests (onUpdate)="onUpdate()" [(request)]="re"></app-filters-bests>-->
 <app-pagination
-  [(loading)]="pagination.loading" (onUpdate)="onUpdate()"
+  (onUpdate)="onUpdate()"
   [total]="pagination.total"
   [(paginate)]="pagination.paginate"
   [(index)]="pagination.index"
 ></app-pagination>
-<nz-spin [nzSpinning]="pagination.loading">
+<nz-spin [nzSpinning]="loading">
   <nz-list nzGrid class="mt-5">
-    <div nz-row [nzGutter]="14" nzJustify="center">
-      <div nz-col *ngFor="let best of bests;let i = index " [nzXXl]="6" [nzXl]="8" [nzLg]="12" [nzXs]="24" >
-
-        <div class="card mb-4" style="width: 18rem;margin: auto" >
+    <section  nz-row [nzGutter]="[14,45]" nzJustify="space-between">
+      <div nz-col *ngFor="let best of bests;let i = index " [nzXXl]="8" [nzXl]="12" [nzLg]="24" [nzXs]="24">
+        <div style="width: fit-content;margin: auto">
           <nz-badge [nzCount]="i + 1 + pagination.paginate.skip" [nzOverflowCount]="pagination.total">
-            <div class="card-body p-0">
-              <div routerLink="{{best._id}}" class="p-3" style="cursor: pointer;">
-                <h5 class="card-title">{{best.pair}}</h5>
-                <p class="card-subtitle mb-2 text-muted mb-1">Spread 15K$ :
-                  <button nz-button nzType="primary" nzSize="small"> {{best.spread_15kusd | number : '1.0-2' | replaceBy : ',' : ' ' }} $</button>
-                </p>
-                <p class="card-subtitle mb-2 text-muted mb-1">Spread 1$ :
-                  <button nz-button nzType="default" nzSize="small">{{best.spread_1usd | number : '1.0-2' | replaceBy : ',' : ' ' }} $</button>
-                </p>
-                <p class="card-subtitle mb-2 text-muted mb-1">Profits Maxi $ :
-                  <button nz-button nzType="dashed" nzDanger nzSize="small">{{best.profitMaxi_usd | number : '1.0-2' | replaceBy : ',' : ' ' }} $</button>
-                </p>
-                <p class="card-subtitle mb-2 text-muted">Volume en $ :
-                  <button nz-button nzType="primary" nzGhost nzSize="small">{{best.volume_usd | number : '1.0-2' | replaceBy : ',' : ' ' }} $</button>
-                </p>
-              </div>
 
-              <div class="row" style="margin: 0">
-                <a class="btn btn-outline-success " href="{{best.buy.website}}" target="_blank" style="width: 50%">
-                  {{best.buy.exchange}} <br> <span class="badge badge-light">  prix :<br> {{best.buy.price}} {{best.quote}}</span>
-                </a>
-                <a class="btn btn-outline-warning"  style="width: 50%" href="{{best.buy.website}}" target="_blank">
-                  {{best.sell.exchange}} <br> <span class="badge badge-light"> prix :<br>{{best.sell.price}} {{best.quote}}</span>
-                </a>
-              </div>
-            </div>
+            <nz-table  class="my-tabs" nzTemplateMode >
+              <thead>
+              <tr>
+                <th class="pt-3" colSpan="4"><h3>{{best.pair}}</h3></th>
+              </tr>
+
+              <tr>
+                <th>pour</th>
+                <th>spread($)</th>
+                <th>achat/vente</th>
+                <th>volume</th>
+              </tr>
+              </thead>
+              <tbody>
+
+
+              <tr>
+                <td style="background: #FAFAFA"><strong><nz-tag nzColor="blue">1 000 $</nz-tag></strong></td>
+                <td>
+                  <button *ngIf="best.for1k.spread_usd; else elseNoVolume" nz-button nzType="primary" nzGhost> {{ best.for1k.spread_usd | number | exponentiel : 2 | replaceBy : ',' : ' ' }} $</button>
+                </td>
+                <td>
+                  <div  style="text-align: left!important;width: fit-content; margin: auto" *ngIf=" best.for1k.buy.price_quote &&  best.for1k.sell.price_quote; else elseNoVolume">
+                    <nz-tag nzColor="green">
+                      <span style="font-weight: 500">{{ best.for1k.buy.price_quote | exponentiel : 7  | replaceBy : ',' : ' '  }} </span> {{best.quote}}
+                      <a target="_blank" [href]="best.for1k.buy.website">| <span style="color: #0099ff">{{best.for1k.buy.market}}</span></a>
+                    </nz-tag>
+                    <br>
+                    <nz-tag nzColor="gold">
+                      <span style="font-weight: 500">{{ best.for1k.sell.price_quote | exponentiel : 7  | replaceBy : ',' : ' '  }} </span>
+                      <a target="_blank" [href]="best.for1k.sell.website">| <span style="color: #0099ff">{{best.for1k.sell.market}}</span></a>
+                    </nz-tag>
+                  </div>
+                </td>
+
+                <td><span style="font-weight: 500">{{ best.for1k.sell.volume_base | exponentiel : 6  | replaceBy : ',' : ' ' }} </span>{{best.base}}</td>
+              </tr>
+              <ng-template #elseNoVolume >
+                <nz-tag>NO VOLUME</nz-tag>
+              </ng-template>
+
+              <tr>
+                <td style="background: #FAFAFA"><strong><nz-tag nzColor="blue">15 000 $</nz-tag></strong></td>
+                <td>
+                  <button *ngIf="best.for15k.spread_usd; else elseNoVolume" nz-button nzType="primary" nzGhost> {{ best.for15k.spread_usd| number | exponentiel : 2 | replaceBy : ',' : ' ' }} $</button>
+                </td>
+                <td>
+                  <div  style="text-align: left!important;width: fit-content; margin: auto" *ngIf=" best.for15k.buy.price_quote &&  best.for15k.sell.price_quote; else elseNoVolume">
+                    <nz-tag nzColor="green">
+                      <span style="font-weight: 500">{{ best.for15k.buy.price_quote | exponentiel : 7  | replaceBy : ',' : ' '  }} </span> {{best.quote}}
+                      <a target="_blank" [href]="best.for15k.buy.website">| <span style="color: #0099ff">{{best.for15k.buy.market}}</span></a>
+                    </nz-tag>
+                    <br>
+                    <nz-tag nzColor="gold">
+                      <span style="font-weight: 500">{{ best.for15k.sell.price_quote | exponentiel : 7  | replaceBy : ',' : ' '  }} </span>
+                      <a target="_blank" [href]="best.for15k.sell.website">| <span style="color: #0099ff">{{best.for15k.sell.market}}</span></a>
+                    </nz-tag>
+                  </div>
+                </td>
+
+                <td><span style="font-weight: 500">{{ best.for15k.sell.volume_base | exponentiel : 6  | replaceBy : ',' : ' ' }} </span>{{best.base}}</td>
+              </tr>
+
+              <tr>
+                <td style="background: #FAFAFA"><strong><nz-tag nzColor="blue">30 000 $</nz-tag></strong></td>
+                <td>
+                  <button *ngIf="best.for30k.spread_usd; else elseNoVolume" nz-button nzType="primary" nzGhost> {{ best.for30k.spread_usd | number | exponentiel : 2 | replaceBy : ',' : ' ' }} $</button>
+                </td>
+                <td>
+                  <div  style="text-align: left!important;width: fit-content; margin: auto" *ngIf=" best.for30k.buy.price_quote &&  best.for30k.sell.price_quote; else elseNoVolume">
+                    <nz-tag nzColor="green">
+                      <span style="font-weight: 500">{{ best.for30k.buy.price_quote | exponentiel : 7  | replaceBy : ',' : ' '  }} </span> {{best.quote}}
+                      <a target="_blank" [href]="best.for30k.buy.website">| <span style="color: #0099ff">{{best.for30k.buy.market}}</span></a>
+                    </nz-tag>
+                    <br>
+                    <nz-tag nzColor="gold">
+                      <span style="font-weight: 500">{{ best.for30k.sell.price_quote | exponentiel : 7  | replaceBy : ',' : ' '  }} </span>
+                      <a target="_blank" [href]="best.for30k.sell.website">| <span style="color: #0099ff">{{best.for30k.sell.market}}</span></a>
+                    </nz-tag>
+                  </div>
+                </td>
+
+                <td><span style="font-weight: 500">{{ best.for30k.sell.volume_base | exponentiel : 6  | replaceBy : ',' : ' ' }} </span>{{best.base}}</td>
+              </tr>
+
+
+              </tbody>
+            </nz-table>
           </nz-badge>
         </div>
-
       </div>
-    </div>
+    </section>
   </nz-list>
 </nz-spin>
-
 <nz-empty *ngIf="pagination.total === 0"></nz-empty>
+<br>
 <app-pagination
-  [(loading)]="pagination.loading" (onUpdate)="onUpdate()"
+  (onUpdate)="onUpdate()"
   [total]="pagination.total"
   [(paginate)]="pagination.paginate"
   [(index)]="pagination.index"
 ></app-pagination>
--->
