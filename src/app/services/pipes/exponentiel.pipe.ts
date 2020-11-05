@@ -6,7 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class ExponentielPipe implements PipeTransform {
 
 
-  transform(value: number|string,decimals : number = 6): number {
+  transform(value: number|string,decimals : number = 6): string {
     try {
       const num = +value
       let trunc : number = Math.trunc(num)
@@ -24,11 +24,12 @@ export class ExponentielPipe implements PipeTransform {
 
       let val : number = +num.toFixed(decimals)
       if(trunc === 0 && Math.trunc(val * 10*decimals) === 0 ) //Si le nombre de "0" consécutifs dépasse la qté de décimales souhaité, alors j'écrit le nombre en notation scientifique
-        val = +val.toExponential()
-      return val
+        return val.toExponential().toString()
+      else
+        return val.toLocaleString()
     }
     catch (err){
-      return +value
+      return (+value).toLocaleString()
     }
   }
 

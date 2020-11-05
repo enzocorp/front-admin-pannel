@@ -90,3 +90,8 @@ th,td{
   box-shadow: 5px 10px 25px -15px #838383;
   filter:progid:DXImageTransform.Microsoft.Shadow(color=#838383, Direction=153, Strength=25);
 }
+
+.hoverBest:hover{
+  text-decoration: underline #0099ff;
+  cursor: pointer;
+}

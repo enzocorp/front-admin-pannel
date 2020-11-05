@@ -52,7 +52,7 @@ import { Error404Component } from './components/pages/error404/error404.componen
 import {BestsComponent} from "./components/pages/bests/bests.component";
 import { MarketsComponent } from './components/pages/markets/markets.component';
 import {BestsHistoricComponent} from "./components/pages/bests-historic/bests-historic.component";
-import { ShowBestComponent } from './components/pages/bests/show-best/show-best.component';
+import { BestComponent } from './components/pages/bests/best/best.component';
 import { PaginationComponent } from './components/modules/pagination/pagination.component';
 import { FiltersBestsComponent } from './components/pages/bests/filters-bests/filters-bests.component';
 import {FiltersPairsComponent} from "./components/pages/pairs/filters-pairs/filters-pairs.component";
@@ -91,7 +91,7 @@ registerLocaleData(fr);
     Error404Component,
     MarketsComponent,
     BestsHistoricComponent,
-    ShowBestComponent,
+    BestComponent,
     PaginationComponent,
     FiltersBestsComponent,
     FiltersPairsComponent,

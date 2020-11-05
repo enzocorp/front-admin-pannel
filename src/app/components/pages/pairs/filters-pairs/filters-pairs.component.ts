@@ -69,7 +69,10 @@ export class FiltersPairsComponent implements OnInit {
     this.makeUpdate()
   }
 
-  onIsForChange(){
+  onIsForChange(isFor){
+    let str = this.sort.key
+    if(/for[\d]+?k/.test(str))
+      this.sort.key = str.replace(/for[\d]+?k/, isFor)
     this.isForChange.emit(this.isFor)
     this.makeUpdate()
   }

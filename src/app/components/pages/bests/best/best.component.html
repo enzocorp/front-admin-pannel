@@ -1,0 +1,179 @@
+<nz-drawer
+  [nzBodyStyle]="{ overflow: 'auto', paddingBottom: '4rem' }"
+  [nzMaskClosable]="true"
+  [nzWidth]="720"
+  [nzVisible]="visible"
+  [nzTitle]="excludePair"
+  (nzOnClose)="close()"
+>
+  <nz-spin [nzSpinning]="!marketsBuy.for30k && !marketsSell.for30k" nzTip="Chargement...">
+  <div *ngIf="marketsBuy.for30k && best">
+
+    <aside class="mt-2 mb-3">
+      <nz-radio-group nzName="isFor" [(ngModel)]="isFor">
+        <label nz-radio-button nzValue="for1k">1000 $</label>
+        <label nz-radio-button nzValue="for15k">15 000 $</label>
+        <label nz-radio-button nzValue="for30k">30 000 $</label>
+      </nz-radio-group>
+    </aside>
+
+    <nz-divider nzText="Les markets " nzOrientation="left"></nz-divider>
+
+    <nz-row *ngFor="let isFor of [isFor]" [nzGutter]="16">
+      <nz-col [nzSpan]="12">
+        <nz-card [nzTitle]="marketsBuy[isFor].longName + ' - ' + marketsBuy[isFor].name" [nzExtra]="excludeBuy">
+          <nz-statistic
+            [nzValue]="(best[isFor].buy.price_quote | exponentiel : 6)"
+            nzTitle="Prix d'achat moyen d'un {{best.base.name}}  ({{isFor}} $)"
+            [nzPrefix]="prefixTplUp"
+            [nzSuffix]="best.quote.name"
+            [nzValueStyle]="{ color: '#3F8600' }"
+          >
+          </nz-statistic>
+          <ng-template #prefixTplUp><i nz-icon nzType="arrow-up"></i></ng-template>
+          <br>
+          - Volume : <strong>{{best[isFor].buy.volume_base | exponentiel : 6}} {{best.base.name}}</strong>
+          <br>
+          - Market : <a href="{{marketsBuy[isFor].website}}" target="_blank"  >{{marketsBuy[isFor].website}}</a>
+        </nz-card>
+      </nz-col>
+
+      <nz-col [nzSpan]="12">
+        <nz-card [nzTitle]="marketsSell[isFor].longName + ' - ' + marketsSell[isFor].name" [nzExtra]="excludeSell">
+          <nz-statistic
+            [nzValue]="(best[isFor].sell.price_quote | exponentiel : 6)"
+            nzTitle="Prix de vente moyen d'un {{best.base.name}} ({{isFor}} $)"
+            [nzPrefix]="prefixTplDown"
+            [nzSuffix]="best.quote.name"
+            [nzValueStyle]="{ color: 'red' }"
+          >
+          </nz-statistic>
+          <ng-template #prefixTplDown><i nz-icon nzType="arrow-down"></i></ng-template>
+          <br>
+          - Volume : <strong>{{best[isFor].sell.volume_base | exponentiel : 6}} {{best.base.name}}</strong>
+          <br>
+          - Market : <a href="{{marketsSell[isFor].website }} " target="_blank"  >{{marketsSell[isFor].website}}</a>
+        </nz-card>
+      </nz-col>
+    </nz-row>
+
+    <nz-divider nzText="Les assets " nzOrientation="left"></nz-divider>
+    <div style="background: #ECECEC;padding:30px;">
+      <div nz-row [nzGutter]="8">
+        <div nz-col [nzSpan]="12">
+          <nz-card [nzTitle]="best.base.name + ' - ' +best.base.longName + ' (base)'">
+            <div class="d-flex justify-content-center">
+              <button disabled class="mr-2" nz-button nzType="primary" nzShape="circle"><i nz-icon nzType="right"></i></button>
+              <button disabled nz-button nzType="danger" nzShape="circle"><i nz-icon nzType="delete"></i></button>
+            </div>
+            <p class="mt-4">
+              - Type : <strong>{{best.base.typeIsCrypto ? 'crypto' : 'fiat'}}</strong>
+              <br>
+              - Valeur : <strong>1 {{best.base.name}}  </strong> = <nz-tag nzColor="gold">{{best.base.price_usd | exponentiel : 3}}  $</nz-tag>
+              <br>
+              - Nom long : <strong>{{best.base.longName}}</strong>
+            </p>
+          </nz-card>
+        </div>
+        <div nz-col [nzSpan]="12">
+          <nz-card [nzTitle]="best.quote.name + ' - ' +best.quote.longName + ' (quote)'">
+            <div class="d-flex justify-content-center">
+              <button disabled class="mr-2" nz-button nzType="primary" nzShape="circle"><i nz-icon nzType="right"></i></button>
+              <button disabled nz-button nzType="danger" nzShape="circle"><i nz-icon nzType="delete"></i></button>
+            </div>
+            <p class="mt-4">
+              - Type : <strong>{{best.quote.typeIsCrypto ? 'crypto' : 'fiat'}}</strong>
+              <br>
+              - Valeur : <strong>1 {{best.quote.name}}  </strong> = <nz-tag nzColor="gold">{{best.quote.price_usd | exponentiel :3}}  $</nz-tag>
+              <br>
+              - Nom long : <strong>{{best.quote.longName}}</strong>
+            </p>
+          </nz-card>
+        </div>
+      </div>
+    </div>
+
+    <nz-divider nzText="Les stats " nzOrientation="left"></nz-divider>
+
+    <nz-list nzBordered nzSize="small">
+      <nz-list-item >  <nz-divider nzText="Les spreads"></nz-divider> </nz-list-item>
+
+
+      <nz-list-item>
+        <nz-list-item-meta
+          nzTitle="Spread "
+          nzDescription="Représente les gains en {{best.quote.name}} pour {{best[isFor].sell.volume_base | exponentiel : 6}} {{best.base.name}} acheté puis revendu"
+        ></nz-list-item-meta>
+        <kbd>{{best[isFor].spread_quote | exponentiel : 6 }} {{best.quote.name}}</kbd>
+      </nz-list-item>
+
+      <nz-list-item>
+        <nz-list-item-meta
+          nzTitle="Spread pour 1$ "
+          nzDescription="Représente les gains en $ pour {{isFor}} misé"
+        ></nz-list-item-meta>
+        <span nz-typography>
+        <i class="mr-2" nz-icon nzType="thunderbolt" nzTheme="twotone"></i>
+        <strong style="color: #0099ff ; font-size: 120%">{{best[isFor].spread_usd | exponentiel : 1}} $</strong>
+      </span>
+      </nz-list-item>
+
+<!--      <nz-list-item>
+        <nz-list-item-meta
+          nzTitle="Spread pour 15 000$"
+          nzDescription="Représente les gains en $ pour 15 000$ misés"
+        ></nz-list-item-meta>
+        <mark>{{best.spread_15kusd }} $</mark>
+      </nz-list-item>-->
+
+      <nz-list-item >  <nz-divider nzText="Les volumes"></nz-divider> </nz-list-item>
+
+
+      <nz-list-item>
+        <nz-list-item-meta
+          nzTitle="Volume max échangeable"
+          nzDescription="Représente le volume maximum en {{best.base.name}} echangeable entre les deux market "
+        ></nz-list-item-meta>
+        <kbd>{{best[isFor].sell.volume_base | exponentiel : 6 }} {{best.base.name}}</kbd>
+      </nz-list-item>
+      <nz-list-item>
+        <nz-list-item-meta
+          nzTitle="Volume max échangeable en $"
+          nzDescription="Représente le volume maximum en $ echangeable entre les deux market "
+        ></nz-list-item-meta>
+        <mark>{{ isFor }} $</mark>
+      </nz-list-item>
+    </nz-list>
+
+  </div>
+  </nz-spin>
+</nz-drawer>
+
+Les templates
+
+  <ng-template #excludePair>
+    <div *ngIf="best">
+      <span class="mr-3">{{best.pair.name}}</span>
+      <a href="/pairs/{{best.pair.name}}" target="_blank" class="mr-2" nz-button nzType="primary" nzShape="circle"><i nz-icon nzType="right"></i></a>
+<!--    <app-report-symbols class="mr-2" *ngIf="pair" [symbols]="[marketsBuy[isFor].]" [selectMultiple]="false"  [markets_id]="[best.sell.exchange, best.buy.exchange]">
+          <button nz-button nzType="default" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
+        </app-report-symbols>-->
+        <app-report-pairs *ngIf="best?.pair" [pairs]="[best.pair]" [selectMultiple]="false" (afterUpdate)="onUpdate()">
+          <button nz-button nzType="danger" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
+        </app-report-pairs>
+    </div>
+  </ng-template>
+
+  <ng-template #excludeBuy>
+    <a href="/markets/{{marketsBuy[isFor].name}}" nzSize="small" target="_blank" class="mr-2" nz-button nzType="primary" nzShape="circle"><i nz-icon nzType="right"></i></a>
+    <app-report-markets *ngIf="marketsBuy.for30k" [markets]="[marketsBuy[isFor]]" [selectMultiple]="false" (afterUpdate)="onUpdate()">
+      <button nzSize="small" nz-button nzType="danger" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
+    </app-report-markets>
+  </ng-template>
+
+<ng-template #excludeSell>
+  <a href="/markets/{{marketsSell[isFor].name}}" nzSize="small" target="_blank" class="mr-2" nz-button nzType="primary" nzShape="circle"><i nz-icon nzType="right"></i></a>
+  <app-report-markets *ngIf="marketsSell.for30k" [markets]="[marketsSell[isFor]]" [selectMultiple]="false" (afterUpdate)="onUpdate()">
+    <button nzSize="small" nz-button nzType="danger" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
+  </app-report-markets>
+</ng-template>

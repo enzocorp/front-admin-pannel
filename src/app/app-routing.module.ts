@@ -9,7 +9,7 @@ import {PairsComponent} from "./components/pages/pairs/pairs.component";
 import {MarketsComponent} from "./components/pages/markets/markets.component";
 import {BestsComponent} from "./components/pages/bests/bests.component";
 import {BestsHistoricComponent} from "./components/pages/bests-historic/bests-historic.component";
-import {ShowBestComponent} from "./components/pages/bests/show-best/show-best.component";
+import {BestComponent} from "./components/pages/bests/best/best.component";
 import {PairComponent} from "./components/pages/pairs/pair/pair.component";
 import {MarketComponent} from "./components/pages/markets/market/market.component";
 
@@ -23,7 +23,7 @@ const routes: Routes = [
     ]},
   {path : 'bests',children : [
       {path : 'calculer', component : BestsComponent, children : [
-          {path : ':id', component : ShowBestComponent},
+          {path : ':id', component : BestComponent},
         ]},
       {path : 'historique', component : BestsHistoricComponent},
     ]},

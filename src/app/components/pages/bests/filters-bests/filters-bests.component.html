@@ -1,30 +1,42 @@
-<strong style="font-size: 0.9rem" nz-typography >Filtrer par</strong><br>
+
+<div class="mb-2"><strong style="font-size: 0.9rem" nz-typography >Filtrer par :</strong></div>
+
 <form nz-form  [formGroup]="filterform">
   <nz-input-group [nzAddOnBefore]="addOnBeforeTemplate" style="width: fit-content; display: flex" [nzSuffix]="suffixIconSearch">
     <input style="min-width: 150px" type="text" nz-input formControlName="best" placeholder="Rechercher par nom" />
   </nz-input-group>
 </form>
 
-<div class="mt-2">
-  <p>
-    <strong style="font-size: 0.9rem" nz-typography >Trier par</strong><br>
-    <nz-radio-group nzName="radiogroup" [(ngModel)]="sort.key" (ngModelChange)="onRadioChange($event)">
-      <label nz-radio nzValue="spread_15kusd" class="mr-2">gains pour 15k$</label>
-      <label nz-radio nzValue="profitMaxi_usd" class="mr-2">Profits max</label>
-      <label nz-radio nzValue="spread_1usd" class="mr-2">gains pour 1$</label>
-      <label nz-radio nzValue="_id" class="mr-2">date</label>
-      <label nz-radio nzValue="pair" class="mr-2">nom</label>
-    </nz-radio-group>
+<section class="mt-2">
+  <div>
+
+    <strong style="font-size: 0.9rem" nz-typography >Trier par :</strong>
+    <br>
     <nz-switch nzSize="small" [ngModel]="true" nzCheckedChildren="décroissant" nzUnCheckedChildren="croissant" (click)="onChangeOrder()"></nz-switch>
-  </p>
-</div>
+    <br>
+    <nz-radio-group nzName="radiogroup" [(ngModel)]="sort.key" (ngModelChange)="makeUpdate()">
+        <label nz-radio nzValue="{{isFor + '.spread_usd'}}" class="mr-2">spread($)</label>
+        <label nz-radio nzValue="pair" class="mr-2">nom</label>
+    </nz-radio-group>
+
+    <div class="mt-2"><strong style="font-size: 0.9rem" nz-typography >Pour :</strong></div>
+    <aside class="mt-2">
+      <nz-radio-group nzName="isFor" [(ngModel)]="isFor">
+        <label nz-radio-button nzValue="for1k">1000 $</label>
+        <label nz-radio-button nzValue="for15k">15 000 $</label>
+        <label nz-radio-button nzValue="for30k">30 000 $</label>
+      </nz-radio-group>
+    </aside>
+
+  </div>
+</section>
 
 <ng-template #suffixIconSearch>
   <i nz-icon nzType="search"></i>
 </ng-template>
 
 <ng-template #addOnBeforeTemplate>
-  <nz-select style="width: 150px" [(ngModel)]="searchMod" >
+  <nz-select style="width: 150px" [(ngModel)]="searchMod" (ngModelChange)="this.filterform.controls['best'].updateValueAndValidity({onlySelf : true})" >
     <nz-option nzLabel="Commence par" nzValue="startWith"></nz-option>
     <nz-option nzLabel="Termine par" nzValue="endWith"></nz-option>
   </nz-select>

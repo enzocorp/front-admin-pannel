@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ShowBestComponent } from './show-best.component';
+import { BestComponent } from './best.component';
 
 describe('ShowBestComponent', () => {
-  let component: ShowBestComponent;
-  let fixture: ComponentFixture<ShowBestComponent>;
+  let component: BestComponent;
+  let fixture: ComponentFixture<BestComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ShowBestComponent ]
+      declarations: [ BestComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ShowBestComponent);
+    fixture = TestBed.createComponent(BestComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

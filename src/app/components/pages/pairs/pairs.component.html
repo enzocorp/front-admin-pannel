@@ -1,4 +1,4 @@
-<h1>La liste des pairs </h1>
+<h1>La liste des paires </h1>
 <button class="mb-3" nz-button nzType="primary" [nzLoading]="loading">
   <i nz-icon nzType="search"></i>Pairs trouvés <span class="badge badge-light ml-3">{{pagination.total}}</span>
 </button>
@@ -63,7 +63,7 @@
           </td>
           <!--Spread moyen-->
           <td *ngIf="pair[isFor].spreadMoyen_usd; else negativSpread">
-            <button nz-button nzType="primary" nzGhost>{{pair[isFor].spreadMoyen_usd | exponentiel : 0 | number |replaceBy : ',' : ' '}} $</button>
+            <button nz-button nzType="primary" nzGhost>{{pair[isFor].spreadMoyen_usd | exponentiel : 0}} $</button>
           </td>
           <ng-template #negativSpread><td><button nz-button nzSize="small" nzType="dashed">Pas de data</button></td></ng-template>
 

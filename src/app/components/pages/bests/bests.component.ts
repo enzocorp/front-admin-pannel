@@ -27,7 +27,7 @@ export class BestsComponent implements OnInit, OnDestroy{
     skip : this.pagination.paginate.skip,
     limit : this.pagination.paginate.limit,
     0 : {$match : {}},
-    1 : {$sort : {_id : -1}},
+    1 : {$sort : {"for15k.spread_usd" : -1}},
   }
 
   constructor(
@@ -47,23 +47,29 @@ export class BestsComponent implements OnInit, OnDestroy{
     if(this.groupId !== null){
       if (!this.loading) this.loading = true
       this.request = {
-        ...this.request,...this.pagination.paginate,
+        ...this.request,
+        ...this.pagination.paginate,
          0 : {$match : { ...this.request[0].$match, groupId : this.groupId }} }
       this.bestService.getBests(this.request).subscribe(
         (resp) => {
           this.bestService.emmitBests(resp?.data || [])
           this.pagination.total = resp?.metadata?.total || 0
           this.loading = false
-        }
+        },
+        () => null,
+        ()=> this.loading = false
       )}
   }
 
   calculBests(){
+    this.loading = true
     this.bestService.calculBests().subscribe(
       () => {
         this.getLatest()
         this.getTotalDocs()
-      }
+      },
+      null,
+      ()=>this.loading = false
     )
   }
 
@@ -74,7 +80,10 @@ export class BestsComponent implements OnInit, OnDestroy{
   }
 
   resetBest(){
-    this.bestService.resetBests().subscribe(()=> this.onUpdate() )
+    this.bestService.resetBests().subscribe(()=> {
+      this.getTotalDocs()
+      this.onUpdate()
+    } )
   }
 
   getLatest(){
