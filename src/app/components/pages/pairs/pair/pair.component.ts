@@ -105,7 +105,6 @@ export class PairComponent implements OnInit {
   }
 
   makeList(sorter = this.list.sorter, search = this.list.search,isFor = this.isFor){
-    console.log(isFor)
     const funcSort = (a,b,side) => {
         if(a[isFor][side][sorter] === undefined || a[isFor][side][sorter] === null)
           return 0

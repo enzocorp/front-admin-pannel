@@ -17,11 +17,11 @@
         </nz-radio-group>
       </aside>
 
-      <div *ngIf="pair.exclusion.severityPlus.severity" class="card mb-4" [ngStyle]="{borderColor : colors[pair.exclusion.severityPlus]}">
-        <div class="card-header" [ngStyle]="{borderColor : colors[pair.exclusion.severityPlus]}">
+      <div *ngIf="pair.exclusion.severityPlus.severity" class="card mb-4" [ngStyle]="{borderColor : colors[pair.exclusion.severityPlus.severity]}">
+        <div class="card-header" [ngStyle]="{borderColor : colors[pair.exclusion.severityPlus.severity]}">
 
-          <h6 [ngStyle]="{color :colors[pair.exclusion.severityPlus], display : 'inline-block'}">A été signalée &nbsp;</h6>
-          <nz-tag [nzColor]="colors[pair.exclusion.severityPlus]">
+          <h6 [ngStyle]="{color :colors[pair.exclusion.severityPlus.severity], display : 'inline-block'}">A été signalée &nbsp;</h6>
+          <nz-tag [nzColor]="colors[pair.exclusion.severityPlus.severity]">
             <i nz-icon nzType="exclamation-circle"></i>
             <span>{{pair.exclusion.severityPlus.description | uppercase}}</span>
           </nz-tag>
