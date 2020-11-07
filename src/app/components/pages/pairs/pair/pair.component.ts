@@ -41,6 +41,7 @@ export class PairComponent implements OnInit {
   ) { }
 
   colors = ['green','default','gold','orange','red']
+  colorsv2 = ['green','black','gold','orange','red']
   isFor : 'for1k' | 'for15k' | 'for30k' = 'for15k'
   visible : boolean = false
   pair : PairPlus = undefined
@@ -115,7 +116,6 @@ export class PairComponent implements OnInit {
         else if (side === "buy") {
           return a[isFor][side][sorter] - b[isFor][side][sorter]
         }
-
     }
 
     let symbols : SymbolPlus[] = [...this.symbols]
@@ -123,7 +123,6 @@ export class PairComponent implements OnInit {
       .filter(symb =>  !this.list.maskOff || !(this.list.maskOff && (symb.exclusion.isExclude || symb.market.exclusion.isExclude)) )
     let listSell = symbols.sort((a,b)=> funcSort(a,b, 'sell') )
       .filter(symb => !this.list.maskOff || !(this.list.maskOff && (symb.exclusion.isExclude || symb.market.exclusion.isExclude)) )
-    console.log(listBuy.map(symb => symb[isFor].buy.bestMarketFreq))
     if (search.length){
       if(search) this.list.search = search
       this.list.buy = listBuy.filter(symb => new RegExp(`^${search}`,'i').test(symb.market.name))
