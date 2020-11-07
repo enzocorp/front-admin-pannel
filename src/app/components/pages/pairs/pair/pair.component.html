@@ -1,8 +1,7 @@
-<!--
 <nz-drawer
   [nzBodyStyle]="{ overflow: 'auto', paddingBottom: '4rem' }"
   [nzMaskClosable]="true"
-  [nzWidth]="720"
+  [nzWidth]="780"
   [nzVisible]="visible"
   [nzTitle]="excludePair"
   (nzOnClose)="close()"
@@ -10,29 +9,37 @@
   <nz-spin [nzSpinning]="!pair" >
     <div *ngIf="pair">
 
-      <div *ngIf="pair.reported" class="card mb-4" [ngStyle]="{borderColor : colorMarket[pair.reported.severityText.severity]}">
-        <div class="card-header" [ngStyle]="{borderColor : colorMarket[pair.reported.severityText.severity]}">
+      <aside class="mt-2 mb-3">
+         <nz-radio-group nzName="isFor" [(ngModel)]="isFor" (ngModelChange)="makeList()" >
+          <label nz-radio-button nzValue="for1k">1000 $</label>
+          <label nz-radio-button nzValue="for15k">15 000 $</label>
+          <label nz-radio-button nzValue="for30k">30 000 $</label>
+        </nz-radio-group>
+      </aside>
 
-          <h6 [ngStyle]="{color :colorMarket[pair.reported.severityText.severity], display : 'inline-block'}">A été signalée &nbsp;</h6>
-          <nz-tag [nzColor]="colorMarket[pair.reported.severityText.severity]">
+      <div *ngIf="pair.exclusion.severityPlus.severity" class="card mb-4" [ngStyle]="{borderColor : colors[pair.exclusion.severityPlus]}">
+        <div class="card-header" [ngStyle]="{borderColor : colors[pair.exclusion.severityPlus]}">
+
+          <h6 [ngStyle]="{color :colors[pair.exclusion.severityPlus], display : 'inline-block'}">A été signalée &nbsp;</h6>
+          <nz-tag [nzColor]="colors[pair.exclusion.severityPlus]">
             <i nz-icon nzType="exclamation-circle"></i>
-            <span>{{pair.reported.severityText.description | uppercase}}</span>
+            <span>{{pair.exclusion.severityPlus.description | uppercase}}</span>
           </nz-tag>
-          <div class="ml-5 d-inline-block">Par : <strong>{{pair.reported.excludeBy}}</strong> </div>
-          <div class="ml-5 d-inline-block">Le : <strong>{{pair.reported.date | date}}</strong> </div>
+          <div class="ml-5 d-inline-block">Par : <strong>{{pair.exclusion.excludeBy}}</strong> </div>
+          <div class="ml-5 d-inline-block">Le : <strong>{{pair.exclusion.date | date}}</strong> </div>
         </div>
         <div class="card-body">
           <nz-divider nzText="Raisons : " nzOrientation="left"></nz-divider>
           <ul>
-            <li *ngFor="let textreason of pair.reported.reasonsText">{{textreason.description}}</li>
+            <li *ngFor="let reason of pair.exclusion.reasonsPlus">{{reason.description}}</li>
           </ul>
           <nz-divider nzText="Note : " nzOrientation="left"></nz-divider>
-          <p>{{pair.reported.note}}</p>
+          <p>{{pair.exclusion.note}}</p>
 
         </div>
       </div>
 
-      <div *ngIf="!pair.reported" class="card mb-4" style="border-color: green">
+      <div *ngIf="!pair.exclusion.severityPlus.severity" class="card mb-4" style="border-color: green">
         <h6 class="card-header" style="color: green; border-color: green">
           A été signalée : <nz-tag nzColor="success"><i nz-icon nzType="check-circle"></i><span>Non </span></nz-tag>
         </h6>
@@ -47,19 +54,23 @@
           <ul class="list-group">
             <li class="list-group-item d-flex justify-content-between align-items-center">
               A été Positif
-              <span class="badge pr-3 pl-3 pt-1 pb-1 badge-success badge-pill">{{pair.frequences.positive}}</span>
+              <nz-tag nzColor="green">{{pair[isFor].positiveFreq}}</nz-tag>
             </li>
             <li class="list-group-item d-flex justify-content-between align-items-center">
               A été Négatif
-              <span class="badge pr-3 pl-3 pt-1 pb-1  badge-danger badge-pill">{{pair.frequences.negative}}</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              A obtenu le plus gros bénéfice :
-              <span class="badge pr-3 pl-3 pt-1 pb-1  badge-primary badge-pill">{{pair.frequences.isBest}}</span>
+              <nz-tag nzColor="red">{{pair[isFor].negativeFreq}}</nz-tag>
             </li>
           </ul>
         </div>
       </div>
+
+      <aside class="mt-2 mb-3">
+         <nz-radio-group nzName="isFor" [(ngModel)]="isFor" (ngModelChange)="makeList()" >
+          <label nz-radio-button nzValue="for1k">1000 $</label>
+          <label nz-radio-button nzValue="for15k">15 000 $</label>
+          <label nz-radio-button nzValue="for30k">30 000 $</label>
+        </nz-radio-group>
+      </aside>
 
       <div class="card mb-4">
         <h6 class="card-header">Quand la paire est <strong>Positive</strong> </h6>
@@ -72,26 +83,29 @@
 
             <nz-list-item let="">
               <nz-list-item-meta
-                nzTitle="Spread moyen"
-                nzDescription="Représente les gains moyens en {{pair.quote}} pour 1 {{pair.base}} acheté puis revendu"
+                nzTitle="Spread en quote pour {{isFor}}"
+                nzDescription="Représente les gains moyens en {{pair.quote.name}} pour {{isFor}}$ de {{pair.base.name}} acheté puis revendu"
               ></nz-list-item-meta>
-              <kbd>{{pair.ifPositiveSpread.spreadMoyen | number: '1.0-5' | replaceBy : ',' : ' '}} {{pair.quote}}</kbd>
+              <kbd>{{pair[isFor].spreadMoyen_quote | exponentiel : 7}} {{pair.quote.name}}</kbd>
             </nz-list-item>
 
             <nz-list-item>
               <nz-list-item-meta
-                nzTitle="Spread moyen pour 1$ "
-                nzDescription="Représente les gains moyens en $ pour 1$ misé"
+                nzTitle="Spread moyen en $ pour {{isFor}} "
+                nzDescription="Représente les gains moyens {{isFor}} $ investis"
               ></nz-list-item-meta>
-              <kbd>{{pair.ifPositiveSpread.spreadMoyen_1usd | number: '1.0-2' | replaceBy : ',' : ' '}} $</kbd>
+              <kbd>{{pair[isFor].spreadMoyen_usd | exponentiel : 2}} $</kbd>
             </nz-list-item>
 
             <nz-list-item>
               <nz-list-item-meta
-                nzTitle="Spread moyen pour 15 000$"
-                nzDescription="Représente les gains moyens en $ pour 15 000$ misés"
+                nzTitle="Profit max en 1 coup"
+                nzDescription="Représente les gains max $ gagnés en 1 coup"
               ></nz-list-item-meta>
-              <mark>{{pair.ifPositiveSpread.spreadMoyen_15kusd | number: '1.0-2' | replaceBy : ',' : ' '}} $</mark>
+              <span nz-typography>
+                <i class="mr-2" nz-icon nzType="thunderbolt" nzTheme="twotone"></i>
+                <strong style="color: #0099ff ; font-size: 120%">{{pair[isFor].hightestSpread_usd | exponentiel : 2}} $</strong>
+              </span>
             </nz-list-item>
 
             <nz-list-item >  <nz-divider nzText="Les volumes"></nz-divider> </nz-list-item>
@@ -99,182 +113,186 @@
 
             <nz-list-item>
               <nz-list-item-meta
-                nzTitle="Volume max moyen échangeable"
-                nzDescription="Représente le volume maximum moyen en {{pair.base}} echangeable entre deux market "
+                nzTitle="Volume moyen {{isFor}}$ en {{pair.base.name}}"
+                nzDescription="Représente la qté moyenne de {{pair.base.name}} pour {{isFor}}$ "
               ></nz-list-item-meta>
-              <kbd>{{pair.ifPositiveSpread.volumeMoyen | number: '1.0-5' | replaceBy : ',' : ' '}} {{pair.base}}</kbd>
-            </nz-list-item>
-            <nz-list-item>
-              <nz-list-item-meta
-                nzTitle="Volume max moyen échangeable en $"
-                nzDescription="Représente le volume maximum moyen en $ echangeable entre deux market "
-              ></nz-list-item-meta>
-              <mark>{{pair.ifPositiveSpread.volumeMoyen_usd | number: '1.0-2' | replaceBy : ',' : ' '}} $</mark>
-            </nz-list-item>
-
-            <nz-list-item >  <nz-divider nzText="Profits Max"></nz-divider> </nz-list-item>
-
-            <nz-list-item>
-              <nz-list-item-meta
-                nzTitle="Profit Maximum moyen en $"
-                nzDescription="Représente les gains maximums moyens possibles en investissant une somme illimitée"
-              ></nz-list-item-meta>
-              <span nz-typography>
-        <i class="mr-2" nz-icon nzType="thunderbolt" nzTheme="twotone"></i>
-        <strong style="color: #0099ff ; font-size: 120%">{{pair.ifPositiveSpread.profitMaxiMoyen_usd | number: '1.0-2' | replaceBy : ',' : ' '}} $</strong>
-      </span>
+              <kbd>{{pair[isFor].volumeMoyen_base | exponentiel : 7}} {{pair.base.name}}</kbd>
             </nz-list-item>
           </nz-list>
 
         </div>
       </div>
 
+      <aside class="mt-2 mb-3">
+         <nz-radio-group nzName="isFor" [(ngModel)]="isFor" (ngModelChange)="makeList()" >
+          <label nz-radio-button nzValue="for1k">1000 $</label>
+          <label nz-radio-button nzValue="for15k">15 000 $</label>
+          <label nz-radio-button nzValue="for30k">30 000 $</label>
+        </nz-radio-group>
+      </aside>
 
       <div class="card">
         <h6 class="card-header">Les Markets de cette pair </h6>
         <div class="card-body">
           <nz-list nzBordered nzSize="small">
             <nz-list-item >
-              <nz-list-item-meta nzTitle="Markets totals pour cette pair"></nz-list-item-meta>
-              <nz-tag nzColor="blue">{{pair.markets.length}}</nz-tag>
+              <nz-list-item-meta nzTitle="Les markets enregistrés où cette pair est présente"></nz-list-item-meta>
+              <nz-tag nzColor="blue">{{pair.marketsForThis}}</nz-tag>
             </nz-list-item>
           </nz-list>
 
           <nz-list nzBordered nzSize="small">
             <nz-list-item >
-              <nz-list-item-meta nzTitle="Markets en services pour cette pair"></nz-list-item-meta>
-              <nz-tag nzColor="green">{{activatedMarket.length}}</nz-tag>
+              <nz-list-item-meta nzTitle="Les markets en enregistrés où cette paire est en service"></nz-list-item-meta>
+              <nz-tag nzColor="green">{{marketsOn}}</nz-tag>
             </nz-list-item>
           </nz-list>
 
           <nz-list nzBordered nzSize="small">
             <nz-list-item >
               <nz-list-item-meta nzTitle="Markets hors services pour cette pair"></nz-list-item-meta>
-              <nz-tag nzColor="red">{{pair.markets.length - activatedMarket.length}}</nz-tag>
+              <nz-tag nzColor="red">{{pair.marketsForThis - marketsOn}}</nz-tag>
             </nz-list-item>
           </nz-list>
           <br>
 
-          <div class="mb-2">
-            <nz-switch nzSize="small" [(ngModel)]="modEdition"></nz-switch> {{modEdition ? 'mode edition' : 'mode visite' }}
-          </div>
-
-          <ng-container *ngIf="modEdition">
-            <div class="d-inline-block mr-2" *ngFor="let market of pair.markets">
-              <nz-badge  [nzCount]="market.exclusion.exchangeIsExclude && market.excludeFromPair?.severity === 4 ? 2 : 0">
-                <app-btn-ban-symbole [pair]="pair" [markets_id]="[market.id_exchange]" (afterUpdate)="onValuesChanges()">
+          <ng-container>
+            <a href="/markets/{{symbol.market.name}}" target="_blank" class="d-inline-block mr-2" *ngFor="let symbol of symbols">
+                <nz-badge [nzDot]="!!symbol.market.exclusion.isExclude">
                   <nz-tag class="mb-2 mr-0 market"
-                          [nzColor]="colorMarket[
-                          market.exclusion.severity === 4 ? 4 : 0 ||
-                          market.excludeFromPair?.severity ? market.excludeFromPair.severity  : 0 ]"
+                          [nzColor]="colors[
+                          symbol.market.exclusion.severity === 4 ? 4 : 0 ||
+                          symbol.exclusion.severity ]"
                   >
-                    {{market.id_exchange}}
-
-                  </nz-tag>
-                </app-btn-ban-symbole>
-              </nz-badge>
-            </div>
-          </ng-container>
-
-          <ng-container *ngIf="!modEdition">
-            <a href="/markets/{{market.id_exchange}}" target="_blank" class="d-inline-block mr-2" *ngFor="let market of pair.markets">
-              <nz-badge  [nzCount]="market.exclusion.exchangeIsExclude && market.excludeFromPair?.severity === 4 ? 2 : 0">
-                <nz-badge [nzDot]="!!market.excludeFromPair" [nzStyle]="{ backgroundColor: colorMarket[market.excludeFromPair?.severity || 0] }" >
-                  <nz-tag class="mb-2 mr-0 market"
-                          [nzColor]="colorMarket[
-                          market.exclusion.severity === 4 ? 4 : 0 ||
-                          market.excludeFromPair?.severity ? market.excludeFromPair.severity  : 0 ]"
-                  >
-                    {{market.id_exchange}}
+                    {{symbol.market.name}}
 
                   </nz-tag>
                 </nz-badge>
-              </nz-badge>
+
             </a>
           </ng-container>
 
         </div>
         <nz-divider nzText="Classement des markets pour la pair {{pair.name}}"></nz-divider>
         <br>
-        <nz-radio-group class="ml-3 mb-2" (ngModelChange)="makeAverages($event)" [ngModel]="sorter.moyenne" nzName="radiogroup">
-          <label nz-radio nzValue="1k">1k $</label>
-          <label nz-radio nzValue="15k">15k $</label>
-          <label nz-radio nzValue="30k">30k $</label>
+
+        <nz-radio-group class="ml-3 mb-2" (ngModelChange)="makeList($event)" [(ngModel)]="list.sorter" nzName="radiogroup">
+          <label nz-radio nzValue="bestMarketFreq">Top 1</label>
+          <label nz-radio nzValue="prixMoyen_quote">Prix Moyen $</label>
+          <nz-switch nzSize="small" nzCheckedChildren="en services" nzUnCheckedChildren="tous" [(ngModel)]="list.maskOff" (ngModelChange)="makeList()"></nz-switch>
         </nz-radio-group>
-        <div style="transform: translateX(-52px)" class="mt-2">
-          <pagination-controls (pageChange)="page = $event" (pageBoundsCorrection)="page = $event"
-                               [autoHide]="true" previousLabel="préc" nextLabel="suiv"></pagination-controls>
-        </div>
-          <div nz-row>
-            <aside nz-col [nzSpan]="12">
-              <h6 class="text-center" style="color: limegreen">ACHAT</h6>
-              <ul class="list-group">
-                <li *ngFor="let average of tabAverages.buy | paginate : {itemsPerPage:10, currentPage : page }" class="list-group-item p-0"
-                >
-                  <div class="d-flex align-items-md-center" [ngStyle]="{ backgroundColor : average.exclude ? 'rgb(252,153,153)' : 'white'}">
-                    <span style="min-width: 20px" class="flex2 mt-2 mb-2 mr-2">
-                      <app-btn-ban-symbole (afterUpdate)="onValuesChanges()" [markets_id]="[average.exchange]" [pair]="pair" >
-                        <button nz-button nzType="default" nzSize="small" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
-                      </app-btn-ban-symbole>
-                    </span>
-                    <a href="/markets/{{average.exchange}}" target="_blank" style="color: black" class="d-flex ant-row-space-between align-items-md-center flex1 p-2">
-                      <span>{{average.exchange}}</span>
-                      <div class="d-inline-block">
-                        <div><nz-tag nzColor="green" class="m-0"><strong> {{average.buy['prixMoyen_for'+sorter.moyenne+'usd_quote']  | exponentiel : 6 }}</strong> {{pair.quote}}</nz-tag></div>
-                        <div><nz-tag style="width: 100%;" nzColor="default" class="m-0">vol : <strong> {{average.buy['volumeMoyen_for'+sorter.moyenne+'usd']  | exponentiel : 1 }}</strong> USD</nz-tag></div>
-                      </div>
-                    </a>
 
-                  </div>
-                </li>
-              </ul>
+        <nz-input-group class="ml-3 mt-2 mb-3" style="width: 15rem" [nzSuffix]="suffixIconSearch">
+          <input type="text" nz-input placeholder="chercher" (ngModelChange)="makeList(undefined,$event)" [(ngModel)]="list.search" />
+        </nz-input-group>
+        <ng-template #suffixIconSearch><i nz-icon nzType="search"></i></ng-template>
+
+          <div nz-row style="min-height: 500px">
+            <aside nz-col [nzSpan]="12" >
+              <h6 class="text-center m0" style="color: limegreen">ACHAT</h6>
+              <nz-table #buyTablee
+                        [nzData]="list.buy"
+                        nzSize="small"
+                        [(nzPageSize)]="paginate.pageSize"
+                        nzShowSizeChanger
+                        [(nzPageIndex)]="paginate.pageIndex"
+              >
+                <thead >
+                <tr >
+                  <th class="listbuy"><i nz-icon nzType="delete" nzTheme="outline"></i></th>
+                  <th class="listbuy">prix moyen </th>
+                  <th class="listbuy">top 1</th>
+                  <th class="listbuy">Market</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr  style="font-weight: 500" [ngClass]="{alertBan : symb.exclusion.isExclude || symb.market.exclusion.isExclude  }"
+                     *ngFor="let symb of buyTablee.data; let i = index">
+                  <td style="text-align: left">
+                    <app-report-symbols (afterUpdate)="onUpdate()" class="mr-2" *ngIf="pair" [symbols]="[symb]" [selectMultiple]="false" >
+                      <nz-badge [nzDot]="symb.exclusion.severity > 0"  [nzStyle]="{ backgroundColor: colors[symb.exclusion.severity]}">
+                        <button nz-button nzShape="circle" nzSize="small"><i  nz-icon nzType="delete"></i></button>
+                      </nz-badge>
+                    </app-report-symbols>
+                  </td>
+                  <td style="color: green">{{ symb[isFor].buy.prixMoyen_quote | exponentiel : 4}} {{pair.quote.name}}</td>
+                  <td>
+                    <nz-tag nzColor="blue">
+                      <strong>{{ symb[isFor].buy.bestMarketFreq }}</strong> / {{ symb[isFor].buy.okFreq +  symb[isFor].buy.notEnoughVolFreq + symb[isFor].buy.notDataFreq }}
+                    </nz-tag>
+                  </td>
+                  <td style="text-align: right">
+                   {{ symb.market.name }} &nbsp; <span class="badge badge-success">{{i + 1 + paginate.pageSize * (paginate.pageIndex - 1)}}</span>
+                  </td>
+
+                </tr>
+                </tbody>
+              </nz-table>
             </aside>
 
             <aside nz-col [nzSpan]="12">
-              <h6 class="text-center" style="color: red">VENTE</h6>
-              <ul class="list-group">
-                <li *ngFor="let average of tabAverages.sell | paginate : {itemsPerPage:10, currentPage : page }" class="list-group-item p-0"
-                >
-                  <div class="d-flex align-items-md-center" [ngStyle]="{ backgroundColor : average.exclude ? 'rgb(252,153,153)' : 'white'}">
-                    <span style="min-width: 20px" class="flex2 mt-2 mb-2 mr-2">
-                      <app-btn-ban-symbole (afterUpdate)="onValuesChanges()" [markets_id]="[average.exchange]" [pair]="pair" >
-                        <button nz-button nzType="default" nzSize="small" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
-                      </app-btn-ban-symbole>
-                    </span>
-                    <a href="/markets/{{average.exchange}}" target="_blank" style="color: black" class="d-flex ant-row-space-between align-items-md-center flex1 p-2">
-                      <span>{{average.exchange}}</span>
-                      <div class="d-inline-block">
-                        <div><nz-tag nzColor="red" class="m-0"><strong> {{average.sell['prixMoyen_for'+sorter.moyenne+'usd_quote']  | exponentiel : 6 }}</strong> {{pair.quote}}</nz-tag></div>
-                        <div><nz-tag style="width: 100%;" nzColor="default" class="m-0">vol : <strong> {{average.sell['volumeMoyen_for'+sorter.moyenne+'usd']  | exponentiel : 1 }}</strong> USD</nz-tag></div>
-                      </div>
-                    </a>
-
-                  </div>
-                </li>
-              </ul>
+              <h6 class="text-center" style="color: #ffbb00">VENTE</h6>
+              <nz-table #sellTable
+                        [nzData]="list.sell"
+                        nzSize="small"
+                        [(nzPageSize)]="paginate.pageSize"
+                        nzShowSizeChanger
+                        [(nzPageIndex)]="paginate.pageIndex"
+              >
+                <thead >
+                <tr >
+                  <th class="listsell">Market</th>
+                  <th class="listsell">top 1</th>
+                  <th class="listsell">prix moyen </th>
+                  <th class="listsell"><i nz-icon nzType="delete" nzTheme="outline"></i></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr  style="font-weight: 500" [ngClass]="{alertBan : symb.exclusion.isExclude || symb.market.exclusion.isExclude  }"
+                     *ngFor="let symb of sellTable.data; let i = index">
+                  <td>
+                    <span class="badge badge-warning">{{i + 1 + paginate.pageSize * (paginate.pageIndex - 1)}}</span>&nbsp;{{ symb.market.name }}
+                  </td>
+                  <td><nz-tag nzColor="blue"><strong>{{ symb[isFor].sell.bestMarketFreq }}</strong> / {{ symb[isFor].sell.okFreq +  symb[isFor].sell.notEnoughVolFreq + symb[isFor].sell.notDataFreq }}</nz-tag></td>
+                  <td style="color: #ffbb00">{{ symb[isFor].sell.prixMoyen_quote | exponentiel : 4}} {{pair.quote.name}}</td>
+                  <td style="text-align: right">
+                    <app-report-symbols  (afterUpdate)="onUpdate()" class="mr-2" *ngIf="pair" [symbols]="[symb]" [selectMultiple]="false" >
+                      <nz-badge [nzDot]="symb.exclusion.severity > 0"  [nzStyle]="{ backgroundColor: colors[symb.exclusion.severity]}">
+                        <button nz-button nzShape="circle" nzSize="small"><i  nz-icon nzType="delete"></i></button>
+                      </nz-badge>
+                    </app-report-symbols>
+                  </td>
+                </tr>
+                </tbody>
+              </nz-table>
             </aside>
 
+            <aside class="mt-2 mb-3">
+               <nz-radio-group nzName="isFor" [(ngModel)]="isFor" (ngModelChange)="makeList()" >
+                <label nz-radio-button nzValue="for1k">1000 $</label>
+                <label nz-radio-button nzValue="for15k">15 000 $</label>
+                <label nz-radio-button nzValue="for30k">30 000 $</label>
+              </nz-radio-group>
+            </aside>
         </div>
-
       </div>
-
 
     </div>
   </nz-spin>
 
 </nz-drawer>
 
-&lt;!&ndash;-&#45;&#45;&#45;&#45;Templates-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;
+<!-------Templates----------->
 <ng-template #excludePair>
   <div *ngIf="pair">
     <span class="mr-3">{{pair.name}}</span>
-    <app-btn-ban-symbole (afterUpdate)="onValuesChanges()" class="mr-2" *ngIf="pair" [pair]="pair" [markets_id]="['*']">
+    <app-report-pairs (afterUpdate)="onUpdate()" class="mr-2" *ngIf="pair" [pairs]="[pair]" >
       <button nz-button nzType="danger" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
-    </app-btn-ban-symbole>
-    <nz-tag *ngIf="pair.exclusion.pairIsExclude" nzColor="red">éliminée</nz-tag>
-    <div (click)="onValuesChanges()" style="cursor: pointer" class="d-inline-block ml-2" nz-popover nzPopoverContent="rafraichir">
-      <i nz-icon nzType="redo" [nzSpin]="dataLoading" style="color: dodgerblue" nzTheme="outline"></i>
+    </app-report-pairs>
+    <nz-tag *ngIf="pair.exclusion.isExclude" nzColor="red">éliminée</nz-tag>
+
+    <div (click)="onUpdate()" style="cursor: pointer" class="d-inline-block ml-2" nz-popover nzPopoverContent="rafraichir">
+      <i nz-icon nzType="redo" [nzSpin]="loading" style="color: dodgerblue" nzTheme="outline"></i>
     </div>
   </div>
 </ng-template>
--->

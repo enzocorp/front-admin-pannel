@@ -31,10 +31,9 @@
             style="width: 160px"
           >
             <nz-option *ngFor="let item of severities" nzCustomContent [nzLabel]="item.description" [nzValue]="item.severity">
-              <i *ngIf="item.severity === 4" nz-icon nzType="close-circle" nzTheme="twotone" nzTwotoneColor="red"></i> {{item.description}}
-            </nz-option>
-            <nz-option nzCustomContent nzLabel="DEBAN" [nzValue]="0">
-              <i nz-icon nzType="check-circle" nzTheme="twotone"></i> débanir
+              <i *ngIf="item.severity === 4" nz-icon nzType="close-circle" nzTheme="twotone" nzTwotoneColor="red"></i>
+              <i *ngIf="item.severity === 0" nz-icon nzType="check-circle" nzTheme="twotone"></i>
+              {{item.description}}
             </nz-option>
           </nz-select>
         </nz-input-group>

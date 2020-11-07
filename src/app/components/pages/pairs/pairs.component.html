@@ -58,7 +58,7 @@
           <!--Status-->
           <td>
             <nz-tag class="m-0" [nzColor]="colors[pair.exclusion.severity]">
-              {{pair.exclusion.severity ? strSeverities[pair.exclusion.severity - 1] : "en service"}}
+              {{pair.exclusion.severity ? strSeverities[pair.exclusion.severity] : "en service"}}
             </nz-tag>
           </td>
           <!--Spread moyen-->
@@ -69,8 +69,8 @@
 
           <!--Freq + et -  -->
           <td>
-            <nz-tag  nzColor="red"> {{pair[isFor].negativeFreq }} </nz-tag>
-            <nz-tag class="m-0" nzColor="green"> {{pair[isFor].positiveFreq }} </nz-tag>
+            <nz-tag nzColor="green"> {{pair[isFor].positiveFreq }} </nz-tag>
+            <nz-tag  class="m-0" nzColor="red"> {{pair[isFor].negativeFreq }} </nz-tag>
 
           </td>
           <!--freq no volume-->

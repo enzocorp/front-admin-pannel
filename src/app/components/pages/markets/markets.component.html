@@ -46,7 +46,7 @@
           <td class="btn-link" style="color: black; cursor: pointer"  (click)="navigate(market.name)">{{market.longName}} ({{market.name}})</td>
           <td>
             <nz-tag [nzColor]="colors[market.exclusion.severity]">
-              {{market.exclusion.severity ? strSeverities[market.exclusion.severity - 1] : "en service"}}
+              {{market.exclusion.severity ? strSeverities[market.exclusion.severity] : "en service"}}
             </nz-tag>
           </td>
           <td><span><strong > {{market.pairsCount}}</strong></span></td>
