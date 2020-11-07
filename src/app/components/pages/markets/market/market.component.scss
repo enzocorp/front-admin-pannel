@@ -12,3 +12,14 @@
 .flex2{
   margin-left: 5%;
 }
+
+tr > th {
+  font-size: 92%;
+  text-align: center;
+}
+tr > td {
+  text-align: center;
+}
+.alertBan > td {
+  background-color: #ffdada !important;
+}

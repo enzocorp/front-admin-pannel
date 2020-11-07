@@ -51,7 +51,11 @@
           </td>
           <td><span><strong > {{market.pairsCount}}</strong></span></td>
           <td><span><strong> {{market.pairsForThis}}</strong></span></td>
-          <td><span><strong style="color: #0099ff ; font-size: 100%"> {{market.pairsUsed}}</strong></span></td>
+          <td>
+<!--            <span><strong style="color: #0099ff ; font-size: 100%"> {{market.pairsUsed}}</strong></span>-->
+            <strong [ngStyle]="{color : market.pairsUsed === 0 ? 'red' : '#0099ff'}"> {{market.pairsUsed}}</strong>
+            <i class="iconeTab" *ngIf="market.pairsUsed === 0" nz-icon nzType="warning" nzTwotoneColor="red" nzTheme="twotone"></i>
+          </td>
           <td><a target="_blank" href="{{market.website}}">Lien</a> </td>
           <td>
             <app-report-markets (afterUpdate)="onUpdate()" *ngIf="market" [markets]="[market]" >

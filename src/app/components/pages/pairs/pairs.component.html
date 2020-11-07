@@ -29,7 +29,7 @@
           </th>
           <th  rowspan="4">Nom</th>
           <th rowspan="4">Status</th>
-          <th colspan="4">Les moyennes pour <nz-tag nzColor="blue"><strong>{{isFor}}</strong></nz-tag> USD</th>
+          <th colspan="5">Les moyennes pour <nz-tag nzColor="blue"><strong>{{isFor}}</strong></nz-tag> USD</th>
           <th  colSpan="2" >Markets </th>
           <th rowSpan="4" style="text-align: center;">
             <app-report-pairs (afterUpdate)="onGroupUpdate()" [pairs]="arrChecked" [selectMultiple]="true">
@@ -40,10 +40,11 @@
         <tr>
           <th >Spread $ moyen</th>
           <th >Freq + vs -</th>
+          <th >Freq <br> top 1 </th>
           <th >Freq no volume </th>
-          <th >Freq top 1 </th>
-          <th > Présente dans [M] </th>
-          <th > Utilisée dans [M]</th>
+          <th >Freq erreur </th>
+          <th > Est dans [M] </th>
+          <th > Use dans [M]</th>
         </tr>
 
         </thead>
@@ -71,15 +72,26 @@
           <td>
             <nz-tag nzColor="green"> {{pair[isFor].positiveFreq }} </nz-tag>
             <nz-tag  class="m-0" nzColor="red"> {{pair[isFor].negativeFreq }} </nz-tag>
-
+          </td>
+          <!--freq Top 1 -->
+          <td>
+            <nz-tag nzColor="blue">
+              <strong>{{pair[isFor].isBestFreq}} / {{pair[isFor].positiveFreq + pair[isFor].negativeFreq + pair[isFor].errorFreq + pair[isFor].notEnoughtVolFreq}}</strong>
+              <i class="iconeTab" *ngIf="pair[isFor].isBestFreq" nz-icon nzType="crown" nzTwotoneColor="orange" nzTheme="twotone"></i>
+            </nz-tag>
           </td>
           <!--freq no volume-->
-          <td><span style="color: black; font-weight: 500">{{pair[isFor].notEnoughtVolFreq}}</span> / {{pair[isFor].positiveFreq + pair[isFor].negativeFreq}}</td>
-          <!--freq Top -->
-          <td>
-            <strong>{{pair[isFor].isBestFreq}}</strong>
-            <i class="iconeTab" *ngIf="pair[isFor].isBestFreq" nz-icon nzType="crown" nzTwotoneColor="orange" nzTheme="twotone"></i>
+          <td >
+            <span style="color: darkorange; ; font-weight: 500">{{pair[isFor].notEnoughtVolFreq}}</span>
+            / {{pair[isFor].positiveFreq + pair[isFor].negativeFreq + pair[isFor].errorFreq + pair[isFor].notEnoughtVolFreq}}
           </td>
+
+          <!--freq erreur-->
+          <td>
+            <span style="color: #ff6b6b; font-weight: 500">{{pair[isFor].errorFreq}}</span>
+            /{{pair[isFor].positiveFreq + pair[isFor].negativeFreq + pair[isFor].errorFreq + pair[isFor].notEnoughtVolFreq}}
+          </td>
+
           <!--nb markets-->
           <td>{{pair.marketsForThis}}</td>
           <!--nb market use-->

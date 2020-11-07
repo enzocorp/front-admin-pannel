@@ -1,26 +1,35 @@
 import {Component, EventEmitter, OnInit} from '@angular/core';
 import {MarketsService} from "../../../../services/http/markets.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {forkJoin, Observable} from "rxjs";
+import {forkJoin, Observable, Subscribable} from "rxjs";
 import {map} from "rxjs/operators";
 import {MongoPaginate} from "../../../../models/pagination";
 import {Pair} from "../../../../models/pair";
 import {CryptoService} from "../../../../services/http/crypto.service";
 import {Market} from "../../../../models/market";
 import {Reason} from "../../../../models/reason";
+import {PairsService} from "../../../../services/http/pairs.service";
+import {SymbolsService} from "../../../../services/http/symbols.service";
+import {Symbol, SymbolFor} from "../../../../models/symbol";
 import {Severity} from "../../../../models/severity";
+import {Asset} from "../../../../models/asset";
 
 
-interface lookup_market extends Market{
-  reasonsText : Reason[]
-  total : [{total : number}],
-  isBestFor : number
+
+interface SymbolPlus extends Omit<Symbol, "pair">{
+  pair : Pair
+  data : Omit< SymbolFor['buy'|'sell'], "prixMoyen_quote">
 }
 
-interface lookup_pair extends Pair{
-  positionBuy : number
-  positionSell : number
+interface MarketPlus extends Omit<Market, "exclusion" | "base" | "quote">{
+  exclusion : Omit<Pair['exclusion'], "reasons"|"severity">&{
+    severityPlus : Severity,
+    reasonsPlus : Reason[]
+  }
+  base : Asset
+  quote : Asset
 }
+
 
 @Component({
   selector: 'app-market',
@@ -29,114 +38,124 @@ interface lookup_pair extends Pair{
 })
 export class MarketComponent implements OnInit {
 
-  ngOnInit() {
-  }
 
-  /*page : number = 1
-  sorter = {
-    moyenne : 'prixMoyen_for1kusd_quote',
-    side : 'positionBuy'
-  }
-  color = ['grey','gold','orange','red']
-  colorMarket = ['default','gold','orange','red']
-  dirty = false
-  market : lookup_market = undefined
-  pairs : lookup_pair[] = undefined
-  severities : Severity[] = []
-
-  listeLoading = true
-  visible : boolean = false
-  isDirty : EventEmitter<void> = new EventEmitter<void>()
-  nestedRequest : Partial<MongoPaginate> = {
-    lookups :
-        [{
-          from: "reasons",
-          localField: "exclusion.reasons",
-          foreignField: "status",
-          as: "reasonsText"
-        },{
-          from: "pairs",
-          let : {exid : "$id_market"},
-          pipeline : [
-            { $match: { $expr: { $in: [ "$$exid", "$markets.id" ] }, "exclusion.pairIsExclude" : false} },
-            { $match: { $expr: { $not: [{ $in: [ "$$exid", "$exclusion.fromMarkets.market" ] }]} } },
-            { $count: "total" }
-          ],
-          as: "total"
-        }],
-    limit : 1,
-    match : {id_market : this.activatedRoute.snapshot.paramMap.get('id')}
-  }
-  constructor(
-              private marketServ : MarketService,
-              private cryptoServ : CryptoService,
+  constructor(private cryptoServ : CryptoService,
+              private marketsServ : MarketsService,
+              private symbsServ : SymbolsService,
               private activatedRoute : ActivatedRoute,
               private router : Router,
   ) { }
 
+  colors = ['green','default','gold','orange','red']
+  colorsv2 = ['green','black','gold','orange','red']
+  isFor : 'for1k' | 'for15k' | 'for30k' = 'for15k'
+  visible : boolean = false
+  market : MarketPlus = undefined
+  loading = true
+  symbols : SymbolPlus[]
+  pairsOn : number
+  paginate : {
+    pageIndex : number
+    pageSize : number
+  } = {pageIndex : 1, pageSize : 10}
+  list: {
+    data : SymbolPlus[]
+    sorter : string,
+    maskOff : boolean,
+    search : string
+  } = {data : [], sorter : 'bestMarketFreq',maskOff : true, search : ''}
+  dirty = false
+  isDirty : EventEmitter<void> = new EventEmitter<void>()
+  requestSymbs = [
+    {$match: {market : this.activatedRoute.snapshot.paramMap.get('id')}},
+    {$lookup: {from: "pairs", localField: "pair", foreignField: "name", as: "pair"}},
+    {$unwind: "$pair"},
+    {$sort: {"pair.name" : 1}},
+  ]
+
   ngOnInit(): void {
     this.visible = true
-    this.marketServ.getPodiumPairs(this.activatedRoute.snapshot.paramMap.get('id'),this.sorter.moyenne, this.sorter.side).subscribe(
-      pairs => {
-        this.pairs = pairs
-        this.makeBestFor()
-        this.listeLoading = false
-      })
-   const $gethttp : Observable<{ market: {data : lookup_market[] },severities: Severity[] }> = forkJoin(
-     this.marketServ.getMarkets(this.nestedRequest),
-     this.exclusionService.getSeverities(),
-   ).pipe(
-     map(([market,severities])=>({market,severities})))
-
-   $gethttp.subscribe(
-     obj =>  {
-       this.market = obj.market.data[0]
-       this.severities = obj.severities.reverse()
-     }
-   )
-
+    this.onUpdate()
   }
 
+  getMarket() : Subscribable<any>{
+    return this.marketsServ.getMarkets( [
+      {$match: {name : this.activatedRoute.snapshot.paramMap.get('id')}},
+      {$lookup: {from: "severities",localField: "exclusion.severity",foreignField: "severity",as: "exclusion.severityPlus"}},
+      {$lookup: {from: "reasons",localField: "exclusion.reasons",foreignField: "status",as: "exclusion.reasonsPlus"}},
+      {$unwind: "$exclusion.severityPlus"}
+    ])
+  }
+
+  onUpdate(){
+    this.dirty = true
+    this.loading = true
+    const $gethttp : Observable<{dataMarket: { data: MarketPlus[] }, dataSymbs : {data : SymbolPlus[]} }> = forkJoin(
+      this.getMarket(),
+      this.symbsServ.getSymbols(this.requestSymbs)
+    ).pipe( // forkJoin returns an array of values, here we map those values to an object
+      map(([dataMarket,dataSymbs])=>({dataMarket,dataSymbs})))
+    $gethttp.subscribe(
+      (resp) =>  {
+        this.symbols = resp.dataSymbs.data
+        this.pairsOn = this.symbols.filter(symb => symb.exclusion.isExclude === false && symb.pair.exclusion.isExclude === false).length
+        this.market = resp.dataMarket.data[0]
+        this.makeList()
+        this.loading = false
+      },
+      ()=> null,
+      ()=> this.loading = false
+    )
+  }
+
+  makeList(sorter = this.list.sorter, search = this.list.search,isFor = this.isFor){
+    const funcSort = (a,b) => {
+      if(a.data[sorter] === undefined || a.data[sorter] === null)
+        return 0
+      if(b.data[sorter]  === undefined || b.data[sorter]  === null)
+        return 0
+      else
+        return b.data[sorter]  - a.data[sorter]
+    }
+
+    let symbols : SymbolPlus[] = this.symbols.map(symb => {
+      symb.data = {
+        bestMarketFreq : symb[isFor].buy.bestMarketFreq + symb[isFor].sell.bestMarketFreq,
+        okFreq: symb[isFor].buy.okFreq + symb[isFor].sell.okFreq,
+        notDataFreq: symb[isFor].buy.notDataFreq + symb[isFor].sell.notDataFreq,
+        notEnoughVolFreq: symb[isFor].buy.notEnoughVolFreq + symb[isFor].sell.notEnoughVolFreq,
+      }
+      return symb
+    })
+    this.list.data = symbols
+    let listData = symbols.sort((a,b)=> funcSort(a,b) )
+      .filter(symb => !this.list.maskOff || !(this.list.maskOff && (symb.exclusion.isExclude || symb.pair.exclusion.isExclude)) )
+    if (search.length){
+      if(search) this.list.search = search
+      this.list.data = listData.filter(symb => new RegExp(`^${search}`,'i').test(symb.pair.name))
+    }
+    else{
+      this.list.data = listData
+    }
+  }
 
   close(): void {
     this.visible = false
-    if (this.dirty && this.activatedRoute.snapshot.queryParamMap.get('nestedRequest')){
-      const req = JSON.parse( this.activatedRoute.snapshot.queryParamMap.get('nestedRequest'))
-      this.marketServ.getMarkets(req).subscribe(
-        resp => this.marketServ.emmitMarkets(resp.data)
-      )
+    const request = this.activatedRoute.snapshot.queryParamMap.get('request')
+    if (this.dirty && request){
+      const req = JSON.parse( request)
+      this.symbsServ.getSymbols(req).subscribe(
+        resp => {
+          let marketPlus = resp ? resp.data.map(({market,pairsUsed}) => ({
+            ...market,
+            pairsUsed
+          })) : []
+          this.marketsServ.emmitMarkets(marketPlus)
+        })
     }
     setTimeout(() => this.router.navigate(
       ['../'],
       { relativeTo: this.activatedRoute }), 250);
   }
-
-  sortList(event : string,sorte : string ) {
-    this.sorter[sorte] = event
-    this.onValuesChanges()
-  }
-
-  makeBestFor(){
-    if (this.market)
-      this.market.isBestFor = this.pairs.filter(pair => (
-        (pair.positionBuy === 0 || pair.positionSell === 0 )
-        && pair.exclusion.pairIsExclude === false)
-        && pair.exclusion.fromMarkets.findIndex(item => item.market === this.activatedRoute.snapshot.paramMap.get('id')) === -1
-      ).length
-  }
-
-  onValuesChanges(){
-    this.dirty = true
-    this.listeLoading = true
-    this.marketServ.getMarkets(this.nestedRequest).subscribe(
-      resp => this.market = resp.data[0]
-    )
-    this.marketServ.getPodiumPairs(this.activatedRoute.snapshot.paramMap.get('id'),this.sorter.moyenne, this.sorter.side).subscribe(
-      pairs => {
-        this.pairs = pairs
-        this.makeBestFor()
-        this.listeLoading = false
-    })
-  }*/
 
 }

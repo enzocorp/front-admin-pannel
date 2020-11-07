@@ -15,6 +15,7 @@ import { fr_FR } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import fr from '@angular/common/locales/fr';
 import {
+  NzAlertModule,
   NzBadgeModule,
   NzButtonModule,
   NzCardModule, NzCheckboxModule,
@@ -144,7 +145,8 @@ registerLocaleData(fr);
     NzCheckboxModule,
     NzRadioModule,
     NzNotificationModule,
-    NzTableModule
+    NzTableModule,
+    NzAlertModule
   ],
   providers: [
     { provide: NZ_I18N, useValue: fr_FR },

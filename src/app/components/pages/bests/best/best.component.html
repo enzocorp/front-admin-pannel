@@ -23,10 +23,10 @@
       <nz-col [nzSpan]="12">
         <nz-card [nzTitle]="marketsBuy[isFor].longName + ' - ' + marketsBuy[isFor].name" [nzExtra]="excludeBuy">
           <nz-statistic
-            [nzValue]="(best[isFor].buy.price_quote | exponentiel : 6)"
+            [nzValue]="best[isFor].buy.price_quote ? (best[isFor].buy.price_quote | exponentiel : 6) : 'no volume'"
             nzTitle="Prix d'achat moyen d'un {{best.base.name}}  ({{isFor}} $)"
             [nzPrefix]="prefixTplUp"
-            [nzSuffix]="best.quote.name"
+            [nzSuffix]="best[isFor].buy.price_quote ? best.quote.name : ''"
             [nzValueStyle]="{ color: '#3F8600' }"
           >
           </nz-statistic>
@@ -41,10 +41,10 @@
       <nz-col [nzSpan]="12">
         <nz-card [nzTitle]="marketsSell[isFor].longName + ' - ' + marketsSell[isFor].name" [nzExtra]="excludeSell">
           <nz-statistic
-            [nzValue]="(best[isFor].sell.price_quote | exponentiel : 6)"
-            nzTitle="Prix de vente moyen d'un {{best.base.name}} ({{isFor}} $)"
-            [nzPrefix]="prefixTplDown"
-            [nzSuffix]="best.quote.name"
+            [nzValue]="best[isFor].sell.price_quote ? (best[isFor].sell.price_quote | exponentiel : 6) : 'no volume'"
+            nzTitle="Prix d'achat moyen d'un {{best.base.name}}  ({{isFor}} $)"
+            [nzPrefix]="prefixTplUp"
+            [nzSuffix]="best[isFor].sell.price_quote ? best.quote.name : ''"
             [nzValueStyle]="{ color: 'red' }"
           >
           </nz-statistic>
@@ -95,21 +95,20 @@
 
     <nz-divider nzText="Les stats " nzOrientation="left"></nz-divider>
 
-    <nz-list nzBordered nzSize="small">
+    <nz-list nzBordered nzSize="small" *ngIf="best[isFor].spread_quote">
       <nz-list-item >  <nz-divider nzText="Les spreads"></nz-divider> </nz-list-item>
-
 
       <nz-list-item>
         <nz-list-item-meta
-          nzTitle="Spread "
+          nzTitle="Spread quote"
           nzDescription="Représente les gains en {{best.quote.name}} pour {{best[isFor].sell.volume_base | exponentiel : 6}} {{best.base.name}} acheté puis revendu"
         ></nz-list-item-meta>
         <kbd>{{best[isFor].spread_quote | exponentiel : 6 }} {{best.quote.name}}</kbd>
       </nz-list-item>
 
-      <nz-list-item>
+      <nz-list-item >
         <nz-list-item-meta
-          nzTitle="Spread pour 1$ "
+          nzTitle="Spread {{isFor}} $"
           nzDescription="Représente les gains en $ pour {{isFor}} misé"
         ></nz-list-item-meta>
         <span nz-typography>
@@ -118,30 +117,22 @@
       </span>
       </nz-list-item>
 
-<!--      <nz-list-item>
-        <nz-list-item-meta
-          nzTitle="Spread pour 15 000$"
-          nzDescription="Représente les gains en $ pour 15 000$ misés"
-        ></nz-list-item-meta>
-        <mark>{{best.spread_15kusd }} $</mark>
-      </nz-list-item>-->
-
       <nz-list-item >  <nz-divider nzText="Les volumes"></nz-divider> </nz-list-item>
-
 
       <nz-list-item>
         <nz-list-item-meta
-          nzTitle="Volume max échangeable"
+          nzTitle="Volume {{isFor}}"
           nzDescription="Représente le volume maximum en {{best.base.name}} echangeable entre les deux market "
         ></nz-list-item-meta>
         <kbd>{{best[isFor].sell.volume_base | exponentiel : 6 }} {{best.base.name}}</kbd>
       </nz-list-item>
+    </nz-list>
+
+    <nz-list nzBordered *ngIf="!best[isFor].spread_quote">
       <nz-list-item>
-        <nz-list-item-meta
-          nzTitle="Volume max échangeable en $"
-          nzDescription="Représente le volume maximum en $ echangeable entre les deux market "
-        ></nz-list-item-meta>
-        <mark>{{ isFor }} $</mark>
+        <nz-alert nzType="warning" nzMessage="Warning" nzShowIcon
+                  nzDescription="Il n'y avait pas le volume nécéssaire de {{best.base.name}} ({{best[isFor].sell.volume_base | exponentiel : 7}}) pour en acheter pour {{isFor}} $">
+        </nz-alert>
       </nz-list-item>
     </nz-list>
 
@@ -155,12 +146,11 @@ Les templates
     <div *ngIf="best">
       <span class="mr-3">{{best.pair.name}}</span>
       <a href="/pairs/{{best.pair.name}}" target="_blank" class="mr-2" nz-button nzType="primary" nzShape="circle"><i nz-icon nzType="right"></i></a>
-<!--    <app-report-symbols class="mr-2" *ngIf="pair" [symbols]="[marketsBuy[isFor].]" [selectMultiple]="false"  [markets_id]="[best.sell.exchange, best.buy.exchange]">
-          <button nz-button nzType="default" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
-        </app-report-symbols>-->
         <app-report-pairs *ngIf="best?.pair" [pairs]="[best.pair]" [selectMultiple]="false" (afterUpdate)="onUpdate()">
           <button nz-button nzType="danger" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
         </app-report-pairs>
+      <p class="d-inline-block ml-3"><nz-tag nzColor="blue"><span style="font-size: 125%" >
+        {{best[isFor].spread_usd ? ((best[isFor].spread_usd | exponentiel : 2) + " $") : "Pas de volume "}}</span> {{isFor}} $ </nz-tag></p>
     </div>
   </ng-template>
 

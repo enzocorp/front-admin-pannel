@@ -65,7 +65,7 @@ export class PairComponent implements OnInit {
     {$match: {pair : this.activatedRoute.snapshot.paramMap.get('id')}},
     {$lookup: {from: "markets", localField: "market", foreignField: "name", as: "market"}},
     {$unwind: "$market"},
-    {$sort: {[`${this.isFor}.buy.prixMoyen_quote`] : -1}},
+    {$sort: {"market.name" : 1}},
   ]
 
   ngOnInit(): void {
