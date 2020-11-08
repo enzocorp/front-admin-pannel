@@ -2,7 +2,8 @@
 <button class="mb-3" nz-button nzType="primary" [nzLoading]="loading">
   <i nz-icon nzType="search"></i>Pairs trouvés <span class="badge badge-light ml-3">{{pagination.total}}</span>
 </button>
-<button (click)="onReset()" class="mb-3 ml-5" nz-button nzType="danger">
+<button (click)="onReset()" nz-popover class="mb-3 ml-5" nz-button nzType="danger"
+        nzContent="Réinitialise toutes les moyennes des paires EN SERVICES ! Les données des paires éliminées ne seront reset">
   <i nz-icon nzType="retweet"></i>Réinitialiser les moyennes
 </button>
 <div>
@@ -43,7 +44,7 @@
         <tr>
           <th >Spread $ moyen</th>
           <th >Freq + vs -</th>
-          <th >Freq <br> top 1 </th>
+          <th >Freq best pair </th>
           <th >Freq no volume </th>
           <th >Freq erreur </th>
           <th > Est dans [M] </th>
@@ -67,7 +68,7 @@
           </td>
           <!--Spread moyen-->
           <td *ngIf="pair[isFor].spreadMoyen_usd; else negativSpread">
-            <button nz-button nzType="primary" nzGhost>{{pair[isFor].spreadMoyen_usd | exponentiel : 0}} $</button>
+            <button nz-button nzType="primary" nzGhost>{{pair[isFor].spreadMoyen_usd | exponentiel : 2}} $</button>
           </td>
           <ng-template #negativSpread><td><button nz-button nzSize="small" nzType="dashed">Pas de data</button></td></ng-template>
 
@@ -76,10 +77,10 @@
             <nz-tag nzColor="green"> {{pair[isFor].positiveFreq }} </nz-tag>
             <nz-tag  class="m-0" nzColor="red"> {{pair[isFor].negativeFreq }} </nz-tag>
           </td>
-          <!--freq Top 1 -->
+          <!--freq best  -->
           <td>
             <nz-tag nzColor="blue">
-              <strong>{{pair[isFor].isBestFreq}} / {{pair[isFor].positiveFreq + pair[isFor].negativeFreq + pair[isFor].errorFreq + pair[isFor].notEnoughtVolFreq}}</strong>
+              <strong>{{pair[isFor].isBestFreq}}</strong> /{{pair[isFor].positiveFreq + pair[isFor].negativeFreq + pair[isFor].errorFreq + pair[isFor].notEnoughtVolFreq}}
               <i class="iconeTab" *ngIf="pair[isFor].isBestFreq" nz-icon nzType="crown" nzTwotoneColor="orange" nzTheme="twotone"></i>
             </nz-tag>
           </td>

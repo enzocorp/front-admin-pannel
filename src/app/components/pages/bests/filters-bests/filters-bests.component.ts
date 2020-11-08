@@ -69,7 +69,7 @@ export class FiltersBestsComponent implements OnInit {
     this.makeUpdate()
   }
 
-  onIsForChange(isFor){
+  onIsForChange(isFor = this.isFor){
     let str = this.sort.key
     if(/for[\d]+?k/.test(str))
       this.sort.key = str.replace(/for[\d]+?k/, isFor)

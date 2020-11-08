@@ -6,7 +6,7 @@
   [nzTitle]="excludePair"
   (nzOnClose)="close()"
 >
-  <nz-spin [nzSpinning]="!pair" >
+  <nz-spin [nzSpinning]="pair === undefined" >
     <div *ngIf="pair">
 
       <aside class="mt-2 mb-3">
@@ -87,15 +87,12 @@
       <div class="card mb-4">
         <h6 class="card-header">Quand la paire est <strong>Positive</strong> </h6>
         <div class="card-body">
-          <h6 class="card-title">Les Moyennes </h6>
-
+          <h6 class="card-title">Les spreads <nz-tag nzColor="green"> {{isFor}} $</nz-tag> </h6>
           <nz-list nzBordered nzSize="small">
-            <nz-list-item >  <nz-divider nzText="Les spreads"></nz-divider> </nz-list-item>
 
-
-            <nz-list-item let="">
+            <nz-list-item>
               <nz-list-item-meta
-                nzTitle="Spread en quote pour {{isFor}}"
+                nzTitle="Profit moyen en quote"
                 nzDescription="Représente les gains moyens en {{pair.quote.name}} pour {{isFor}}$ de {{pair.base.name}} acheté puis revendu"
               ></nz-list-item-meta>
               <kbd>{{pair[isFor].spreadMoyen_quote | exponentiel : 7}} {{pair.quote.name}}</kbd>
@@ -103,32 +100,32 @@
 
             <nz-list-item>
               <nz-list-item-meta
-                nzTitle="Spread moyen en $ pour {{isFor}} "
-                nzDescription="Représente les gains moyens {{isFor}} $ investis"
+                nzTitle="Profits max en 1 coup"
+                nzDescription="Représente les gains max $ gagnés en 1 coup"
               ></nz-list-item-meta>
-              <nz-tag nzColor="blue">{{pair[isFor].spreadMoyen_usd | exponentiel : 2}} $</nz-tag>
+              <nz-tag nzColor="blue">{{pair[isFor].hightestSpread_usd | exponentiel : 2}} $</nz-tag>
             </nz-list-item>
 
             <nz-list-item>
               <nz-list-item-meta
-                nzTitle="Profit max en 1 coup"
-                nzDescription="Représente les gains max $ gagnés en 1 coup"
+                nzTitle="Profits moyen en usd "
+                nzDescription="Représente les gains moyens en dollar pour {{isFor}} $ investis"
               ></nz-list-item-meta>
               <span nz-typography>
                 <i class="mr-2" nz-icon nzType="thunderbolt" nzTheme="twotone"></i>
-                <strong style="color: #0099ff ; font-size: 100%">{{pair[isFor].hightestSpread_usd | exponentiel : 2}} $</strong>
+                <strong style="color: #0099ff ; font-size: 100%">{{pair[isFor].spreadMoyen_usd | exponentiel : 2}} $</strong>
               </span>
             </nz-list-item>
-
-            <nz-list-item >  <nz-divider nzText="Les volumes"></nz-divider> </nz-list-item>
-
-
+          </nz-list>
+          <br>
+          <h6 class="card-title">Le volume <nz-tag nzColor="green"> {{isFor}} $</nz-tag> </h6>
+          <nz-list nzBordered nzSize="small">
             <nz-list-item>
               <nz-list-item-meta
-                nzTitle="Volume moyen {{isFor}}$ en {{pair.base.name}}"
+                nzTitle="Volume moyen {{pair.base.name}}"
                 nzDescription="Représente la qté moyenne de {{pair.base.name}} pour {{isFor}}$ "
               ></nz-list-item-meta>
-              <kbd>{{pair[isFor].volumeMoyen_base | exponentiel : 7}} {{pair.base.name}}</kbd>
+              <mark>{{pair[isFor].volumeMoyen_base | exponentiel : 7}} {{pair.base.name}}</mark>
             </nz-list-item>
 
           </nz-list>
@@ -232,7 +229,10 @@
                       </nz-badge>
                     </app-report-symbols>
                   </td>
-                  <td style="color: green">{{ symb[isFor].buy.prixMoyen_quote | exponentiel : 4}} {{pair.quote.name}}</td>
+                  <td style="color: green">
+                    <ng-container *ngIf="!!symb[isFor].buy.prixMoyen_quote" > {{ symb[isFor].buy.prixMoyen_quote | exponentiel : 4}} {{pair.quote.name}}</ng-container>
+                    <ng-container *ngIf="!symb[isFor].buy.prixMoyen_quote" >No data</ng-container>
+                  </td>
                   <td>
                     <nz-tag nzColor="blue">
                       <strong>{{ symb[isFor].buy.bestMarketFreq }}</strong> / {{ symb[isFor].buy.okFreq +  symb[isFor].buy.notEnoughVolFreq + symb[isFor].buy.notDataFreq }}
@@ -278,7 +278,10 @@
                     </a>
                   </td>
                   <td><nz-tag nzColor="blue"><strong>{{ symb[isFor].sell.bestMarketFreq }}</strong> / {{ symb[isFor].sell.okFreq +  symb[isFor].sell.notEnoughVolFreq + symb[isFor].sell.notDataFreq }}</nz-tag></td>
-                  <td style="color: #ffbb00">{{ symb[isFor].sell.prixMoyen_quote | exponentiel : 4}} {{pair.quote.name}}</td>
+                  <td style="color: #ffbb00">
+                    <ng-container *ngIf="!!symb[isFor].sell.prixMoyen_quote" > {{ symb[isFor].sell.prixMoyen_quote | exponentiel : 4}} {{pair.quote.name}}</ng-container>
+                    <ng-container *ngIf="!symb[isFor].sell.prixMoyen_quote" >No data</ng-container>
+                  </td>
                   <td style="text-align: right">
                     <app-report-symbols  (afterUpdate)="onUpdate()" class="mr-2" *ngIf="pair" [symbols]="[symb]" [selectMultiple]="false" >
                       <nz-badge [nzDot]="symb.exclusion.severity > 0"  [nzStyle]="{ backgroundColor: colors[symb.exclusion.severity]}">

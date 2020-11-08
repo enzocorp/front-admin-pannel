@@ -21,7 +21,7 @@
 
     <div class="mt-2"><strong style="font-size: 0.9rem" nz-typography >Pour :</strong></div>
     <aside class="mt-2">
-      <nz-radio-group nzName="isFor" [(ngModel)]="isFor">
+      <nz-radio-group nzName="isFor" [(ngModel)]="isFor" (ngModelChange)="onIsForChange($event)">
         <label nz-radio-button nzValue="for1k">1000 $</label>
         <label nz-radio-button nzValue="for15k">15 000 $</label>
         <label nz-radio-button nzValue="for30k">30 000 $</label>

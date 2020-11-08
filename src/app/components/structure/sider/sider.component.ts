@@ -11,6 +11,7 @@ export class SiderComponent implements OnInit {
   constructor(private configServ : ConfigService) { }
   openMap: { [name: string]: boolean } = {
     compte: false,
+    home: false,
     pairs: false,
     markets: false,
     kalculator: false,

@@ -21,6 +21,10 @@ export class HeaderComponent implements OnInit {
     this.cryptoServ.coinapiSubject.subscribe(
       coinApiInfo => this.coinapi = coinApiInfo
     )
+    this.refreshCoinapi()
+  }
+
+  refreshCoinapi(){
     this.cryptoServ.get_coinapi()
   }
 

@@ -1,11 +1,14 @@
 <nz-header [ngClass]="{light : !config.theme }">
   <div class="d-flex justify-content-between align-items-center" style="height: 100%; width: 100%;">
-    <div><nz-tag>
-      Requêtes restantes : <strong>{{coinapi?.remaining}}</strong>/{{coinapi?.limit}}
-    </nz-tag>
-      <nz-tag>
-        Reset le <strong>{{coinapi?.dateReflow | date : 'dd MMM yyyy H:mm'}}</strong>
-      </nz-tag></div>
+
+    <div>
+      <nz-tag  style="cursor: pointer;" (click)="refreshCoinapi()">
+        Requêtes restantes : <strong>{{coinapi?.remaining}}</strong>/{{coinapi?.limit}}
+      </nz-tag>
+      <nz-tag>Reset le <strong>{{coinapi?.dateReflow | date : 'dd MMM yyyy Hнmm'}}</strong></nz-tag>
+    </div>
+
     <button class="d-inline-block" nz-button nzType="primary" nzShape="round"><i nz-icon nzType="user-switch"></i>Connexion</button>
+
   </div>
 </nz-header>

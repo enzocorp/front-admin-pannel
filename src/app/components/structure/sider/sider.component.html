@@ -1,6 +1,13 @@
 <nz-sider nzCollapsible [nzTheme]="config.theme ? 'dark' : 'light' " [(nzCollapsed)]="config.collapsed" >
   <div routerLink="/home" style="cursor: pointer;" routerLinkActive="active" class="logo"></div>
   <ul nz-menu [nzTheme]="config.theme ? 'dark' : 'light' " nzMode="inline">
+
+    <li routerLink="/home" nz-menu-item nzMatchRouter
+        (click)="openHandler('home')">
+      <i nz-icon nzType="home"></i>
+      <span >Accueil</span>
+    </li>
+
     <li nz-submenu nzTitle="Mon compte" nzIcon="user"
         [(nzOpen)]="openMap.compte" (nzOpenChange)="openHandler('compte')">
       <ul>
