@@ -24,9 +24,7 @@ export class CryptoService {
   }
 
   get_coinapi() : void{
-    this.http.get<{data : Global['coinapi']}>(`${this.url}/coinapi`).subscribe(
-      ({data} : {data : any}) => this.emmitCoinapi( data.coinapi)
-    )
+    this.http.get<{data : Global['coinapi']}>(`${this.url}/coinapi`).subscribe()
   }
 
   getSeverities() : Subscribable<{data : Severity[]}> {

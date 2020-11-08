@@ -11,7 +11,6 @@ import { tap} from "rxjs/operators";
 import {Injectable} from "@angular/core";
 import {CryptoService} from "../http/crypto.service";
 
-
 @Injectable ()
 export class CoinapiInterceptor implements HttpInterceptor{
   constructor(
@@ -22,6 +21,7 @@ export class CoinapiInterceptor implements HttpInterceptor{
     return next.handle(req).pipe(
       tap(res => {
         if (res instanceof HttpResponse) {
+          console.log(res.body)
           if(res.body?.coinapi){
             this.cryptoServ.emmitCoinapi(res.body.coinapi)
           }

@@ -142,6 +142,12 @@ export class PairsComponent implements OnInit,OnDestroy {
     this.router.navigate([str], {relativeTo : this.activatedRoute ,queryParams : {request}}).then()
   }
 
+  onReset(){
+    this.pairsService.resetMoyennes().subscribe(
+      resp => this.onUpdate()
+    )
+  }
+
   ngOnDestroy() {
     this.subscription.unsubscribe()
   }

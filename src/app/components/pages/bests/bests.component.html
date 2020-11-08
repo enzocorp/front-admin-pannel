@@ -48,7 +48,7 @@
   [(index)]="pagination.index"
 ></app-pagination>
 
-<p class="mt-3">Dernière recherhce : <span class="font-weight-bold" *ngIf="bests">{{bests[0]?.date | date : 'medium'}}</span></p>
+<p class="mt-3">Dernière recherche : <span class="font-weight-bold" *ngIf="bests">{{bests[0]?.date | date : 'medium'}}</span></p>
 
 <nz-spin [nzSpinning]="loading">
   <nz-list nzGrid class="mt-5">

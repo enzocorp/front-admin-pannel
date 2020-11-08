@@ -2,6 +2,9 @@
 <button class="mb-3" nz-button nzType="primary" [nzLoading]="loading">
   <i nz-icon nzType="search"></i>Pairs trouvés <span class="badge badge-light ml-3">{{pagination.total}}</span>
 </button>
+<button (click)="onReset()" class="mb-3 ml-5" nz-button nzType="danger">
+  <i nz-icon nzType="retweet"></i>Réinitialiser les moyennes
+</button>
 <div>
   <div class="mb-3">
     <app-filters-pairs (isForChange)="isFor = $event" (onUpdate)="onUpdate()" [(request)]="request"></app-filters-pairs>
