@@ -69,8 +69,8 @@ import { ReportMarketsComponent } from './components/modules/report-markets/repo
 import { FormReportMarketsComponent } from './components/modules/report-markets/form-report-markets/form-report-markets.component';
 import { ReportAssetsComponent } from './components/modules/report-assets/report-assets.component';
 import { FormReportAssetsComponent } from './components/modules/report-assets/form-report-assets/form-report-assets.component';
-import { ReportSymbolsComponent } from './components/modules/report-Symbols/report-Symbols.component';
-import { FormReportSymbolsComponent } from './components/modules/report-Symbols/form-report-Symbols/form-report-Symbols.component';
+import { ReportSymbolsComponent } from './components/modules/report-symbols/report-symbols.component';
+import { FormReportSymbolsComponent } from './components/modules/report-symbols/form-report-symbols/form-report-Symbols.component';
 
 registerLocaleData(fr);
 
