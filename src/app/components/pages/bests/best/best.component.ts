@@ -2,12 +2,14 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Best} from "../../../../models/best";
 import {Pair} from "../../../../models/pair";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Subscription} from "rxjs";
+import {BehaviorSubject, Subject, Subscription} from "rxjs";
 import {Market} from "../../../../models/market";
 import {MarketsService} from "../../../../services/http/markets.service";
 import {BestsService} from "../../../../services/http/bests.service";
 import {PairsService} from "../../../../services/http/pairs.service";
 import {Asset} from "../../../../models/asset";
+import {ConfigService} from "../../../../services/autre/config.service";
+import {graphConfig} from "../../../../models/global";
 
 interface exclusion {
   market : string
@@ -37,13 +39,15 @@ export class BestComponent implements OnInit, OnDestroy {
               private pairsServ : PairsService,
               private activatedRoute : ActivatedRoute,
               private router : Router,
+              private configServ : ConfigService
   ) { }
 
+  chartBestSubject = new BehaviorSubject<BestPlus>(undefined)
+  graphConfig : graphConfig
   pair : Pair
   best : BestPlus
   visible : boolean = false
   body : exclusion
-  isFor : 'for1k'|'for15k'|'for30k' = "for1k"
   requestBest: any = [
     {$match: {name : this.activatedRoute.snapshot.paramMap.get('id')}},
     {$lookup: {from: "pairs", localField: "pair", foreignField: "name", as: "pair"}},
@@ -53,38 +57,29 @@ export class BestComponent implements OnInit, OnDestroy {
     {$unwind : "$base"},
     {$unwind : "$quote"},
   ]
-  marketsBuy : {
-    for1k : Market
-    for15k : Market
-    for30k : Market
-  } = {for1k: undefined, for15k : undefined, for30k : undefined}
-  marketsSell : {
-    for1k : Market
-    for15k : Market
-    for30k : Market
-  } = {for1k: undefined, for15k : undefined, for30k : undefined}
+  marketsBuy : Market
+  marketsSell : Market
 
   ngOnInit(): void {
+
     this.onUpdate()
   }
 
   onUpdate(){
+    this.subscription.add(this.configServ.isforSubject.subscribe(graphconf => this.graphConfig = graphconf) )
     this.bestsServ.getBests(this.requestBest).subscribe(
       ({data} : {data : [BestPlus]} = null) => {
         this.visible = true
         this.best = data[0]
-        const iter : ['for1k','for15k','for30k'] = ['for1k','for15k','for30k']
+        this.chartBestSubject.next(this.best)
         let setMarkets = new Set<string>()
-        iter.forEach(isFor => {
-          setMarkets.add(this.best[isFor].buy.market)
-          setMarkets.add(this.best[isFor].sell.market)
-        })
+        setMarkets.add(this.best.isfor[this.graphConfig.isfor].buy.market)
+        setMarkets.add(this.best.isfor[this.graphConfig.isfor].sell.market)
+
         this.marketsServ.getMarkets([{$match: {name: {$in: [...setMarkets]}}}]).subscribe(
           ({data : markets} : {data : Market[]}) => {
-            iter.forEach(isFor => {
-              this.marketsBuy[isFor] = markets.find(market => market.name === this.best[isFor].buy.market)
-              this.marketsSell[isFor] = markets.find(market => market.name === this.best[isFor].sell.market)
-            })
+            this.marketsBuy = markets.find(market => market.name === this.best.isfor[this.graphConfig.isfor].buy.market)
+            this.marketsSell = markets.find(market => market.name === this.best.isfor[this.graphConfig.isfor].sell.market)
           }
         )
       }

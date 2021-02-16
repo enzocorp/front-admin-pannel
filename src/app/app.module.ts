@@ -33,7 +33,7 @@ import {
   NzPopconfirmModule,
   NzPopoverModule,
   NzRadioModule,
-  NzSelectModule,
+  NzSelectModule, NzSliderModule,
   NzSpinModule,
   NzStatisticModule,
   NzSwitchModule, NzTableModule,
@@ -41,6 +41,7 @@ import {
   NzTransferModule,
   NzTypographyModule
 } from "ng-zorro-antd";
+
 import { ReplaceByPipe } from './services/pipes/replace-by.pipe';
 import { RegisterComponent } from './components/auth/register/register.component';
 import { LoginComponent } from './components/auth/login/login.component';
@@ -71,6 +72,11 @@ import { ReportAssetsComponent } from './components/modules/report-assets/report
 import { FormReportAssetsComponent } from './components/modules/report-assets/form-report-assets/form-report-assets.component';
 import { ReportSymbolsComponent } from './components/modules/report-symbols/report-symbols.component';
 import { FormReportSymbolsComponent } from './components/modules/report-symbols/form-report-symbols/form-report-symbols.component';
+import { IsforSliderComponent } from './components/modules/isfor-slider/isfor-slider.component';
+import {ChartsModule} from "ng2-charts";
+import { ChartPodiumComponent } from './components/pages/bests/chart-podium/chart-podium.component';
+import { ChartBestComponent } from './components/pages/bests/best/chart-best/chart-best.component';
+
 
 registerLocaleData(fr);
 
@@ -106,7 +112,10 @@ registerLocaleData(fr);
     ReportAssetsComponent,
     FormReportAssetsComponent,
     ReportSymbolsComponent,
-    FormReportSymbolsComponent
+    FormReportSymbolsComponent,
+    IsforSliderComponent,
+    ChartPodiumComponent,
+    ChartBestComponent
   ],
   imports: [
     BrowserModule,
@@ -146,7 +155,12 @@ registerLocaleData(fr);
     NzRadioModule,
     NzNotificationModule,
     NzTableModule,
-    NzAlertModule
+    NzAlertModule,
+    NzSliderModule,
+
+    //Chart.js
+    ChartsModule
+
   ],
   providers: [
     { provide: NZ_I18N, useValue: fr_FR },

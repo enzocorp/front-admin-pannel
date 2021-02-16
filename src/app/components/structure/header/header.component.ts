@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {ConfigService} from "../../../services/autre/config.service";
-import {Global} from "../../../models/global";
+import {Global, graphConfig} from "../../../models/global";
 import {CryptoService} from "../../../services/http/crypto.service";
 
 @Component({
@@ -14,18 +14,16 @@ export class HeaderComponent implements OnInit {
               private cryptoServ : CryptoService) { }
   config : {collapsed: boolean, theme : boolean}
   coinapi : Global['coinapi']
+
   ngOnInit(): void {
-    this.configServ.configSubject.subscribe(
-      conf => this.config = conf
-    )
-    this.cryptoServ.coinapiSubject.subscribe(
-      coinApiInfo => this.coinapi = coinApiInfo
-    )
+    this.configServ.configSubject.subscribe(conf => this.config = conf)
+    this.cryptoServ.coinapiSubject.subscribe(coinApiInfo => this.coinapi = coinApiInfo)
     this.refreshCoinapi()
   }
 
   refreshCoinapi(){
     this.cryptoServ.get_coinapi()
   }
+
 
 }

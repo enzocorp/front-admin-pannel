@@ -14,20 +14,10 @@
     <br>
     <nz-switch nzSize="small" [ngModel]="true" nzCheckedChildren="décroissant" nzUnCheckedChildren="croissant" (click)="onChangeOrder()"></nz-switch>
     <br>
-    <nz-radio-group nzName="radiogroup" [(ngModel)]="sort.key" (ngModelChange)="makeUpdate()">
-        <label nz-radio nzValue="{{isFor + '.spread_usd'}}" class="mr-2">spread($)</label>
-        <label nz-radio nzValue="pair" class="mr-2">nom</label>
+    <nz-radio-group nzName="radiogroup" [(ngModel)]="checkBoxValue" (ngModelChange)="makeUpdate()">
+        <label nz-radio nzValue="__isfor__" class="mr-2">spread($)</label>
+        <label nz-radio nzValue="__pair__" class="mr-2">nom</label>
     </nz-radio-group>
-
-    <div class="mt-2"><strong style="font-size: 0.9rem" nz-typography >Pour :</strong></div>
-    <aside class="mt-2">
-      <nz-radio-group nzName="isFor" [(ngModel)]="isFor" (ngModelChange)="onIsForChange($event)">
-        <label nz-radio-button nzValue="for1k">1000 $</label>
-        <label nz-radio-button nzValue="for15k">15 000 $</label>
-        <label nz-radio-button nzValue="for30k">30 000 $</label>
-      </nz-radio-group>
-    </aside>
-
   </div>
 </section>
 

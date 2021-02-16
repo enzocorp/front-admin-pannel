@@ -1,8 +1,11 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Best} from "../../../models/best";
-import {Subscription} from "rxjs";
+import {Subject, Subscription} from "rxjs";
 import {BestsService} from "../../../services/http/bests.service";
 import {Paginate} from "../../../models/pagination";
+import {graphConfig} from "../../../models/global";
+import {ConfigService} from "../../../services/autre/config.service";
+import {Podium} from "../../../models/podium";
 
 @Component({
   selector: 'app-bests',
@@ -12,11 +15,25 @@ import {Paginate} from "../../../models/pagination";
 export class BestsComponent implements OnInit, OnDestroy{
 
 
+
+  constructor(
+    private bestService : BestsService,
+    private configServ : ConfigService
+  ) { }
+
   private subscription : Subscription = new Subscription()
+  not = {
+    enought_volume : null,
+    spread_quote : undefined,
+    data_orderbook : undefined,
+    baseusd_infos : undefined
+  }
+  chartPodiumSubject = new Subject<Podium[]>()
   totalCollectionBest = undefined
   bests : Best[] = []
   groupId : string = null
   loading : boolean = false
+  graphCongig : graphConfig
   pagination : {total : number, paginate : Paginate, index : number} = {
     total : null,
     paginate : {limit : 30, skip : 0 },
@@ -27,18 +44,21 @@ export class BestsComponent implements OnInit, OnDestroy{
     skip : this.pagination.paginate.skip,
     limit : this.pagination.paginate.limit,
     0 : {$match : {}},
-    1 : {$sort : {"for15k.spread_usd" : -1}},
   }
 
-  constructor(
-    private bestService : BestsService,
-  ) { }
 
   ngOnInit(): void {
-    this.subscription.add(this.bestService.bestsSubject.subscribe(
-      (bests : Best[])=> {
-        this.bests = bests
-      }))
+    this.subscription.add(this.bestService.bestsSubject.subscribe((bests : Best[])=> {
+      this.bests = bests
+      if(bests[0] && bests[0].groupId){
+        this.bestService.getPodium(bests[0].groupId).subscribe(({data}) => this.chartPodiumSubject.next(data))
+      }
+
+    } ))
+    this.subscription.add(this.configServ.isforSubject.subscribe( graphconf => {
+      this.graphCongig = graphconf
+    } ))
+    this.request[1] = {$sort : {[`isfor.${this.graphCongig.isfor}.spread_usd`] : -1}}
     this.getLatest()
     this.getTotalDocs()
   }
@@ -49,7 +69,8 @@ export class BestsComponent implements OnInit, OnDestroy{
       this.request = {
         ...this.request,
         ...this.pagination.paginate,
-         0 : {$match : { ...this.request[0].$match, groupId : this.groupId }} }
+         0 : {$match : { ...this.request[0].$match, groupId : this.groupId }}
+      }
       this.bestService.getBests(this.request).subscribe(
         (resp) => {
           this.bestService.emmitBests(resp?.data || [])
@@ -58,19 +79,20 @@ export class BestsComponent implements OnInit, OnDestroy{
         },
         () => null,
         ()=> this.loading = false
-      )}
+      )
+    }
   }
+
 
   calculBests(){
     this.loading = true
-    this.bestService.calculBests().subscribe(
-      () => {
+    this.bestService.calculBests().subscribe({
+      next : () => {
         this.getLatest()
         this.getTotalDocs()
       },
-      null,
-      ()=>this.loading = false
-    )
+      complete : ()=> this.loading = false
+    })
   }
 
   getTotalDocs(){
@@ -79,7 +101,7 @@ export class BestsComponent implements OnInit, OnDestroy{
     )
   }
 
-  resetBest(){
+  resetBests(){
     this.bestService.resetBests().subscribe(()=> {
       this.getTotalDocs()
       this.onUpdate()

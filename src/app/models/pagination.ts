@@ -8,8 +8,3 @@ export interface MongoPaginate extends Paginate{
   addFields? : Object
 }
 
-export interface MongoPaginatev2 extends Paginate{
-  aggregate : Array<Record<string,Object>>
-  facet : Array<Record<string,Object>>
-}
-

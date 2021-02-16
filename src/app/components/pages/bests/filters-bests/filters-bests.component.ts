@@ -1,24 +1,30 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Paginate} from "../../../../models/pagination";
 import {debounceTime} from "rxjs/operators";
+import {Subscription} from "rxjs";
+import {ConfigService} from "../../../../services/autre/config.service";
+import {graphConfig} from "../../../../models/global";
 
 @Component({
   selector: 'app-filters-bests',
   templateUrl: './filters-bests.component.html',
   styleUrls: ['./filters-bests.component.scss']
 })
-export class FiltersBestsComponent implements OnInit {
+export class FiltersBestsComponent implements OnInit,OnDestroy {
 
   constructor(
     private formBuilder : FormBuilder,
+    private configServ : ConfigService
   ) { }
 
+  private subscription : Subscription = new Subscription()
   filterform : FormGroup
   match : any = {}
   searchMod : 'startWith'| 'endWith' = 'startWith'
-  isFor : 'for1k' | 'for15k' | 'for30k' = "for15k"
-  sort : { key : string, order : number } = { key : `${this.isFor}.spread_usd`, order : -1}
+  isfor : number
+  sort : { key : string, way : number }
+  checkBoxValue : '__isfor__' | '__pair__' = "__isfor__"
   @Output() isForChange : EventEmitter<string> = new EventEmitter<string>();
 
   requestValue : Paginate&Record<number,any>
@@ -36,16 +42,21 @@ export class FiltersBestsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.subscription.add(this.configServ.isforSubject.subscribe((graph: graphConfig)=> {
+      this.isfor = graph.isfor
+      if (this.sort)
+        this.makeUpdate()
+    } ))
+    this.sort = { key : `isfor.${this.isfor}.spread_usd`, way : -1}
     this.initForms()
     this.subscribeFilters()
-    this.isForChange.emit(this.isFor)
   }
 
   editRequest () {
     this.request = {
       ...this.request,
       0 : { $match: this.match},
-      1 : { $sort : {[this.sort.key] : this.sort.order}},
+      1 : { $sort : {[this.sort.key] : this.sort.way}},
     }
   }
 
@@ -60,22 +71,25 @@ export class FiltersBestsComponent implements OnInit {
   }
 
   makeUpdate(){
+    this.updateChecboxValues()
     this.editRequest()
     this.onUpdate.emit()
   }
 
+  updateChecboxValues(){
+    let key : string = undefined
+    if(this.checkBoxValue === '__pair__')
+      key = 'pair'
+    else if(this.checkBoxValue === "__isfor__")
+      key = `isfor.${this.isfor}.spread_usd`
+    this.sort.key = key
+  }
+
   onChangeOrder(){
-    this.sort.order *= - 1
+    this.sort.way *= - 1
     this.makeUpdate()
   }
 
-  onIsForChange(isFor = this.isFor){
-    let str = this.sort.key
-    if(/for[\d]+?k/.test(str))
-      this.sort.key = str.replace(/for[\d]+?k/, isFor)
-    this.isForChange.emit(isFor)
-    this.makeUpdate()
-  }
 
   subscribeFilters(){
     //Name
@@ -87,5 +101,10 @@ export class FiltersBestsComponent implements OnInit {
       else if(this.searchMod === 'endWith') this.match['name']  = {$regex:  `${name}$`, $options: 'i'}
       this.makeUpdate()
     })
+  }
+
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe()
   }
 }

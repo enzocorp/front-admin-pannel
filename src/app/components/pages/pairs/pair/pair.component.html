@@ -9,14 +9,6 @@
   <nz-spin [nzSpinning]="pair === undefined" >
     <div *ngIf="pair">
 
-      <aside class="mt-2 mb-3">
-         <nz-radio-group nzName="isFor" [(ngModel)]="isFor" (ngModelChange)="makeList()" >
-          <label nz-radio-button nzValue="for1k">1000 $</label>
-          <label nz-radio-button nzValue="for15k">15 000 $</label>
-          <label nz-radio-button nzValue="for30k">30 000 $</label>
-        </nz-radio-group>
-      </aside>
-
       <div *ngIf="pair.exclusion.severityPlus.severity" class="card mb-4" [ngStyle]="{borderColor : colorsv2[pair.exclusion.severityPlus.severity]}">
         <div class="card-header" [ngStyle]="{borderColor : colorsv2[pair.exclusion.severityPlus.severity]}">
 
@@ -48,54 +40,50 @@
         </div>
       </div>
 
+      <div style="width: 90%; margin: auto; padding: 5% 0">
+        <app-isfor-slider [showTooltip]="false"> </app-isfor-slider>
+      </div>
+
       <div class="card mb-4">
-        <h6 class="card-header">Frequences</h6>
+        <h6 class="card-header">Frequences <nz-tag nzColor="default">Pour {{isfor}} $</nz-tag> </h6>
         <div class="card-body">
           <ul class="list-group">
             <li style="color: #0099ff" class="list-group-item d-flex justify-content-between align-items-center">
               <span>A obtenu le <strong>meilleur Spread</strong></span>
-              <nz-tag nzColor="#0099ff">{{pair[isFor].isBestFreq}}</nz-tag>
+              <nz-tag nzColor="#0099ff">{{pair.isfor[isfor].isBestFreq}}</nz-tag>
             </li>
             <li style="color: green" class="list-group-item d-flex justify-content-between align-items-center">
              <span> A obtenu un <strong>spread Positif</strong></span>
-              <nz-tag nzColor="green">{{pair[isFor].positiveFreq}}</nz-tag>
+              <nz-tag nzColor="green">{{pair.isfor[isfor].positiveFreq}}</nz-tag>
             </li>
             <li style="color: orange" class="list-group-item d-flex justify-content-between align-items-center">
               <span>A obtenu un <strong>spread Négatif</strong></span>
-              <nz-tag nzColor="orange">{{pair[isFor].negativeFreq}}</nz-tag>
+              <nz-tag nzColor="orange">{{pair.isfor[isfor].negativeFreq}}</nz-tag>
             </li>
             <li class="list-group-item d-flex justify-content-between align-items-center">
               <span>A eu un <strong> volume insuffisant</strong></span>
-              <nz-tag nzColor="default">{{pair[isFor].notEnoughtVolFreq}}</nz-tag>
+              <nz-tag nzColor="default">{{pair.isfor[isfor].notEnoughtVolFreq}}</nz-tag>
             </li>
             <li style="color: #ff0000" class="list-group-item d-flex justify-content-between align-items-center">
               <span>A eu une <strong> erreur de calcul</strong></span>
-              <nz-tag nzColor="#ff0000">{{pair[isFor].notEnoughtVolFreq}}</nz-tag>
+              <nz-tag nzColor="#ff0000">{{pair.isfor[isfor].errorFreq}}</nz-tag>
             </li>
           </ul>
         </div>
       </div>
 
-      <aside class="mt-2 mb-3">
-         <nz-radio-group nzName="isFor" [(ngModel)]="isFor" (ngModelChange)="makeList()" >
-          <label nz-radio-button nzValue="for1k">1000 $</label>
-          <label nz-radio-button nzValue="for15k">15 000 $</label>
-          <label nz-radio-button nzValue="for30k">30 000 $</label>
-        </nz-radio-group>
-      </aside>
-
       <div class="card mb-4">
         <h6 class="card-header">Quand la paire est <strong>Positive</strong> </h6>
         <div class="card-body">
-          <h6 class="card-title">Les spreads <nz-tag nzColor="green"> {{isFor}} $</nz-tag> </h6>
+          <h6 class="card-title">Les spreads <nz-tag nzColor="default">Pour {{isfor}} $</nz-tag> </h6>
           <nz-list nzBordered nzSize="small">
 
             <nz-list-item>
               <nz-list-item-meta
                 nzTitle="Profit moyen en quote"
-                nzDescription="Représente les gains moyens en {{pair.quote.name}} pour {{isFor}}$ de {{pair.base.name}} acheté puis revendu"
+                nzDescription="Représente les gains moyens en {{pair.quote.name}} pour {{isfor}}$ de {{pair.base.name}} acheté puis revendu"
               ></nz-list-item-meta>
-              <kbd>{{pair[isFor].spreadMoyen_quote | exponentiel : 7}} {{pair.quote.name}}</kbd>
+              <kbd>{{pair.isfor[isfor].spreadMoyen_quote | exponentiel : 7}} {{pair.quote.name}}</kbd>
             </nz-list-item>
 
             <nz-list-item>
@@ -103,42 +91,34 @@
                 nzTitle="Profits max en 1 coup"
                 nzDescription="Représente les gains max $ gagnés en 1 coup"
               ></nz-list-item-meta>
-              <nz-tag nzColor="blue">{{pair[isFor].hightestSpread_usd | exponentiel : 2}} $</nz-tag>
+              <nz-tag nzColor="blue">{{pair.isfor[isfor].hightestSpread_usd | exponentiel : 2}} $</nz-tag>
             </nz-list-item>
 
             <nz-list-item>
               <nz-list-item-meta
                 nzTitle="Profits moyen en usd "
-                nzDescription="Représente les gains moyens en dollar pour {{isFor}} $ investis"
+                nzDescription="Représente les gains moyens en dollar pour {{isfor}} $ investis"
               ></nz-list-item-meta>
               <span nz-typography>
                 <i class="mr-2" nz-icon nzType="thunderbolt" nzTheme="twotone"></i>
-                <strong style="color: #0099ff ; font-size: 100%">{{pair[isFor].spreadMoyen_usd | exponentiel : 2}} $</strong>
+                <strong style="color: #0099ff ; font-size: 100%">{{pair.isfor[isfor].spreadMoyen_usd | exponentiel : 2}} $</strong>
               </span>
             </nz-list-item>
           </nz-list>
           <br>
-          <h6 class="card-title">Le volume <nz-tag nzColor="green"> {{isFor}} $</nz-tag> </h6>
+          <h6 class="card-title">Le volume <nz-tag nzColor="default">Pour {{isfor}} $</nz-tag>  </h6>
           <nz-list nzBordered nzSize="small">
             <nz-list-item>
               <nz-list-item-meta
                 nzTitle="Volume moyen {{pair.base.name}}"
-                nzDescription="Représente la qté moyenne de {{pair.base.name}} pour {{isFor}}$ "
+                nzDescription="Représente la qté moyenne de {{pair.base.name}} pour {{isfor}}$ "
               ></nz-list-item-meta>
-              <mark>{{pair[isFor].volumeMoyen_base | exponentiel : 7}} {{pair.base.name}}</mark>
+              <mark>{{pair.isfor[isfor].volumeMoyen_base | exponentiel : 7}} {{pair.base.name}}</mark>
             </nz-list-item>
 
           </nz-list>
         </div>
       </div>
-
-      <aside class="mt-2 mb-3">
-         <nz-radio-group nzName="isFor" [(ngModel)]="isFor" (ngModelChange)="makeList()" >
-          <label nz-radio-button nzValue="for1k">1000 $</label>
-          <label nz-radio-button nzValue="for15k">15 000 $</label>
-          <label nz-radio-button nzValue="for30k">30 000 $</label>
-        </nz-radio-group>
-      </aside>
 
       <div class="card">
         <h6 class="card-header">Les Markets de cette pair </h6>
@@ -184,21 +164,27 @@
           </ng-container>
 
         </div>
-        <nz-divider nzText="Classement des markets pour la pair {{pair.name}}"></nz-divider>
+
+
+<!--Classement des markets de la pair pour l'achat et la vente-->
+        <h5 style="text-align: center">Classement des markets pour la pair {{pair.name}} <nz-tag nzColor="default">Pour {{isfor}} $</nz-tag> </h5>
         <br>
 
+        <!--Le systeme de trie et filtres-->
         <nz-radio-group class="ml-3 mb-2" (ngModelChange)="makeList($event)" [(ngModel)]="list.sorter" nzName="radiogroup">
-          <label nz-radio nzValue="bestMarketFreq">Freq best pour {{pair.name}}</label>
-          <label nz-radio nzValue="prixMoyen_quote">Prix Moyen $</label>
-          <nz-switch nzSize="small" nzCheckedChildren="en services" nzUnCheckedChildren="tous" [(ngModel)]="list.maskOff" (ngModelChange)="makeList()"></nz-switch>
+          <label nz-radio nzValue="prixMoyen_quote">Prix Moyen($)</label>
+          <label nz-radio nzValue="bestMarketFreq">Freq Best [M] pour {{pair.name}}</label>
+          <nz-switch nzSize="small" nzCheckedChildren="en services" nzUnCheckedChildren="tous" [(ngModel)]="list.hideBanned" (ngModelChange)="makeList()"></nz-switch>
         </nz-radio-group>
 
+        <!--Systeme de recherche de markets-->
         <nz-input-group class="ml-3 mt-2 mb-3" style="width: 15rem" [nzSuffix]="suffixIconSearch">
           <input type="text" nz-input placeholder="Chercher un market" (ngModelChange)="makeList(undefined,$event)" [(ngModel)]="list.search" />
         </nz-input-group>
         <ng-template #suffixIconSearch><i nz-icon nzType="search"></i></ng-template>
 
           <div nz-row style="min-height: 500px">
+            <!--Tableau d'achat-->
             <aside nz-col [nzSpan]="12" >
               <h6 class="text-center m0" style="color: limegreen">ACHAT</h6>
               <nz-table #buyTablee
@@ -223,19 +209,19 @@
                 <tr  style="font-weight: 500" [ngClass]="{alertBan : symb.exclusion.isExclude || symb.market.exclusion.isExclude  }"
                      *ngFor="let symb of buyTablee.data; let i = index">
                   <td style="text-align: center">
-                    <app-report-symbols (afterUpdate)="onUpdate()" class="mr-2" *ngIf="pair" [symbols]="[symb]" [selectMultiple]="false" >
+                    <app-report-symbols (afterUpdate)="onUpdate(true)" class="mr-2" *ngIf="pair" [symbols]="[symb]" [selectMultiple]="false" >
                       <nz-badge [nzDot]="symb.exclusion.severity > 0"  [nzStyle]="{ backgroundColor: colors[symb.exclusion.severity]}">
                         <button nz-button nzShape="circle" nzSize="small"><i  nz-icon nzType="delete"></i></button>
                       </nz-badge>
                     </app-report-symbols>
                   </td>
                   <td style="color: green">
-                    <ng-container *ngIf="!!symb[isFor].buy.prixMoyen_quote" > {{ symb[isFor].buy.prixMoyen_quote | exponentiel : 4}} {{pair.quote.name}}</ng-container>
-                    <ng-container *ngIf="!symb[isFor].buy.prixMoyen_quote" >No data</ng-container>
+                    <ng-container *ngIf="!!symb.isfor[isfor].buy.prixMoyen_quote" > {{ symb.isfor[isfor].buy.prixMoyen_quote | exponentiel : 4}} {{pair.quote.name}}</ng-container>
+                    <ng-container *ngIf="!symb.isfor[isfor].buy.prixMoyen_quote" >No data</ng-container>
                   </td>
                   <td>
                     <nz-tag nzColor="blue">
-                      <strong>{{ symb[isFor].buy.bestMarketFreq }}</strong> / {{ symb[isFor].buy.okFreq +  symb[isFor].buy.notEnoughVolFreq + symb[isFor].buy.notDataFreq }}
+                      <strong>{{ symb.isfor[isfor].buy.bestMarketFreq }}</strong> / {{ symb.isfor[isfor].buy.okFreq +  symb.isfor[isfor].buy.notEnoughVolFreq + symb.isfor[isfor].buy.notDataFreq }}
                     </nz-tag>
                   </td>
                   <td style="text-align: right">
@@ -248,7 +234,7 @@
                 </tbody>
               </nz-table>
             </aside>
-
+            <!--Tableau de vente-->
             <aside nz-col [nzSpan]="12">
               <h6 class="text-center" style="color: #ffbb00">VENTE</h6>
               <nz-table #sellTable
@@ -277,13 +263,13 @@
                       <span class="badge badge-warning">{{i + 1 + paginate.pageSize * (paginate.pageIndex - 1)}}</span>&nbsp;{{ symb.market.name }}
                     </a>
                   </td>
-                  <td><nz-tag nzColor="blue"><strong>{{ symb[isFor].sell.bestMarketFreq }}</strong> / {{ symb[isFor].sell.okFreq +  symb[isFor].sell.notEnoughVolFreq + symb[isFor].sell.notDataFreq }}</nz-tag></td>
-                  <td style="color: #ffbb00">
-                    <ng-container *ngIf="!!symb[isFor].sell.prixMoyen_quote" > {{ symb[isFor].sell.prixMoyen_quote | exponentiel : 4}} {{pair.quote.name}}</ng-container>
-                    <ng-container *ngIf="!symb[isFor].sell.prixMoyen_quote" >No data</ng-container>
+                  <td><nz-tag nzColor="blue"><strong>{{ symb.isfor[isfor].sell.bestMarketFreq }}</strong> / {{ symb.isfor[isfor].sell.okFreq +  symb.isfor[isfor].sell.notEnoughVolFreq + symb.isfor[isfor].sell.notDataFreq }}</nz-tag></td>
+                  <td style="color: #ff9900">
+                    <ng-container *ngIf="!!symb.isfor[isfor].sell.prixMoyen_quote" > {{ symb.isfor[isfor].sell.prixMoyen_quote | exponentiel : 4}} {{pair.quote.name}}</ng-container>
+                    <ng-container *ngIf="!symb.isfor[isfor].sell.prixMoyen_quote" >No data</ng-container>
                   </td>
                   <td style="text-align: right">
-                    <app-report-symbols  (afterUpdate)="onUpdate()" class="mr-2" *ngIf="pair" [symbols]="[symb]" [selectMultiple]="false" >
+                    <app-report-symbols  (afterUpdate)="onUpdate(true)" class="mr-2" *ngIf="pair" [symbols]="[symb]" [selectMultiple]="false" >
                       <nz-badge [nzDot]="symb.exclusion.severity > 0"  [nzStyle]="{ backgroundColor: colors[symb.exclusion.severity]}">
                         <button nz-button nzShape="circle" nzSize="small"><i  nz-icon nzType="delete"></i></button>
                       </nz-badge>
@@ -293,27 +279,18 @@
                 </tbody>
               </nz-table>
             </aside>
-
-            <aside class="mt-2 mb-3">
-               <nz-radio-group nzName="isFor" [(ngModel)]="isFor" (ngModelChange)="makeList()" >
-                <label nz-radio-button nzValue="for1k">1000 $</label>
-                <label nz-radio-button nzValue="for15k">15 000 $</label>
-                <label nz-radio-button nzValue="for30k">30 000 $</label>
-              </nz-radio-group>
-            </aside>
         </div>
       </div>
 
     </div>
   </nz-spin>
-
 </nz-drawer>
 
 <!-------Templates----------->
 <ng-template #excludePair>
   <div *ngIf="pair">
     <span class="mr-3">{{pair.name}}</span>
-    <app-report-pairs (afterUpdate)="onUpdate()" class="mr-2" *ngIf="pair" [pairs]="[pair]" >
+    <app-report-pairs (afterUpdate)="onUpdate(true)" class="mr-2" *ngIf="pair" [pairs]="[pair]" >
       <nz-badge [nzDot]="pair.exclusion.severityPlus.severity > 0"  [nzStyle]="{ backgroundColor: colors[pair.exclusion.severityPlus.severity]}" >
         <button nz-button nzType="danger" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
       </nz-badge>

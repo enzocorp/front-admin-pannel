@@ -1,24 +1,31 @@
-import { Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime} from "rxjs/operators";
 import {Paginate} from "../../../../models/pagination";
+import {Subscription} from "rxjs";
+import {ConfigService} from "../../../../services/autre/config.service";
+import {graphConfig} from "../../../../models/global";
 
 @Component({
   selector: 'app-filters-pairs',
   templateUrl: './filters-pairs.component.html',
   styleUrls: ['./filters-pairs.component.scss']
 })
-export class FiltersPairsComponent implements OnInit {
+export class FiltersPairsComponent implements OnInit,OnDestroy {
 
   constructor(
     private formBuilder : FormBuilder,
-  ) { }
+    private configServ : ConfigService
+  ) {}
 
+
+  private subscription : Subscription = new Subscription()
+  isfor : number
   filterform : FormGroup
+  sorterValue : string = "pair.name"
   match : any = {}
   sort : { key : string, order : number } = { key : 'pair._id', order : 1}
   searchMod : 'startWith'| 'endWith' = 'startWith'
-  isFor : 'for1k' | 'for15k' | 'for30k' = "for15k"
   @Output() isForChange : EventEmitter<string> = new EventEmitter<string>();
 
   requestValue : Paginate&Record<number,Object>
@@ -38,7 +45,10 @@ export class FiltersPairsComponent implements OnInit {
   ngOnInit(): void {
     this.initForms()
     this.subscribeFilters()
-    this.isForChange.emit(this.isFor)
+    this.subscription.add(this.configServ.isforSubject.subscribe((graph: graphConfig)=> {
+      this.isfor = graph.isfor
+      this.makeUpdate()
+    } ))
   }
 
   editRequest () {
@@ -49,31 +59,46 @@ export class FiltersPairsComponent implements OnInit {
     }
   }
 
+  makeSorterKey(){
+    let key = undefined
+    switch (this.sorterValue){
+      case  "spreadMoyen_usd" :
+        key = `pair.isfor.${this.isfor}.spreadMoyen_usd`
+        break
+      case  "negativeFreq" :
+        key = `pair.isfor.${this.isfor}.negativeFreq`
+        break
+      case  "positiveFreq" :
+        key = `pair.isfor.${this.isfor}.positiveFreq`
+        break
+      case  "notEnoughtVolFreq" :
+        key = `pair.isfor.${this.isfor}.notEnoughtVolFreq`
+        break
+      case  "isBestFreq" :
+        key = `pair.isfor.${this.isfor}.isBestFreq`
+        break
+      default :
+        key = this.sorterValue
+    }
+    this.sort.key = key
+  }
+
   initForms (){
     this.filterform = this.formBuilder.group({
       pair : [null],
       banned : [null],
-      for1k : [null],
-      for15k : [null],
-      for30k : [null],
     })
   }
 
   makeUpdate(){
+    console.log('halo')
+    this.makeSorterKey()
     this.editRequest()
     this.onUpdate.emit()
   }
 
   onChangeOrder(){
     this.sort.order *= - 1
-    this.makeUpdate()
-  }
-
-  onIsForChange(isFor){
-    let str = this.sort.key
-    if(/for[\d]+?k/.test(str))
-      this.sort.key = str.replace(/for[\d]+?k/, isFor)
-    this.isForChange.emit(this.isFor)
     this.makeUpdate()
   }
 
@@ -100,7 +125,10 @@ export class FiltersPairsComponent implements OnInit {
 
         this.makeUpdate()
       })
+  }
 
+  ngOnDestroy() {
+    this.subscription.unsubscribe()
   }
 
 

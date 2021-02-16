@@ -1,0 +1,14 @@
+<div class="chart-wrapper">
+  <canvas *ngIf="best"
+          baseChart
+          [datasets]="lineChart.yData"
+          [labels]="lineChart.xLabels"
+          [options]="lineChartOptions"
+          [legend]="true"
+          chartType="line"
+          [plugins]="[]"
+  >
+  </canvas>
+  <label (ngModelChange)="onLogarithm()" nz-checkbox [ngModel]="false" >Echelle logarithmique</label>
+</div>
+

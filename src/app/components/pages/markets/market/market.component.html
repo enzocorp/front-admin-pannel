@@ -90,8 +90,8 @@
       <section>
         <div style="min-height: 500px">
           <aside>
-            <h6 class="text-center" style="color: #ffbb00">PAIRS</h6>
-
+            <h5 class="text-center" style="color: #ffb700">PAIRES <nz-tag nzColor="default">Pour {{isfor}} $</nz-tag></h5>
+            <br>
             <aside>
               <nz-radio-group class="ml-3 mb-2" (ngModelChange)="makeList($event)" [(ngModel)]="list.sorter" nzName="radiogroup">
                 <label nz-radio nzValue="bestMarketFreq">[M] est le Best</label>
@@ -107,13 +107,9 @@
               <ng-template #suffixIconSearch><i nz-icon nzType="search"></i></ng-template>
             </aside>
 
-            <aside class="mt-2 mb-3">
-              <nz-radio-group nzSize="small" nzName="isFor" [(ngModel)]="isFor" (ngModelChange)="makeList()" >
-                <label nz-radio-button nzValue="for1k">1000 $</label>
-                <label nz-radio-button nzValue="for15k">15 000 $</label>
-                <label nz-radio-button nzValue="for30k">30 000 $</label>
-              </nz-radio-group>
-            </aside>
+            <div style="width: 90%; margin: auto; padding: 3% 0">
+              <app-isfor-slider [showTooltip]="false"> </app-isfor-slider>
+            </div>
 
             <nz-table #pairTable
                       [nzData]="list.data"
@@ -127,7 +123,7 @@
                 <th style="text-align: left">Nom </th>
                 <th nz-popover
                     nzPopoverContent="Frequence où {{market.name}} à été le meilleur market pour ses paires">
-                  Freq <br> best [M]
+                  Freq [M]<br> is best
                 </th>
                 <th >Freq <br> R.A.S </th>
                 <th >Freq <br> No vol </th>
@@ -141,16 +137,16 @@
                    *ngFor="let symb of pairTable.data; let i = index">
                 <td style="text-align: left">
                   <a style="color: black;" target="_blank" href="/pairs/{{symb.pair.name}}">
-                    <span class="badge badge-warning">{{i + 1 + paginate.pageSize * (paginate.pageIndex - 1)}}</span>&nbsp;{{ symb.pair.name }}
+                    <span class="badge badge-warning">{{i + 1 + paginate.pageSize * (paginate.pageIndex - 1)}}</span>&nbsp;&nbsp;&nbsp;{{ symb.pair.name }}
                   </a>
                 </td>
                 <td><nz-tag nzColor="blue"><strong>{{ symb.data.bestMarketFreq }}</strong> / {{ symb.data.okFreq +  symb.data.notEnoughVolFreq + symb.data.notDataFreq }}</nz-tag></td>
                 <td><nz-tag nzColor="green"><strong>{{ symb.data.okFreq }}</strong> / {{ symb.data.okFreq +  symb.data.notEnoughVolFreq + symb.data.notDataFreq }}</nz-tag></td>
                 <td><nz-tag nzColor="default"><strong>{{ symb.data.notEnoughVolFreq }}</strong> / {{ symb.data.okFreq +  symb.data.notEnoughVolFreq + symb.data.notDataFreq }}</nz-tag></td>
                 <td><nz-tag nzColor="red"><strong>{{ symb.data.notDataFreq }}</strong> / {{ symb.data.okFreq +  symb.data.notEnoughVolFreq + symb.data.notDataFreq }}</nz-tag></td>
-                <td style="font-size: 80%">{{symb.pair[isFor].spreadMoyen_usd ? ((symb.pair[isFor].spreadMoyen_usd | exponentiel : 2) + " $") : "pas rentable"  }} </td>
+                <td style="font-size: 80%">{{symb.pair.isfor[isfor].spreadMoyen_usd ? ((symb.pair.isfor[isfor].spreadMoyen_usd | exponentiel : 2) + " $") : "pas rentable"  }} </td>
                 <td>
-                  <app-report-symbols  (afterUpdate)="onUpdate()" class="mr-2" *ngIf="market" [symbols]="[symb]" [selectMultiple]="false" >
+                  <app-report-symbols  (afterUpdate)="onUpdate(true)" class="mr-2" *ngIf="market" [symbols]="[symb]" [selectMultiple]="false" >
                     <nz-badge [nzDot]="symb.exclusion.severity > 0"  [nzStyle]="{ backgroundColor: colors[symb.exclusion.severity]}">
                       <button nz-button nzShape="circle" nzSize="small"><i  nz-icon nzType="delete"></i></button>
                     </nz-badge>
@@ -172,7 +168,7 @@
 <ng-template #excludePair>
   <div *ngIf="market">
     <a style="color: black;" target="_blank" [href]="market.website" class="mr-3">{{market.longName}} - ({{market.name}})</a>
-    <app-report-markets (afterUpdate)="onUpdate()" class="mr-2" *ngIf="market" [markets]="[market]" >
+    <app-report-markets (afterUpdate)="onUpdate(true)" class="mr-2" *ngIf="market" [markets]="[market]" >
       <nz-badge [nzDot]="market.exclusion.severityPlus.severity > 0"  [nzStyle]="{ backgroundColor: colors[market.exclusion.severityPlus.severity]}" >
         <button nz-button nzType="danger" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
       </nz-badge>

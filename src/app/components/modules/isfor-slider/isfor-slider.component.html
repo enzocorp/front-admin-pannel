@@ -1,0 +1,10 @@
+<nz-slider [ngModel]="graphConfig.isfor"
+           [nzMin]="graphConfig.START_GRAPH"
+           [nzMax]="graphConfig.END_GRAPH"
+           [nzStep]="graphConfig.PAS_GRAPH"
+           [nzMarks]="marks"
+           [nzTooltipVisible]="showTooltip ? 'always' : 'default' "
+           nzTooltipPlacement="bottom"
+           (nzOnAfterChange)="onIsforChange($event)"
+>
+</nz-slider>

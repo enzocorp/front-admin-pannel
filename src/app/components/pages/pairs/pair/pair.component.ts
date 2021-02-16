@@ -1,6 +1,6 @@
-import {Component, EventEmitter, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit} from '@angular/core';
 import {Pair} from "../../../../models/pair";
-import {forkJoin, Observable, Subscribable} from "rxjs";
+import {forkJoin, Observable, Subscribable, Subscription} from "rxjs";
 import {CryptoService} from "../../../../services/http/crypto.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {map} from "rxjs/operators";
@@ -11,6 +11,8 @@ import {Market} from "../../../../models/market";
 import {Symbol} from "../../../../models/symbol";
 import {SymbolsService} from "../../../../services/http/symbols.service";
 import {Asset} from "../../../../models/asset";
+import {ConfigService} from "../../../../services/autre/config.service";
+import {graphConfig} from "../../../../models/global";
 
 interface SymbolPlus extends Omit<Symbol, "market">{
   market : Market
@@ -31,18 +33,20 @@ interface PairPlus extends Omit<Pair, "exclusion" | "base" | "quote">{
   styleUrls: ['./pair.component.scss']
 })
 
-export class PairComponent implements OnInit {
+export class PairComponent implements OnInit, OnDestroy {
 
   constructor(private cryptoServ : CryptoService,
               private pairsServ : PairsService,
               private symbsServ : SymbolsService,
               private activatedRoute : ActivatedRoute,
               private router : Router,
+              private configServ : ConfigService
   ) { }
 
+  private subscription : Subscription = new Subscription()
   colors = ['green','default','gold','orange','red']
   colorsv2 = ['green','black','gold','orange','red']
-  isFor : 'for1k' | 'for15k' | 'for30k' = 'for15k'
+  isfor : number
   visible : boolean = false
   pair : PairPlus = undefined
   loading = true
@@ -56,9 +60,9 @@ export class PairComponent implements OnInit {
     buy : SymbolPlus[]
     sell : SymbolPlus[]
     sorter : 'prixMoyen_quote' | 'bestMarketFreq',
-    maskOff : boolean,
+    hideBanned : boolean,
     search : string
-  } = {buy : [], sell :[], sorter : 'prixMoyen_quote',maskOff : true, search : ''}
+  } = {buy : [], sell :[], sorter : 'prixMoyen_quote',hideBanned : true, search : ''}
   dirty = false
   isDirty : EventEmitter<void> = new EventEmitter<void>()
   requestSymbs = [
@@ -70,7 +74,10 @@ export class PairComponent implements OnInit {
 
   ngOnInit(): void {
     this.visible = true
-    this.onUpdate()
+    this.subscription.add(this.configServ.isforSubject.subscribe(({isfor}) => {
+      this.isfor = isfor
+      this.onUpdate()
+    } ))
   }
 
   getPair() : Subscribable<any>{
@@ -84,8 +91,9 @@ export class PairComponent implements OnInit {
     ])
   }
 
-  onUpdate(){
-    this.dirty = true
+  onUpdate(dirty : boolean =false){
+    if(dirty)
+      this.dirty = true
     this.loading = true
     const $gethttp : Observable<{dataPair: { data: PairPlus[] }, dataSymbs : {data : SymbolPlus[]} }> = forkJoin(
       this.getPair(),
@@ -105,26 +113,26 @@ export class PairComponent implements OnInit {
     )
   }
 
-  makeList(sorter = this.list.sorter, search = this.list.search,isFor = this.isFor){
+  makeList(sorter = this.list.sorter, search = this.list.search){
     const funcSort = (a,b,side) => {
-        if(a[isFor][side][sorter] === undefined || a[isFor][side][sorter] === null)
-          return 0
-        if(b[isFor][side][sorter] === undefined || b[isFor][side][sorter] === null)
-          return 0
+        if(a.isfor[this.isfor][side][sorter] === undefined || a.isfor[this.isfor][side][sorter] === null)//null & undef sont automatiquement renvoyés a la fin du tableau
+          return 1
+        if(b.isfor[this.isfor][side][sorter] === undefined || b.isfor[this.isfor][side][sorter] === null)
+          return -1
         else if (side ==="sell" || sorter === "bestMarketFreq")
-          return b[isFor][side][sorter]  - a[isFor][side][sorter]
-        else if (side === "buy") {
-          return a[isFor][side][sorter] - b[isFor][side][sorter]
-        }
+          return b.isfor[this.isfor][side][sorter]  - a.isfor[this.isfor][side][sorter]//(Trié du + grand au + petit ) Si b > a alors b,a Sinon a,b
+        else if (side === "buy")
+          return a.isfor[this.isfor][side][sorter] - b.isfor[this.isfor][side][sorter] //(Trié du + petit au + grand )Si b > a alors a,b Sinon b,a
+
     }
 
     let symbols : SymbolPlus[] = [...this.symbols]
     let listBuy = symbols.sort((a,b)=> funcSort(a,b, 'buy') )
-      .filter(symb =>  !this.list.maskOff || !(this.list.maskOff && (symb.exclusion.isExclude || symb.market.exclusion.isExclude)) )
+      .filter(symb =>  !this.list.hideBanned || !(this.list.hideBanned && (symb.exclusion.isExclude || symb.market.exclusion.isExclude)) )
     let listSell = symbols.sort((a,b)=> funcSort(a,b, 'sell') )
-      .filter(symb => !this.list.maskOff || !(this.list.maskOff && (symb.exclusion.isExclude || symb.market.exclusion.isExclude)) )
+      .filter(symb => !this.list.hideBanned || !(this.list.hideBanned && (symb.exclusion.isExclude || symb.market.exclusion.isExclude)) )
     if (search.length){
-      if(search) this.list.search = search
+      this.list.search = search
       this.list.buy = listBuy.filter(symb => new RegExp(`^${search}`,'i').test(symb.market.name))
       this.list.sell = listSell.filter(symb => new RegExp(`^${search}`,'i').test(symb.market.name))
     }
@@ -152,5 +160,10 @@ export class PairComponent implements OnInit {
       ['../'],
       { relativeTo: this.activatedRoute }), 250);
   }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe()
+  }
+
 
 }
