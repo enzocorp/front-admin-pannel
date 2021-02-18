@@ -8,15 +8,16 @@
       <span >Accueil</span>
     </li>
 
-    <li nz-submenu nzTitle="Mon compte" nzIcon="user"
+    <li nz-submenu nzTitle="Options" nzIcon="setting"
         [(nzOpen)]="openMap.compte" (nzOpenChange)="openHandler('compte')">
       <ul>
         <li routerLink="/utilisateur/compte" nzMatchRouter nz-menu-item>Compte</li>
         <li nzDisabled nzMatchRouter nz-menu-item>Historique</li>
-        <li nzDisabled nzMatchRouter nz-menu-item>Préférences</li>
+        <li routerLink="/parametres" nzMatchRouter nz-menu-item>Paramètres</li>
       </ul>
     </li>
 
+    <hr>
     <li routerLink="/pairs" nz-menu-item nzMatchRouter
         (click)="openHandler('pairs')">
       <i nz-icon nzType="box-plot"></i>
@@ -35,6 +36,7 @@
       <span>Les Assets</span>
     </li>
 
+    <hr>
 
     <li nz-submenu nzTitle="K-alculatorV2" nzIcon="rocket"
         [(nzOpen)]="openMap.kalculator" (nzOpenChange)="openHandler('kalculator')">

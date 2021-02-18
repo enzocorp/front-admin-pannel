@@ -79,6 +79,8 @@ import { ChartBestComponent } from './components/pages/bests/best/chart-best/cha
 import { AssetsComponent } from './components/pages/assets/assets.component';
 import { AssetComponent } from './components/pages/assets/asset/asset.component';
 import { FiltersAssetsComponent } from './components/pages/assets/filters-assets/filters-assets.component';
+import { SettingsComponent } from './components/pages/settings/settings.component';
+import { AddKeyComponent } from './components/pages/settings/add-key/add-key.component';
 
 
 registerLocaleData(fr);
@@ -121,7 +123,9 @@ registerLocaleData(fr);
     ChartBestComponent,
     AssetsComponent,
     AssetComponent,
-    FiltersAssetsComponent
+    FiltersAssetsComponent,
+    SettingsComponent,
+    AddKeyComponent
   ],
   imports: [
     BrowserModule,

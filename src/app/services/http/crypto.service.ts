@@ -23,7 +23,7 @@ export class CryptoService {
     this.coinapiSubject.next(content)
   }
 
-  get_coinapi() : void{
+  get_coinapi_infos() : void{
     this.http.get<{data : Global['coinapi']}>(`${this.url}/coinapi`).subscribe()
   }
 

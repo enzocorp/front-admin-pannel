@@ -1,0 +1,23 @@
+<form [formGroup]="formApikey" (ngSubmit)="onSubmit()">
+
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="key">Clé</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="la clé n'esst pas valide ">
+      <input type="text" nz-input formControlName="key" id="key" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="email">E-mail</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+      <input type="text" nz-input formControlName="mail" id="email" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item nz-row class="register-area">
+    <nz-form-control [nzSpan]="14" [nzOffset]="6">
+      <button [disabled]="!formApikey.valid" type="submit" nz-button nzType="primary">Ajouter</button>
+    </nz-form-control>
+  </nz-form-item>
+
+</form>

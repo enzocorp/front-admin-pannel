@@ -14,6 +14,7 @@ import {PairComponent} from "./components/pages/pairs/pair/pair.component";
 import {MarketComponent} from "./components/pages/markets/market/market.component";
 import {AssetComponent} from "./components/pages/assets/asset/asset.component";
 import {AssetsComponent} from "./components/pages/assets/assets.component";
+import {SettingsComponent} from "./components/pages/settings/settings.component";
 
 const routes: Routes = [
   {path : 'home', component : HomeComponent},
@@ -39,6 +40,7 @@ const routes: Routes = [
   {path : 'utilisateur',children : [
       {path : 'compte', component : AccountComponent},
     ]},
+  {path : 'parametres', component : SettingsComponent},
   {path: '', pathMatch : 'full', redirectTo : "/home" },
   {path : '**', component : Error404Component}
 ]

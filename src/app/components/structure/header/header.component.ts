@@ -22,7 +22,7 @@ export class HeaderComponent implements OnInit {
   }
 
   refreshCoinapi(){
-    this.cryptoServ.get_coinapi()
+    this.cryptoServ.get_coinapi_infos()
   }
 
 

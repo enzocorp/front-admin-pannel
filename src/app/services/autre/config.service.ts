@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, Subject, Subscribable} from "rxjs";
 import {graphConfig} from "../../models/global";
+import {Apikey} from "../../models/apikey";
+import {HttpClient} from "@angular/common/http";
 
 
 @Injectable({
@@ -8,18 +10,22 @@ import {graphConfig} from "../../models/global";
 })
 export class ConfigService {
 
-  constructor() { }
+  constructor(private http : HttpClient  ) { }
+
   configSubject = new BehaviorSubject<{collapsed: boolean, theme : boolean}>({
     collapsed : false,
     theme : false
   })
+  keysSubject = new Subject<Apikey[]>()
+  url = location.protocol +'//'+ location.host + '/api1/crypto'
+
   isforSubject = new BehaviorSubject<graphConfig>({
     isfor : 2000,
     START_GRAPH :  200, //Point de depart du graphique
     END_GRAPH:  20000, //Point de fin du graphique
     PAS_GRAPH:  200 //Saut entre chaque points du graphique
   })
-  url = location.protocol +'//'+ location.host + '/api1/crypto'
+
 
 
   emmitConfig(content : {collapsed: boolean, theme : boolean}) {
@@ -30,4 +36,23 @@ export class ConfigService {
     this.isforSubject.next(graphConfig)
   }
 
+  emmitApikeys(keys : Apikey[]) {
+    this.keysSubject.next(keys)
+  }
+
+  getKeys():Subscribable<{data : Apikey[]}>{
+    return this.http.get(`${this.url}/apikey`)
+  }
+
+  addKey(key : {key: string, mail? : string}):Subscribable<any>{
+    return this.http.post(`${this.url}/apikey`,key)
+  }
+
+  removeApikey(key : string){
+    return this.http.delete(`${this.url}/apikey/${key}`)
+  }
+
+  chooseOtherKey(key : string){
+    return this.http.get(`${this.url}/apikey/choose/${key}`)
+  }
 }
