@@ -73,9 +73,11 @@ export class FiltersAssetsComponent implements OnInit {
       if (!word) {
         delete this.match['name']
         delete this.match['longName']
+        delete this.match['contient']
       }
       else if(this.searchMod === 'acronyme') this.match['name']  = {$regex:  `^${word}`, $options: 'i'}
       else if(this.searchMod === 'fullname') this.match['longName']  = {$regex:  `^${word}`, $options: 'i'}
+      else if(this.searchMod === 'contient') this.match['name']  = {$regex:  `${word}`, $options: 'i'}
       this.makeUpdate()
     })
 

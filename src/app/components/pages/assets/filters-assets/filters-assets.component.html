@@ -44,5 +44,6 @@
   <nz-select style="width: 150px" [(ngModel)]="searchMod" (ngModelChange)="this.filterform.controls['pair'].updateValueAndValidity({onlySelf : true})" >
     <nz-option nzLabel="Acronyme" nzValue="acronyme"></nz-option>
     <nz-option nzLabel="Full name" nzValue="fullname"></nz-option>
+    <nz-option nzLabel="Contient" nzValue="contient"></nz-option>
   </nz-select>
 </ng-template>

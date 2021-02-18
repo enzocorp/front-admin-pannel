@@ -54,5 +54,6 @@
   <nz-select style="width: 150px" [(ngModel)]="searchMod" (ngModelChange)="this.filterform.controls['pair'].updateValueAndValidity({onlySelf : true})" >
     <nz-option nzLabel="Commence par" nzValue="startWith"></nz-option>
     <nz-option nzLabel="Termine par" nzValue="endWith"></nz-option>
+    <nz-option nzLabel="Contient" nzValue="contain"></nz-option>
   </nz-select>
 </ng-template>

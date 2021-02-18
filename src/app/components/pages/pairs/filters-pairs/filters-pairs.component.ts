@@ -109,6 +109,7 @@ export class FiltersPairsComponent implements OnInit,OnDestroy {
       if (!name) delete this.match['pair.name']
       else if(this.searchMod === 'startWith') this.match['pair.name']  = {$regex:  `^${name}`, $options: 'i'}
       else if(this.searchMod === 'endWith') this.match['pair.name']  = {$regex:  `${name}$`, $options: 'i'}
+      else if(this.searchMod === 'contain') this.match['pair.name']  = {$regex:  `${name}`, $options: 'i'}
       this.makeUpdate()
     })
 
