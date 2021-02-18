@@ -66,8 +66,9 @@
           <div nz-col [nzSpan]="12">
             <nz-card [nzTitle]="best.base.name + ' - ' +best.base.longName + ' (base)'">
               <div class="d-flex justify-content-center">
-                <button disabled class="mr-2" nz-button nzType="primary" nzShape="circle"><i nz-icon nzType="right"></i></button>
-                <button disabled nz-button nzType="danger" nzShape="circle"><i nz-icon nzType="delete"></i></button>
+                <app-report-assets (afterUpdate)="onUpdate()" [assets]="[best.base]" >
+                  <button nz-button nzType="danger" nzSize="small" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
+                </app-report-assets>
               </div>
               <p class="mt-4">
                 - Type : <strong>{{best.base.typeIsCrypto ? 'crypto' : 'fiat'}}</strong>
@@ -81,8 +82,9 @@
           <div nz-col [nzSpan]="12">
             <nz-card [nzTitle]="best.quote.name + ' - ' +best.quote.longName + ' (quote)'">
               <div class="d-flex justify-content-center">
-                <button disabled class="mr-2" nz-button nzType="primary" nzShape="circle"><i nz-icon nzType="right"></i></button>
-                <button disabled nz-button nzType="danger" nzShape="circle"><i nz-icon nzType="delete"></i></button>
+                <app-report-assets (afterUpdate)="onUpdate()" [assets]="[best.quote]" >
+                  <button nz-button nzType="danger" nzSize="small" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
+                </app-report-assets>
               </div>
               <p class="mt-4">
                 - Type : <strong>{{best.quote.typeIsCrypto ? 'crypto' : 'fiat'}}</strong>
