@@ -6,6 +6,7 @@ import {Paginate} from "../../../models/pagination";
 import {graphConfig} from "../../../models/global";
 import {ConfigService} from "../../../services/autre/config.service";
 import {Podium} from "../../../models/podium";
+import * as process from "process";
 
 @Component({
   selector: 'app-bests',
@@ -44,6 +45,7 @@ export class BestsComponent implements OnInit, OnDestroy{
     skip : this.pagination.paginate.skip,
     limit : this.pagination.paginate.limit,
     0 : {$match : {}},
+    1 : {$sort :{}}
   }
 
 
@@ -82,7 +84,6 @@ export class BestsComponent implements OnInit, OnDestroy{
       )
     }
   }
-
 
   calculBests(){
     this.loading = true

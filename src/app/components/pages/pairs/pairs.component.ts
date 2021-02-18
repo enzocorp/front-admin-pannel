@@ -56,9 +56,11 @@ export class PairsComponent implements OnInit,OnDestroy {
     1 :{$lookup: { from: "pairs",localField: "_id",foreignField: "name", as: "pair"}},
     2 :{$unwind: "$pair"},
     3 :{$match: {}}, //Gérer par le filtreur
-    4 :{$addFields: {markets : {$filter: {input: "$markets",as: "item",cond: { $eq: [ "$$item.excl", false ] }}}  }},
+
+    4 :{$addFields: {markets : {$filter: {input: "$markets",as: "item",cond: { $eq: [ "$$item.excl", false ] }}}  }},/*Permet
+    de ne récupérer que les market des symbols non-exclus qui utilisent cette paire */
     5 :{$lookup: {from: "markets", localField: "markets.market", foreignField: "name", as: "markets"}},
-    6 :{$addFields: { markets : { $filter: {
+    6 :{$addFields: { markets : { $filter: {//Permet de ne récupérer que les markets non-exclus qui utilisent cette paire
             input: "$markets",
             as: "item",
             cond: { $eq: [ "$$item.exclusion.isExclude", false ]}

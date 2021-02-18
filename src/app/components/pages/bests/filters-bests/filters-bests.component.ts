@@ -44,8 +44,7 @@ export class FiltersBestsComponent implements OnInit,OnDestroy {
   ngOnInit(): void {
     this.subscription.add(this.configServ.isforSubject.subscribe((graph: graphConfig)=> {
       this.isfor = graph.isfor
-      if (this.sort)
-        this.makeUpdate()
+      if (this.sort) this.makeUpdate()
     } ))
     this.sort = { key : `isfor.${this.isfor}.spread_usd`, way : -1}
     this.initForms()

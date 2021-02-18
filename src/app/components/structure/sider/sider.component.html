@@ -19,7 +19,7 @@
 
     <li routerLink="/pairs" nz-menu-item nzMatchRouter
         (click)="openHandler('pairs')">
-      <i nz-icon nzType="dollar"></i>
+      <i nz-icon nzType="box-plot"></i>
       <span >Les Paires</span>
     </li>
 
@@ -28,6 +28,13 @@
       <i nz-icon nzType="shop"></i>
       <span>Les Markets</span>
     </li>
+
+    <li routerLink="/assets" nz-menu-item nzMatchRouter
+        (click)="openHandler('assets')">
+      <i nz-icon nzType="dollar"></i>
+      <span>Les Assets</span>
+    </li>
+
 
     <li nz-submenu nzTitle="K-alculatorV2" nzIcon="rocket"
         [(nzOpen)]="openMap.kalculator" (nzOpenChange)="openHandler('kalculator')">

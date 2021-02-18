@@ -91,7 +91,6 @@ export class FiltersPairsComponent implements OnInit,OnDestroy {
   }
 
   makeUpdate(){
-    console.log('halo')
     this.makeSorterKey()
     this.editRequest()
     this.onUpdate.emit()

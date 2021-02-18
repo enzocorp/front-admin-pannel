@@ -76,6 +76,9 @@ import { IsforSliderComponent } from './components/modules/isfor-slider/isfor-sl
 import {ChartsModule} from "ng2-charts";
 import { ChartPodiumComponent } from './components/pages/bests/chart-podium/chart-podium.component';
 import { ChartBestComponent } from './components/pages/bests/best/chart-best/chart-best.component';
+import { AssetsComponent } from './components/pages/assets/assets.component';
+import { AssetComponent } from './components/pages/assets/asset/asset.component';
+import { FiltersAssetsComponent } from './components/pages/assets/filters-assets/filters-assets.component';
 
 
 registerLocaleData(fr);
@@ -115,7 +118,10 @@ registerLocaleData(fr);
     FormReportSymbolsComponent,
     IsforSliderComponent,
     ChartPodiumComponent,
-    ChartBestComponent
+    ChartBestComponent,
+    AssetsComponent,
+    AssetComponent,
+    FiltersAssetsComponent
   ],
   imports: [
     BrowserModule,
