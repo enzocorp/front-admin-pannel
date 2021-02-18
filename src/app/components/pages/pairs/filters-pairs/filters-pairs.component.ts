@@ -4,7 +4,7 @@ import {debounceTime} from "rxjs/operators";
 import {Paginate} from "../../../../models/pagination";
 import {Subscription} from "rxjs";
 import {ConfigService} from "../../../../services/autre/config.service";
-import {graphConfig} from "../../../../models/global";
+import {GraphConfig} from "../../../../models/graphConfig";
 
 @Component({
   selector: 'app-filters-pairs',
@@ -45,7 +45,7 @@ export class FiltersPairsComponent implements OnInit,OnDestroy {
   ngOnInit(): void {
     this.initForms()
     this.subscribeFilters()
-    this.subscription.add(this.configServ.isforSubject.subscribe((graph: graphConfig)=> {
+    this.subscription.add(this.configServ.isforSubject.subscribe((graph: GraphConfig)=> {
       this.isfor = graph.isfor
       this.makeUpdate()
     } ))

@@ -62,7 +62,7 @@ import { MarketComponent } from './components/pages/markets/market/market.compon
 import { FiltersMarketsComponent } from './components/pages/markets/filters-markets/filters-markets.component';
 import {NgxPaginationModule} from "ngx-pagination";
 import { ExponentielPipe } from './services/pipes/exponentiel.pipe';
-import {CoinapiInterceptorProvider} from "./services/interceptors/coinapi.interceptor";
+import {CoinapiInterceptorProvider} from "./services/interceptors/coinapi-infos.interceptor";
 import {MessageInterceptorProvider} from "./services/interceptors/message.interceptor";
 import { ReportPairsComponent } from './components/modules/report-pairs/report-pairs.component';
 import { FormReportPairsComponent } from './components/modules/report-pairs/form-report-pairs/form-report-pairs.component';

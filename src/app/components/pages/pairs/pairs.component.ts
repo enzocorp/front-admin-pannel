@@ -8,7 +8,7 @@ import {CryptoService} from "../../../services/http/crypto.service";
 import {Pair} from "../../../models/pair";
 import {PairsService} from "../../../services/http/pairs.service";
 import {ConfigService} from "../../../services/autre/config.service";
-import {graphConfig} from "../../../models/global";
+import {GraphConfig} from "../../../models/graphConfig";
 
 
 interface PairPlus extends Pair{
@@ -80,7 +80,7 @@ export class PairsComponent implements OnInit,OnDestroy {
       ({data})=> {
         this.strSeverities = data.sort((a, b) => a.severity - b.severity).map(severity => severity.description)
       })
-    this.subscription.add(this.configServ.isforSubject.subscribe((graph: graphConfig)=> {
+    this.subscription.add(this.configServ.isforSubject.subscribe((graph: GraphConfig)=> {
       this.isfor = graph.isfor
     } ))
 

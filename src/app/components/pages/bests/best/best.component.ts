@@ -9,7 +9,7 @@ import {BestsService} from "../../../../services/http/bests.service";
 import {PairsService} from "../../../../services/http/pairs.service";
 import {Asset} from "../../../../models/asset";
 import {ConfigService} from "../../../../services/autre/config.service";
-import {graphConfig} from "../../../../models/global";
+import {GraphConfig} from "../../../../models/graphConfig";
 
 interface exclusion {
   market : string
@@ -43,7 +43,7 @@ export class BestComponent implements OnInit, OnDestroy {
   ) { }
 
   chartBestSubject = new BehaviorSubject<BestPlus>(undefined)
-  graphConfig : graphConfig
+  graphConfig : GraphConfig
   pair : Pair
   best : BestPlus
   visible : boolean = false

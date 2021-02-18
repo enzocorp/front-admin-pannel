@@ -3,7 +3,7 @@ import {Best} from "../../../models/best";
 import {Subject, Subscription} from "rxjs";
 import {BestsService} from "../../../services/http/bests.service";
 import {Paginate} from "../../../models/pagination";
-import {graphConfig} from "../../../models/global";
+import {GraphConfig} from "../../../models/graphConfig";
 import {ConfigService} from "../../../services/autre/config.service";
 import {Podium} from "../../../models/podium";
 import * as process from "process";
@@ -34,7 +34,7 @@ export class BestsComponent implements OnInit, OnDestroy{
   bests : Best[] = []
   groupId : string = null
   loading : boolean = false
-  graphCongig : graphConfig
+  graphCongig : GraphConfig
   pagination : {total : number, paginate : Paginate, index : number} = {
     total : null,
     paginate : {limit : 30, skip : 0 },

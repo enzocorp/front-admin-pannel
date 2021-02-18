@@ -1,12 +1,4 @@
-export interface Global{
-  coinapi : {
-    limit : string
-    remaining : string
-    dateReflow : string
-  }
-}
-
-export interface graphConfig {
+export interface GraphConfig {
   isfor : number
   START_GRAPH : number //Point de depart du graphique
   END_GRAPH: number //Point de fin du graphique

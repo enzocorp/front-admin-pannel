@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, Subject, Subscribable} from "rxjs";
-import {graphConfig} from "../../models/global";
+import {GraphConfig} from "../../models/graphConfig";
 import {Apikey} from "../../models/apikey";
 import {HttpClient} from "@angular/common/http";
 
@@ -19,7 +19,7 @@ export class ConfigService {
   keysSubject = new Subject<Apikey[]>()
   url = location.protocol +'//'+ location.host + '/api1/crypto'
 
-  isforSubject = new BehaviorSubject<graphConfig>({
+  isforSubject = new BehaviorSubject<GraphConfig>({
     isfor : 2000,
     START_GRAPH :  200, //Point de depart du graphique
     END_GRAPH:  20000, //Point de fin du graphique
@@ -32,7 +32,7 @@ export class ConfigService {
     this.configSubject.next(content)
   }
 
-  emmitIsfor(graphConfig : graphConfig) {
+  emmitIsfor(graphConfig : GraphConfig) {
     this.isforSubject.next(graphConfig)
   }
 

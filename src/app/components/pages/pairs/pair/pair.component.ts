@@ -12,7 +12,7 @@ import {Symbol} from "../../../../models/symbol";
 import {SymbolsService} from "../../../../services/http/symbols.service";
 import {Asset} from "../../../../models/asset";
 import {ConfigService} from "../../../../services/autre/config.service";
-import {graphConfig} from "../../../../models/global";
+import {GraphConfig} from "../../../../models/graphConfig";
 
 interface SymbolPlus extends Omit<Symbol, "market">{
   market : Market

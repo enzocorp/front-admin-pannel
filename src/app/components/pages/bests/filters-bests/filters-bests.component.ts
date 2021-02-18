@@ -4,7 +4,7 @@ import {Paginate} from "../../../../models/pagination";
 import {debounceTime} from "rxjs/operators";
 import {Subscription} from "rxjs";
 import {ConfigService} from "../../../../services/autre/config.service";
-import {graphConfig} from "../../../../models/global";
+import {GraphConfig} from "../../../../models/graphConfig";
 
 @Component({
   selector: 'app-filters-bests',
@@ -42,7 +42,7 @@ export class FiltersBestsComponent implements OnInit,OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscription.add(this.configServ.isforSubject.subscribe((graph: graphConfig)=> {
+    this.subscription.add(this.configServ.isforSubject.subscribe((graph: GraphConfig)=> {
       this.isfor = graph.isfor
       if (this.sort) this.makeUpdate()
     } ))
