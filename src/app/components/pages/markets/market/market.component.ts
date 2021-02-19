@@ -1,18 +1,17 @@
-import {Component, EventEmitter, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit} from '@angular/core';
 import {MarketsService} from "../../../../services/http/markets.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {forkJoin, Observable, Subscribable} from "rxjs";
+import {forkJoin, Observable, Subscribable, Subscription} from "rxjs";
 import {map} from "rxjs/operators";
-import {MongoPaginate} from "../../../../models/pagination";
 import {Pair} from "../../../../models/pair";
 import {CryptoService} from "../../../../services/http/crypto.service";
 import {Market} from "../../../../models/market";
 import {Reason} from "../../../../models/reason";
-import {PairsService} from "../../../../services/http/pairs.service";
 import {SymbolsService} from "../../../../services/http/symbols.service";
 import {Symbol, SymbolFor} from "../../../../models/symbol";
 import {Severity} from "../../../../models/severity";
 import {Asset} from "../../../../models/asset";
+import {ConfigService} from "../../../../services/autre/config.service";
 
 
 
@@ -36,7 +35,7 @@ interface MarketPlus extends Omit<Market, "exclusion" | "base" | "quote">{
   templateUrl: './market.component.html',
   styleUrls: ['./market.component.scss']
 })
-export class MarketComponent implements OnInit {
+export class MarketComponent implements OnInit,OnDestroy {
 
 
   constructor(private cryptoServ : CryptoService,
@@ -44,16 +43,18 @@ export class MarketComponent implements OnInit {
               private symbsServ : SymbolsService,
               private activatedRoute : ActivatedRoute,
               private router : Router,
+              private configServ : ConfigService
   ) { }
 
+  private subscription : Subscription = new Subscription()
   colors = ['green','default','gold','orange','red']
   colorsv2 = ['green','black','gold','orange','red']
-  isFor : 'for1k' | 'for15k' | 'for30k' = 'for15k'
   visible : boolean = false
   market : MarketPlus = undefined
   loading = true
   symbols : SymbolPlus[]
   pairsOn : number
+  isfor : number
   paginate : {
     pageIndex : number
     pageSize : number
@@ -75,7 +76,10 @@ export class MarketComponent implements OnInit {
 
   ngOnInit(): void {
     this.visible = true
-    this.onUpdate()
+    this.subscription.add(this.configServ.isforSubject.subscribe(({isfor}) => {
+      this.isfor = isfor
+      this.onUpdate()
+    } ))
   }
 
   getMarket() : Subscribable<any>{
@@ -87,14 +91,16 @@ export class MarketComponent implements OnInit {
     ])
   }
 
-  onUpdate(){
-    this.dirty = true
+  onUpdate(dirty : boolean=false){
+    if(dirty)
+      this.dirty = true
     this.loading = true
     const $gethttp : Observable<{dataMarket: { data: MarketPlus[] }, dataSymbs : {data : SymbolPlus[]} }> = forkJoin(
       this.getMarket(),
       this.symbsServ.getSymbols(this.requestSymbs)
     ).pipe( // forkJoin returns an array of values, here we map those values to an object
       map(([dataMarket,dataSymbs])=>({dataMarket,dataSymbs})))
+
     $gethttp.subscribe(
       (resp) =>  {
         this.symbols = resp.dataSymbs.data
@@ -108,7 +114,7 @@ export class MarketComponent implements OnInit {
     )
   }
 
-  makeList(sorter = this.list.sorter, search = this.list.search,isFor = this.isFor){
+  makeList(sorter = this.list.sorter, search = this.list.search,isfor = this.isfor){
     const funcSort = (a,b) => {
       if(a.data[sorter] === undefined || a.data[sorter] === null)
         return 0
@@ -120,10 +126,10 @@ export class MarketComponent implements OnInit {
 
     let symbols : SymbolPlus[] = this.symbols.map(symb => {
       symb.data = {
-        bestMarketFreq : symb[isFor].buy.bestMarketFreq + symb[isFor].sell.bestMarketFreq,
-        okFreq: symb[isFor].buy.okFreq + symb[isFor].sell.okFreq,
-        notDataFreq: symb[isFor].buy.notDataFreq + symb[isFor].sell.notDataFreq,
-        notEnoughVolFreq: symb[isFor].buy.notEnoughVolFreq + symb[isFor].sell.notEnoughVolFreq,
+        bestMarketFreq : symb.isfor[isfor].buy.bestMarketFreq + symb.isfor[isfor].sell.bestMarketFreq,
+        okFreq: symb.isfor[isfor].buy.okFreq + symb.isfor[isfor].sell.okFreq,
+        notDataFreq: symb.isfor[isfor].buy.notDataFreq + symb.isfor[isfor].sell.notDataFreq,
+        notEnoughVolFreq: symb.isfor[isfor].buy.notEnoughVolFreq + symb.isfor[isfor].sell.notEnoughVolFreq,
       }
       return symb
     })
@@ -156,6 +162,10 @@ export class MarketComponent implements OnInit {
     setTimeout(() => this.router.navigate(
       ['../'],
       { relativeTo: this.activatedRoute }), 250);
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe()
   }
 
 }

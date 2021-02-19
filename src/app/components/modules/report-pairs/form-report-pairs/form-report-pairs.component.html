@@ -4,6 +4,7 @@
 
     <div nz-row class="mb-1">
 
+      <!--La/les paires a ban -->
       <nz-form-item class="mb-1">
         <nz-form-control nzErrorTip="Séléctionne aumoins un champ ! !">
           <nz-input-group nzAddOnBefore="Paire(s)">
@@ -22,10 +23,12 @@
         </nz-form-control>
       </nz-form-item>
 
+    <!--La sévérité-->
     <nz-form-item class="mb-1">
       <nz-form-control nzErrorTip="Séléctionne une sévérité !">
         <nz-input-group nzAddOnBefore="Severité">
           <nz-select
+            [nzDisabled]="pairs.length === 1 && selectMultiple === false && pairs[0].exclusion.severityHistoric !== null"
             nzPlaceHolder="severité"
             formControlName="severity"
             style="width: 160px"
@@ -42,7 +45,8 @@
 
     </div>
 
-    <nz-form-item class="mb-1" *ngIf="!unbanIsSelect">
+    <!--Choisir les raison de ban-->
+    <nz-form-item class="mb-1" *ngIf="!unbanIsSelect && pairs.length === 1 && selectMultiple === false && pairs[0].exclusion.severityHistoric === null">
       <nz-form-control nzErrorTip="Il faut selectionner aumoins une raison !">
         <nz-input-group nzAddOnBefore="Raisons">
           <nz-select
@@ -57,25 +61,36 @@
             nzMode="multiple"
             formControlName="reasons"
           >
-            <nz-option *ngFor="let item of reasons" [nzLabel]="item.description" [nzValue]="item.status"></nz-option>
+
+              <nz-option *ngFor="let item of reasons" [nzLabel]="item.description" [nzValue]="item.status"></nz-option>
+
           </nz-select>
         </nz-input-group>
       </nz-form-control>
     </nz-form-item>
 
+    <!--La raison par defaut si l'un des assets est ban-->
+    <nz-form-item class="mb-1" *ngIf="pairs.length === 1 && selectMultiple === false && pairs[0].exclusion.severityHistoric !== null" >
+      <nz-input-group nzAddOnBefore="Raisons">
+        <input nz-input placeholder="L'un des asset est ban !" disabled />
+      </nz-input-group>
+    </nz-form-item>
+
+    <!--Entrer une note-->
     <nz-form-item *ngIf="!unbanIsSelect">
-  <textarea nz-input
-            placeholder="Ajouter une note (facultatif)"
-            [nzAutosize]="{ minRows: 2, maxRows: 5 }"
-            formControlName="note"
-  >
-  </textarea>
+      <textarea nz-input
+                placeholder="Ajouter une note (facultatif)"
+                [nzAutosize]="{ minRows: 2, maxRows: 5 }"
+                formControlName="note">
+      </textarea>
     </nz-form-item>
 
   </form>
 
   <div class="mt-3 text-right">
-    <button class="mr-1" nz-button nzSize="small" nzType="primary" (click)="checkValidity()">Envoyer</button>
+    <button class="mr-1" nz-button nzSize="small" nzType="primary" (click)="checkValidity()" [disabled]="pairs.length === 1 && selectMultiple === false && pairs[0].exclusion.severityHistoric !== null">
+      Envoyer
+    </button>
     <button nz-button nzSize="small" (click)="visible = false" >Annuler</button>
   </div>
 

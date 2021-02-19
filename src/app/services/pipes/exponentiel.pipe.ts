@@ -8,6 +8,9 @@ export class ExponentielPipe implements PipeTransform {
 
   transform(value: number|string,decimals : number = 6): string {
     try {
+      if(!+value){
+        return value.toString()
+      }
       const num : number = +value
       let trunc : number = Math.trunc(num)
       let len : number //Longeur de la partie entiere

@@ -1,0 +1,49 @@
+
+<div class="mb-2"><strong style="font-size: 0.9rem" nz-typography >Filtrer par :</strong></div>
+
+<form nz-form  [formGroup]="filterform">
+  <nz-input-group style="width: fit-content; display: flex" [nzAddOnBefore]="addOnBeforeTemplate" [nzSuffix]="suffixIconSearch">
+    <input style="min-width: 150px" type="text" nz-input formControlName="asset" placeholder="Rechercher par nom" />
+  </nz-input-group>
+
+  <div class="mt-2">
+    <nz-radio-group class="mr-3" formControlName="banned" nzSize="small">
+      <label nz-radio-button>tous</label>
+      <label nz-radio-button nzValue="allowed">en service(s)</label>
+      <label nz-radio-button nzValue="reported">signalée(s)</label>
+      <label nz-radio-button nzValue="banned">éliminée(s)</label>
+    </nz-radio-group>
+  </div>
+</form>
+
+
+<section class="mt-2">
+  <div>
+
+    <strong style="font-size: 0.9rem" nz-typography >Trier par :</strong>
+    <br>
+    <nz-switch nzSize="small" [ngModel]="true" nzCheckedChildren="croissant" nzUnCheckedChildren="décroissant" (click)="onChangeOrder()"></nz-switch>
+    <br>
+    <nz-radio-group nzName="radiogroup" [(ngModel)]="sort.key" (ngModelChange)="makeUpdate()">
+      <aside>
+        <label nz-radio nzValue="name" class="mr-2">acronymes</label>
+        <label nz-radio nzValue="longName" class="mr-2">full name</label>
+        <label nz-radio nzValue="_id" class="mr-2">date d'ajout</label>
+        <label nz-radio nzValue="exclusion.isExclude" class="mr-2">élimination</label>
+        <label nz-radio nzValue="exclusion.severity" class="mr-2">signalement</label>
+        <label nz-radio nzValue="typeIsCrypto" class="mr-2">type</label>
+      </aside>
+    </nz-radio-group>
+
+  </div>
+</section>
+
+<ng-template #suffixIconSearch> <i nz-icon nzType="search"></i></ng-template>
+
+<ng-template #addOnBeforeTemplate>
+  <nz-select style="width: 150px" [(ngModel)]="searchMod" (ngModelChange)="this.filterform.controls['pair'].updateValueAndValidity({onlySelf : true})" >
+    <nz-option nzLabel="Acronyme" nzValue="acronyme"></nz-option>
+    <nz-option nzLabel="Full name" nzValue="fullname"></nz-option>
+    <nz-option nzLabel="Contient" nzValue="contient"></nz-option>
+  </nz-select>
+</ng-template>

@@ -6,7 +6,10 @@ import {Reason} from "../../../../models/reason";
 import {Severity} from "../../../../models/severity";
 import {Pair} from "../../../../models/pair";
 import {PairsService} from "../../../../services/http/pairs.service";
-import {debounceTime} from "rxjs/operators";
+
+
+const BAN_BASE = 'p55'
+const BAN_QUOTE = 'p66'
 
 @Component({
   selector: 'app-form-report-pairs',
@@ -43,7 +46,10 @@ export class FormReportPairsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.cryptoServ.getReasons(this.for).subscribe(({data}) => this.reasons = data)
+    this.cryptoServ.getReasons(this.for).subscribe(({data}) => {
+      //On filtre les raisons internes ( qui sont liées au ban d'un asset )
+      this.reasons = data.filter(reason => ![BAN_BASE,BAN_QUOTE].includes(reason.status))
+    })
     this.cryptoServ.getSeverities().subscribe(({data}) => this.severities = data)
     this.initForm()
     this.subscribeFilters()

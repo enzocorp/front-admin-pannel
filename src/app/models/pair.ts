@@ -17,10 +17,9 @@ export interface Pair {
   base : string
   quote : string
   marketsForThis? : number
-  for1k : PairFor
-  for15k : PairFor
-  for30k : PairFor
+  isfor : Record<number, PairFor>
   exclusion : {
+    severityHistoric : number
     isExclude : boolean
     reasons : string[]
     severity : number

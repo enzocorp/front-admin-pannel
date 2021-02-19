@@ -1,0 +1,89 @@
+<h1>La liste des assets </h1>
+<button class="mb-3" nz-button nzType="primary" [nzLoading]="loading">
+  <i nz-icon nzType="search"></i>Pairs trouvés <span class="badge badge-light ml-3">{{pagination.total}}</span>
+</button>
+<div>
+  <div class="mb-3">
+    <app-filters-assets (onUpdate)="onUpdate()" [(request)]="request"></app-filters-assets>
+    <br>
+    <app-pagination
+      (onUpdate)="onUpdate()"
+      [total]="pagination.total"
+      [(paginate)]="pagination.paginate"
+      [(index)]="pagination.index"
+    ></app-pagination>
+
+    <br>
+    <nz-spin nzSize="large" [nzSpinning]="loading">
+      <router-outlet></router-outlet>
+      <nz-table
+        [nzWidthConfig]="['7%','15%','11%','16%','10%','8.5%','8.5%','9%','9%','7%']"
+        nzBordered
+        [nzData]="pagination.total"
+        [nzFrontPagination]="false"
+      >
+        <thead>
+        <tr>
+          <th class="position-relative" [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)">
+            <div *ngIf="arrChecked.length" style="color:dodgerblue ;position: absolute;top : 50%; left : 50% ;transform: translate(55%,-50%);"  >{{setOfCheckedId.size}}</div>
+          </th>
+          <th>Acronymes</th>
+          <th>Full name</th>
+          <th>Type  </th>
+          <th>Prix USD </th>
+          <th>dans(paires)  </th>
+          <th>Status</th>
+          <th  style="text-align: center;">
+            <app-report-assets (afterUpdate)="onGroupUpdate()" [assets]="arrChecked" [selectMultiple]="true">
+              <button nz-button nzType="danger" nzSize="small" ><i  nz-icon nzType="delete"></i></button>
+            </app-report-assets>
+          </th>
+        </tr>
+
+        </thead>
+        <tbody>
+        <tr *ngFor="let asset of assets">
+          <!--checkbox-->
+          <td [nzChecked]="setOfCheckedId.has(asset.name)"
+              (nzCheckedChange)="onItemChecked(asset.name, $event)">
+          </td>
+          <!--Nom-->
+          <td class="btn-link" style="color: black; cursor: pointer">{{asset.name}}</td>
+          <!--Nom Long-->
+          <td class="btn-link" style="color: black; cursor: pointer" >{{asset.longName}}</td>
+          <!--Type-->
+          <td><nz-tag> {{asset.typeIsCrypto ? "Crypto" : "Fiat" }} </nz-tag></td>
+          <!--Prix USD -->
+          <td>
+            <button *ngIf="asset.price_usd; else noPrice" nz-button nzType="primary" nzGhost>{{asset.price_usd | exponentiel : 2}} $</button>
+            <ng-template #noPrice><button nz-button nzSize="small" nzType="dashed">Pas de data</button></ng-template>
+          </td>
+          <!--nb pairs-->
+          <td>{{asset.inPairCount}}</td>
+          <!--Status-->
+          <td>
+            <nz-tag class="m-0" [nzColor]="colors[asset.exclusion.severity]">
+              {{asset.exclusion.severity ? strSeverities[asset.exclusion.severity] : "en service"}}
+            </nz-tag>
+          </td>
+          <!--Delete-->
+          <td style="text-align: center;">
+            <app-report-assets (afterUpdate)="onUpdate()" *ngIf="asset" [assets]="[asset]" >
+              <button nz-button nzType="danger" nzSize="small" nzShape="circle"><i  nz-icon nzType="delete"></i></button>
+            </app-report-assets>
+          </td>
+
+        </tr>
+        </tbody>
+      </nz-table>
+
+    </nz-spin>
+    <br>
+    <app-pagination
+      (onUpdate)="onUpdate()"
+      [total]="pagination.total"
+      [(paginate)]="pagination.paginate"
+      [(index)]="pagination.index"
+    ></app-pagination>
+  </div>
+</div>

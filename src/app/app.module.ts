@@ -33,7 +33,7 @@ import {
   NzPopconfirmModule,
   NzPopoverModule,
   NzRadioModule,
-  NzSelectModule,
+  NzSelectModule, NzSliderModule,
   NzSpinModule,
   NzStatisticModule,
   NzSwitchModule, NzTableModule,
@@ -41,6 +41,7 @@ import {
   NzTransferModule,
   NzTypographyModule
 } from "ng-zorro-antd";
+
 import { ReplaceByPipe } from './services/pipes/replace-by.pipe';
 import { RegisterComponent } from './components/auth/register/register.component';
 import { LoginComponent } from './components/auth/login/login.component';
@@ -61,7 +62,7 @@ import { MarketComponent } from './components/pages/markets/market/market.compon
 import { FiltersMarketsComponent } from './components/pages/markets/filters-markets/filters-markets.component';
 import {NgxPaginationModule} from "ngx-pagination";
 import { ExponentielPipe } from './services/pipes/exponentiel.pipe';
-import {CoinapiInterceptorProvider} from "./services/interceptors/coinapi.interceptor";
+import {CoinapiInterceptorProvider} from "./services/interceptors/coinapi-infos.interceptor";
 import {MessageInterceptorProvider} from "./services/interceptors/message.interceptor";
 import { ReportPairsComponent } from './components/modules/report-pairs/report-pairs.component';
 import { FormReportPairsComponent } from './components/modules/report-pairs/form-report-pairs/form-report-pairs.component';
@@ -71,6 +72,16 @@ import { ReportAssetsComponent } from './components/modules/report-assets/report
 import { FormReportAssetsComponent } from './components/modules/report-assets/form-report-assets/form-report-assets.component';
 import { ReportSymbolsComponent } from './components/modules/report-symbols/report-symbols.component';
 import { FormReportSymbolsComponent } from './components/modules/report-symbols/form-report-symbols/form-report-symbols.component';
+import { IsforSliderComponent } from './components/modules/isfor-slider/isfor-slider.component';
+import {ChartsModule} from "ng2-charts";
+import { ChartPodiumComponent } from './components/pages/bests/chart-podium/chart-podium.component';
+import { ChartBestComponent } from './components/pages/bests/best/chart-best/chart-best.component';
+import { AssetsComponent } from './components/pages/assets/assets.component';
+import { AssetComponent } from './components/pages/assets/asset/asset.component';
+import { FiltersAssetsComponent } from './components/pages/assets/filters-assets/filters-assets.component';
+import { SettingsComponent } from './components/pages/settings/settings.component';
+import { AddKeyComponent } from './components/pages/settings/add-key/add-key.component';
+
 
 registerLocaleData(fr);
 
@@ -106,7 +117,15 @@ registerLocaleData(fr);
     ReportAssetsComponent,
     FormReportAssetsComponent,
     ReportSymbolsComponent,
-    FormReportSymbolsComponent
+    FormReportSymbolsComponent,
+    IsforSliderComponent,
+    ChartPodiumComponent,
+    ChartBestComponent,
+    AssetsComponent,
+    AssetComponent,
+    FiltersAssetsComponent,
+    SettingsComponent,
+    AddKeyComponent
   ],
   imports: [
     BrowserModule,
@@ -146,7 +165,12 @@ registerLocaleData(fr);
     NzRadioModule,
     NzNotificationModule,
     NzTableModule,
-    NzAlertModule
+    NzAlertModule,
+    NzSliderModule,
+
+    //Chart.js
+    ChartsModule
+
   ],
   providers: [
     { provide: NZ_I18N, useValue: fr_FR },

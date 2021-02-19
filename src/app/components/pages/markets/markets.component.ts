@@ -46,14 +46,14 @@ export class MarketsComponent implements OnInit,OnDestroy {
     paginate : {limit : 20, skip : 0 },
     index : 1
   }
-  loading : boolean = false
+  loading : boolean = true
   request : Paginate&Record<number,Object> = {
     skip : this.pagination.paginate.skip,
     limit : this.pagination.paginate.limit,
     0 :{$group :{_id: "$market", pairs: { $push: {pair :"$pair", excl : "$exclusion.isExclude"} }}},
     1 :{$lookup: { from: "markets",localField: "_id",foreignField: "name", as: "market"}},
     2 :{$unwind: "$market"},
-    3 :{$match: {}},
+    3 :{$match: {}},//Gérer par le systeme de filtres
     4 :{$addFields: {pairs : {$filter: {input: "$pairs",as: "item",cond: { $eq: [ "$$item.excl", false ] }}}  }},
     5 :{$lookup: {from: "pairs", localField: "pairs.pair", foreignField: "name", as: "pairs"}},
     6 :{$addFields: { pairs : { $filter: {
@@ -62,7 +62,7 @@ export class MarketsComponent implements OnInit,OnDestroy {
             cond: { $eq: [ "$$item.exclusion.isExclude", false ]}
     }}}},
     7:{$project: { market :1,_id :0,pairsUsed : {$size: "$pairs"}}},
-    8:{$sort : {"market._id" : 1}}
+    8:{$sort : {}}//Gérer par le systeme de filtres
   }
   checked = false;
   indeterminate = false;
@@ -72,10 +72,7 @@ export class MarketsComponent implements OnInit,OnDestroy {
   ngOnInit(): void {
     this.subscription.add(this.marketsService.marketsSubject.subscribe((markets : MarketPlus[])=> this.markets = markets ))
     this.cryptoServ.getSeverities().subscribe(
-      ({data})=> {
-        this.onUpdate()
-        this.strSeverities = data.sort((a, b) => a.severity - b.severity).map(severity => severity.description)
-      })
+      ({data})=> this.strSeverities = data.sort((a, b) => a.severity - b.severity).map(severity => severity.description))
   }
 
   /*-----------------------On update ----------------------------------*/

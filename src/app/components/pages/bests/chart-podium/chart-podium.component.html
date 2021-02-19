@@ -1,0 +1,12 @@
+<div style="max-width: 80rem; margin: auto" *ngIf="podiumBests">
+  <canvas baseChart
+          [datasets]="lineChart.yData"
+          [labels]="lineChart.xLabels"
+          [options]="lineChartOptions"
+          [legend]="true"
+          chartType="line"
+          [plugins]="[]"
+  >
+  </canvas>
+  <label (ngModelChange)="onLogarithm()" nz-checkbox [ngModel]="false" >Echelle logarithmique</label>
+</div>

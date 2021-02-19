@@ -1,0 +1,36 @@
+<nz-divider nzOrientation="left" nzText="Clées coinapi"></nz-divider>
+<div nz-row>
+  <div nz-col [nzSpan]="6">
+    <app-add-key (afterSubmit)="reload()"></app-add-key>
+  </div>
+
+  <nz-table  [nzData]="keys" nz-col nzBordered>
+    <thead>
+    <tr>
+      <th>Clé</th>
+      <th>Propriétaire</th>
+      <th>Req Restantes</th>
+      <th>Req Utilisées</th>
+      <th>Req limites</th>
+      <th>Reset</th>
+      <th>Supprimer</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let key of keys">
+      <td>
+        <nz-badge *ngIf="key.used" nzStatus="success" ></nz-badge>
+        <span (click)="chooseThisKey(key.key)" class="changeKey" >{{key.key}} </span>
+        <i (click)="refreshThisKey(key.key)" nz-icon nzType="redo" style="color: dodgerblue; cursor: pointer" nzTheme="outline"></i>
+      </td>
+      <td>{{key.user_owner}}</td>
+      <td>{{key.remaining}}</td>
+      <td>{{key.limit - key.remaining}}</td>
+      <td>{{key.limit}}</td>
+      <td>{{key.dateReflow | date : 'dd MMM yyyy Hнmm'}}</td>
+      <td (click)="removeKey(key.key)"> <button nz-button nzType="danger" nzSize="small" nzShape="circle"><i nz-icon nzType="delete"></i></button> </td>
+    </tr>
+    </tbody>
+  </nz-table>
+
+</div>

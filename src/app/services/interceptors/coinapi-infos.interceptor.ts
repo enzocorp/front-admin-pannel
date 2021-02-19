@@ -12,7 +12,7 @@ import {Injectable} from "@angular/core";
 import {CryptoService} from "../http/crypto.service";
 
 @Injectable ()
-export class CoinapiInterceptor implements HttpInterceptor{
+export class CoinapiInfosInterceptor implements HttpInterceptor{
   constructor(
     private cryptoServ : CryptoService
   ) {
@@ -33,6 +33,6 @@ export class CoinapiInterceptor implements HttpInterceptor{
 
 export const CoinapiInterceptorProvider = {
   provide : HTTP_INTERCEPTORS,
-  useClass : CoinapiInterceptor,
+  useClass : CoinapiInfosInterceptor,
   multi : true
 }

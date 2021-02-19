@@ -8,7 +8,7 @@
 </button>
 <div>
   <div class="mb-3">
-    <app-filters-pairs (isForChange)="isFor = $event" (onUpdate)="onUpdate()" [(request)]="request"></app-filters-pairs>
+    <app-filters-pairs (onUpdate)="onUpdate()" [(request)]="request"></app-filters-pairs>
     <br>
     <app-pagination
       (onUpdate)="onUpdate()"
@@ -29,11 +29,11 @@
         <thead>
         <tr>
           <th rowspan="4" class="position-relative" [nzChecked]="checked" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)">
-            <div *ngIf="arrChecked.length" style="color:dodgerblue ;position: absolute;transform: translate(37px,-21px);" >{{setOfCheckedId.size}}</div>
+            <div *ngIf="arrChecked.length" style="color:dodgerblue ;position: absolute;top : 50%; left : 50% ;transform: translate(55%,-50%);" >{{setOfCheckedId.size}}</div>
           </th>
           <th  rowspan="4">Nom</th>
           <th rowspan="4">Status</th>
-          <th colspan="5">Les moyennes pour <nz-tag nzColor="blue"><strong>{{isFor}}</strong></nz-tag> USD</th>
+          <th colspan="5">Les moyennes pour <nz-tag nzColor="blue"><strong>{{isfor}}</strong></nz-tag> USD</th>
           <th  colSpan="2" >Markets </th>
           <th rowSpan="4" style="text-align: center;">
             <app-report-pairs (afterUpdate)="onGroupUpdate()" [pairs]="arrChecked" [selectMultiple]="true">
@@ -67,33 +67,33 @@
             </nz-tag>
           </td>
           <!--Spread moyen-->
-          <td *ngIf="pair[isFor].spreadMoyen_usd; else negativSpread">
-            <button nz-button nzType="primary" nzGhost>{{pair[isFor].spreadMoyen_usd | exponentiel : 2}} $</button>
+          <td *ngIf="pair.isfor[isfor].spreadMoyen_usd; else negativSpread">
+            <button nz-button nzType="primary" nzGhost>{{pair.isfor[isfor].spreadMoyen_usd | exponentiel : 2}} $</button>
           </td>
           <ng-template #negativSpread><td><button nz-button nzSize="small" nzType="dashed">Pas de data</button></td></ng-template>
 
           <!--Freq + et -  -->
           <td>
-            <nz-tag nzColor="green"> {{pair[isFor].positiveFreq }} </nz-tag>
-            <nz-tag  class="m-0" nzColor="red"> {{pair[isFor].negativeFreq }} </nz-tag>
+            <nz-tag nzColor="green"> {{pair.isfor[isfor].positiveFreq }} </nz-tag>
+            <nz-tag  class="m-0" nzColor="red"> {{pair.isfor[isfor].negativeFreq }} </nz-tag>
           </td>
           <!--freq best  -->
           <td>
             <nz-tag nzColor="blue">
-              <strong>{{pair[isFor].isBestFreq}}</strong> /{{pair[isFor].positiveFreq + pair[isFor].negativeFreq + pair[isFor].errorFreq + pair[isFor].notEnoughtVolFreq}}
-              <i class="iconeTab" *ngIf="pair[isFor].isBestFreq" nz-icon nzType="crown" nzTwotoneColor="orange" nzTheme="twotone"></i>
+              <strong>{{pair.isfor[isfor].isBestFreq}}</strong> /{{pair.isfor[isfor].positiveFreq + pair.isfor[isfor].negativeFreq + pair.isfor[isfor].errorFreq + pair.isfor[isfor].notEnoughtVolFreq}}
+              <i class="iconeTab" *ngIf="pair.isfor[isfor].isBestFreq" nz-icon nzType="crown" nzTwotoneColor="orange" nzTheme="twotone"></i>
             </nz-tag>
           </td>
           <!--freq no volume-->
           <td >
-            <span style="color: darkorange; ; font-weight: 500">{{pair[isFor].notEnoughtVolFreq}}</span>
-            / {{pair[isFor].positiveFreq + pair[isFor].negativeFreq + pair[isFor].errorFreq + pair[isFor].notEnoughtVolFreq}}
+            <span style="color: darkorange; ; font-weight: 500">{{pair.isfor[isfor].notEnoughtVolFreq}}</span>
+            / {{pair.isfor[isfor].positiveFreq + pair.isfor[isfor].negativeFreq + pair.isfor[isfor].errorFreq + pair.isfor[isfor].notEnoughtVolFreq}}
           </td>
 
           <!--freq erreur-->
           <td>
-            <span style="color: #ff6b6b; font-weight: 500">{{pair[isFor].errorFreq}}</span>
-            /{{pair[isFor].positiveFreq + pair[isFor].negativeFreq + pair[isFor].errorFreq + pair[isFor].notEnoughtVolFreq}}
+            <span style="color: #ff6b6b; font-weight: 500">{{pair.isfor[isfor].errorFreq}}</span>
+            /{{pair.isfor[isfor].positiveFreq + pair.isfor[isfor].negativeFreq + pair.isfor[isfor].errorFreq + pair.isfor[isfor].notEnoughtVolFreq}}
           </td>
 
           <!--nb markets-->

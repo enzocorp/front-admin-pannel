@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Subject, Subscribable} from "rxjs";
-import {Pair} from "../../models/pair";
 import {Severity} from "../../models/severity";
 import {Reason} from "../../models/reason";
-import {Global} from "../../models/global";
+import {Apikey} from "../../models/apikey";
 
 @Injectable({
   providedIn: 'root'
@@ -14,17 +13,16 @@ export class CryptoService {
 
 
   constructor(private http : HttpClient) { }
-  pairsSubject = new Subject<Pair[]>()
-  coinapiSubject = new Subject<Global['coinapi']>()
+  coinapiSubject = new Subject<Apikey>()
 
   url = location.protocol +'//'+ location.host + '/api1/crypto'
 
-  emmitCoinapi(content : Global['coinapi']) {
+  emmitCoinapi(content : Apikey) {
     this.coinapiSubject.next(content)
   }
 
-  get_coinapi() : void{
-    this.http.get<{data : Global['coinapi']}>(`${this.url}/coinapi`).subscribe()
+  get_coinapi_infos() : void{
+    this.http.get<{data : Apikey}>(`${this.url}/coinapi`).subscribe()
   }
 
   getSeverities() : Subscribable<{data : Severity[]}> {

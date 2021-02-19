@@ -35,6 +35,7 @@ export class FiltersMarketsComponent implements OnInit {
   ngOnInit(): void {
     this.initForms()
     this.subscribeFilters()
+    this.makeUpdate()
   }
 
   editRequest () {

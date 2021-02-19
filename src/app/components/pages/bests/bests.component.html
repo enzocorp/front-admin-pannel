@@ -1,46 +1,54 @@
 <router-outlet ></router-outlet>
 <h1>Les bests</h1>
+
 <nz-spin nzSize="large" [nzSpinning]="loading">
-<div class="d-flex align-items-center mt-5">
+  <div class="d-flex align-items-center mt-5 mb-5">
 
-  <div class="mb-5 mr-5">
-    <button (click)="calculBests()" class="button">
-      <div class="button__content">
-        <div class="button__icon">
-          <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-               width="80px" height="80px" viewBox="0 0 80 80" style="enable-background:new 0 0 80 80;" xml:space="preserve">
-      <g>
-        <path d="M64,48L64,48h-8V32h8c8.836,0,16-7.164,16-16S72.836,0,64,0c-8.837,0-16,7.164-16,16v8H32v-8c0-8.836-7.164-16-16-16
-          S0,7.164,0,16s7.164,16,16,16h8v16h-8l0,0l0,0C7.164,48,0,55.164,0,64s7.164,16,16,16c8.837,0,16-7.164,16-16l0,0v-8h16v7.98
-          c0,0.008-0.001,0.014-0.001,0.02c0,8.836,7.164,16,16,16s16-7.164,16-16S72.836,48.002,64,48z M64,8c4.418,0,8,3.582,8,8
-          s-3.582,8-8,8h-8v-8C56,11.582,59.582,8,64,8z M8,16c0-4.418,3.582-8,8-8s8,3.582,8,8v8h-8C11.582,24,8,20.417,8,16z M16,72
-          c-4.418,0-8-3.582-8-8s3.582-8,8-8l0,0h8v8C24,68.418,20.418,72,16,72z M32,48V32h16v16H32z M64,72c-4.418,0-8-3.582-8-8l0,0v-8
-          h7.999c4.418,0,8,3.582,8,8S68.418,72,64,72z"/>
-      </g>
-      </svg>
+    <!--Bouton geant-->
+    <div class="mr-5">
+      <button (click)="calculBests()" class="button">
+        <div class="button__content">
+          <div class="button__icon">
+            <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                 width="80px" height="80px" viewBox="0 0 80 80" style="enable-background:new 0 0 80 80;" xml:space="preserve">
+        <g>
+          <path d="M64,48L64,48h-8V32h8c8.836,0,16-7.164,16-16S72.836,0,64,0c-8.837,0-16,7.164-16,16v8H32v-8c0-8.836-7.164-16-16-16
+            S0,7.164,0,16s7.164,16,16,16h8v16h-8l0,0l0,0C7.164,48,0,55.164,0,64s7.164,16,16,16c8.837,0,16-7.164,16-16l0,0v-8h16v7.98
+            c0,0.008-0.001,0.014-0.001,0.02c0,8.836,7.164,16,16,16s16-7.164,16-16S72.836,48.002,64,48z M64,8c4.418,0,8,3.582,8,8
+            s-3.582,8-8,8h-8v-8C56,11.582,59.582,8,64,8z M8,16c0-4.418,3.582-8,8-8s8,3.582,8,8v8h-8C11.582,24,8,20.417,8,16z M16,72
+            c-4.418,0-8-3.582-8-8s3.582-8,8-8l0,0h8v8C24,68.418,20.418,72,16,72z M32,48V32h16v16H32z M64,72c-4.418,0-8-3.582-8-8l0,0v-8
+            h7.999c4.418,0,8,3.582,8,8S68.418,72,64,72z"/>
+        </g>
+        </svg>
+          </div>
+          <p class="button__text">calculer</p>
         </div>
-        <p class="button__text">calculer</p>
-      </div>
-    </button>
+      </button>
+    </div>
+
+    <!--Bouton reset des best-->
+    <div>
+      <button class="mb-3"
+              nz-button
+              nzDanger
+              [nzLoading]="totalCollectionBest === undefined"
+              nz-popconfirm
+              (nzOnConfirm)="resetBests()"
+              nzOkText="oui"
+              nzPopconfirmPlacement="bottom"
+              nzPopconfirmTitle="Veux-tu supprimer TOUTES les données des anciens calculs ???!"
+      >Clear les Bests ({{totalCollectionBest}} documents)
+      </button>
+      <app-filters-bests (onUpdate)="onUpdate()" [(request)]="request"></app-filters-bests>
+    </div>
+
+
   </div>
-
-  <button class="ml-5"
-          nz-button
-          nzDanger
-          [nzLoading]="totalCollectionBest === undefined"
-          nz-popconfirm
-          (nzOnConfirm)="resetBest()"
-          nzOkText="oui"
-          nzPopconfirmPlacement="bottom"
-          nzPopconfirmTitle="Veux-tu supprimer TOUTES les données des anciens calculs ???!"
-  >Supprimer les données accumulées ({{totalCollectionBest}} documents)
-  </button>
-
-</div>
 </nz-spin>
 
-<app-filters-bests (onUpdate)="onUpdate()" [(request)]="request"></app-filters-bests>
+
 <br>
+<!--Paginnation haute -->
 <app-pagination
   (onUpdate)="onUpdate()"
   [total]="pagination.total"
@@ -48,15 +56,22 @@
   [(index)]="pagination.index"
 ></app-pagination>
 
+<!--Dernière recherche effectuée-->
 <p class="mt-3">Dernière recherche : <span class="font-weight-bold" *ngIf="bests">{{bests[0]?.date | date : 'dd MMM yyyy Hнmm'}}</span></p>
 
+<!--Graph des meilleur pairs pour chaque prix-->
+<app-chart-podium [podiumSubject]="chartPodiumSubject"></app-chart-podium>
+
+
 <nz-spin [nzSpinning]="loading">
+  <!-- Liste des bests-->
   <nz-list nzGrid class="mt-5">
     <section  nz-row [nzGutter]="[14,45]" nzJustify="space-between">
-      <div nz-col *ngFor="let best of bests;let i = index " [nzXXl]="8" [nzXl]="12" [nzLg]="24" [nzXs]="24">
-        <div style="width: fit-content;margin: auto">
-          <nz-badge [nzCount]="i + 1 + pagination.paginate.skip" [nzOverflowCount]="pagination.total">
+      <div nz-col *ngFor="let best of bests;let i = index " [nzXXl]="12" [nzXl]="12" [nzLg]="24" [nzXs]="24">
 
+        <!--Card d'affichage d'un BEST-->
+        <div style="width: fit-content;margin: auto; position: relative" [ngStyle]="{'z-index': bests.length - i}">
+          <nz-badge [nzCount]="i + 1 + pagination.paginate.skip" [nzOverflowCount]="pagination.total">
             <nz-table  class="my-tabs" nzTemplateMode >
               <thead>
               <tr class="hoverBest" [routerLink]="best.name">
@@ -74,77 +89,38 @@
 
 
               <tr>
-                <td style="background: #FAFAFA"><strong><nz-tag nzColor="blue">1 000 $</nz-tag></strong></td>
+                <!--Is for -->
+                <td style="background: #FAFAFA"><nz-tag nzColor="blue"><strong>{{graphCongig.isfor}} </strong> $</nz-tag>  </td>
+                <!--Spread usd-->
                 <td>
-                  <button *ngIf="best.for1k.spread_usd; else elseNoVolume" nz-button nzType="primary" nzGhost> {{ best.for1k.spread_usd | exponentiel : 2  }} $</button>
+                  <button *ngIf="best.isfor[graphCongig.isfor].spread_usd; else noSpread" nz-button nzType="primary" nzGhost>
+                    {{ best.isfor[graphCongig.isfor].spread_usd | exponentiel : 2  }} $
+                  </button>
+                  <ng-template #noSpread> <nz-tag>NO SPREAD</nz-tag> </ng-template>
                 </td>
+                <!--Achat/vente-->
                 <td>
-                  <div  style="text-align: left!important;width: fit-content; margin: auto" *ngIf=" best.for1k.buy.price_quote &&  best.for1k.sell.price_quote; else elseNoVolume">
+                  <div  style="text-align: left!important;width: fit-content; margin: auto" *ngIf=" best.isfor[graphCongig.isfor].buy.price_quote &&  best.isfor[graphCongig.isfor].sell.price_quote; else elseNoVolume">
                     <nz-tag nzColor="green">
-                      <span style="font-weight: 500">{{ best.for1k.buy.price_quote | exponentiel : 7    }} </span> {{best.quote}}
-                      <a target="_blank" [href]="best.for1k.buy.website">| <span style="color: #0099ff">{{best.for1k.buy.market}}</span></a>
+                      <span style="font-weight: 500">{{ best.isfor[graphCongig.isfor].buy.price_quote | exponentiel : 7    }} </span> {{best.quote}}
+                      <a target="_blank" [href]="best.isfor[graphCongig.isfor].buy.website">| <span style="color: #0099ff">{{best.isfor[graphCongig.isfor].buy.market}}</span></a>
                     </nz-tag>
                     <br>
                     <nz-tag nzColor="gold">
-                      <span style="font-weight: 500">{{ best.for1k.sell.price_quote | exponentiel : 7    }} </span> {{best.quote}}
-                      <a target="_blank" [href]="best.for1k.sell.website">| <span style="color: #0099ff">{{best.for1k.sell.market}}</span></a>
+                      <span style="font-weight: 500">{{ best.isfor[graphCongig.isfor].sell.price_quote | exponentiel : 7    }} </span> {{best.quote}}
+                      <a target="_blank" [href]="best.isfor[graphCongig.isfor].sell.website">| <span style="color: #0099ff">{{best.isfor[graphCongig.isfor].sell.market}}</span></a>
                     </nz-tag>
                   </div>
                 </td>
-
-                <td><span style="font-weight: 500">{{ best.for1k.sell.volume_base | exponentiel : 6   }} </span>{{best.base}}</td>
-              </tr>
-              <ng-template #elseNoVolume >
-                <nz-tag>NO VOLUME</nz-tag>
-              </ng-template>
-
-              <tr>
-                <td style="background: #FAFAFA"><strong><nz-tag nzColor="blue">15 000 $</nz-tag></strong></td>
-                <td>
-                  <button *ngIf="best.for15k.spread_usd; else elseNoVolume" nz-button nzType="primary" nzGhost> {{ best.for15k.spread_usd| exponentiel : 2  }} $</button>
-                </td>
-                <td>
-                  <div  style="text-align: left!important;width: fit-content; margin: auto" *ngIf=" best.for15k.buy.price_quote &&  best.for15k.sell.price_quote; else elseNoVolume">
-                    <nz-tag nzColor="green">
-                      <span style="font-weight: 500">{{ best.for15k.buy.price_quote | exponentiel : 7    }} </span> {{best.quote}}
-                      <a target="_blank" [href]="best.for15k.buy.website">| <span style="color: #0099ff">{{best.for15k.buy.market}}</span></a>
-                    </nz-tag>
-                    <br>
-                    <nz-tag nzColor="gold">
-                      <span style="font-weight: 500">{{ best.for15k.sell.price_quote | exponentiel : 7    }} </span> {{best.quote}}
-                      <a target="_blank" [href]="best.for15k.sell.website">| <span style="color: #0099ff">{{best.for15k.sell.market}}</span></a>
-                    </nz-tag>
-                  </div>
-                </td>
-
-                <td><span style="font-weight: 500">{{ best.for15k.sell.volume_base | exponentiel : 6   }} </span>{{best.base}}</td>
+                <!--volume -->
+                <td><span style="font-weight: 500">{{ best.isfor[graphCongig.isfor].sell.volume_base | exponentiel : 6   }} </span>{{best.base}}</td>
               </tr>
 
-              <tr>
-                <td style="background: #FAFAFA"><strong><nz-tag nzColor="blue">30 000 $</nz-tag></strong></td>
-                <td>
-                  <button *ngIf="best.for30k.spread_usd; else elseNoVolume" nz-button nzType="primary" nzGhost> {{ best.for30k.spread_usd | exponentiel : 2  }} $</button>
-                </td>
-                <td>
-                  <div  style="text-align: left!important;width: fit-content; margin: auto" *ngIf=" best.for30k.buy.price_quote &&  best.for30k.sell.price_quote; else elseNoVolume">
-                    <nz-tag nzColor="green">
-                      <span style="font-weight: 500">{{ best.for30k.buy.price_quote | exponentiel : 7    }} </span> {{best.quote}}
-                      <a target="_blank" [href]="best.for30k.buy.website">| <span style="color: #0099ff">{{best.for30k.buy.market}}</span></a>
-                    </nz-tag>
-                    <br>
-                    <nz-tag nzColor="gold">
-                      <span style="font-weight: 500">{{ best.for30k.sell.price_quote | exponentiel : 7    }} </span> {{best.quote}}
-                      <a target="_blank" [href]="best.for30k.sell.website">| <span style="color: #0099ff">{{best.for30k.sell.market}}</span></a>
-                    </nz-tag>
-                  </div>
-                </td>
-
-                <td><span style="font-weight: 500">{{ best.for30k.sell.volume_base | exponentiel : 6   }} </span>{{best.base}}</td>
-              </tr>
 
 
               </tbody>
             </nz-table>
+
           </nz-badge>
         </div>
       </div>

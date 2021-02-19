@@ -16,6 +16,7 @@
   </div>
 </form>
 
+
 <section class="mt-2">
   <div>
 
@@ -23,7 +24,7 @@
     <br>
     <nz-switch nzSize="small" [ngModel]="true" nzCheckedChildren="croissant" nzUnCheckedChildren="décroissant" (click)="onChangeOrder()"></nz-switch>
     <br>
-    <nz-radio-group nzName="radiogroup" [(ngModel)]="sort.key" (ngModelChange)="makeUpdate()">
+    <nz-radio-group nzName="radiogroup" [(ngModel)]="sorterValue" (ngModelChange)="makeUpdate()">
       <aside>
         <label nz-radio nzValue="pair._id" class="mr-2">date d'ajout</label>
         <label nz-radio nzValue="pair.name" class="mr-2">nom</label>
@@ -34,24 +35,15 @@
       </aside>
 
       <div class="mt-2">
-        <label nz-radio [nzValue]="'pair.'+isFor+'.spreadMoyen_usd'" class="mr-2">spread($)</label>
-        <label nz-radio [nzValue]="'pair.'+isFor+'.negativeFreq'" class="mr-2">negatif</label>
-        <label nz-radio [nzValue]="'pair.'+isFor+'.positiveFreq'" class="mr-2">positif</label>
-        <label nz-radio [nzValue]="'pair.'+isFor+'.notEnoughtVolFreq'" class="mr-2">no volume</label>
-        <label nz-radio [nzValue]="'pair.'+isFor+'.isBestFreq'" class="mr-2">best pair</label>
+        <label nz-radio nzValue="spreadMoyen_usd" class="mr-2">spread($)</label>
+        <label nz-radio nzValue="negativeFreq" class="mr-2">negatif</label>
+        <label nz-radio nzValue="positiveFreq" class="mr-2">positif</label>
+        <label nz-radio nzValue="notEnoughtVolFreq" class="mr-2">no volume</label>
+        <label nz-radio nzValue="isBestFreq" class="mr-2">best pair</label>
       </div>
     </nz-radio-group>
 
-    <div class="mt-2"><strong style="font-size: 0.9rem" nz-typography >Pour :</strong></div>
-    <aside class="mt-2">
-      <nz-radio-group nzName="isFor" [(ngModel)]="isFor" (ngModelChange)="onIsForChange($event)">
-        <label nz-radio-button nzValue="for1k">1000 $</label>
-        <label nz-radio-button nzValue="for15k">15 000 $</label>
-        <label nz-radio-button nzValue="for30k">30 000 $</label>
-      </nz-radio-group>
-    </aside>
-
-   </div>
+  </div>
 </section>
 
 <ng-template #suffixIconSearch>
@@ -62,5 +54,6 @@
   <nz-select style="width: 150px" [(ngModel)]="searchMod" (ngModelChange)="this.filterform.controls['pair'].updateValueAndValidity({onlySelf : true})" >
     <nz-option nzLabel="Commence par" nzValue="startWith"></nz-option>
     <nz-option nzLabel="Termine par" nzValue="endWith"></nz-option>
+    <nz-option nzLabel="Contient" nzValue="contain"></nz-option>
   </nz-select>
 </ng-template>

@@ -7,6 +7,8 @@ import {SymbolsService} from "../../../services/http/symbols.service";
 import {CryptoService} from "../../../services/http/crypto.service";
 import {Pair} from "../../../models/pair";
 import {PairsService} from "../../../services/http/pairs.service";
+import {ConfigService} from "../../../services/autre/config.service";
+import {GraphConfig} from "../../../models/graphConfig";
 
 
 interface PairPlus extends Pair{
@@ -33,49 +35,55 @@ export class PairsComponent implements OnInit,OnDestroy {
     private symbolsServ : SymbolsService,
     private cryptoServ : CryptoService,
     private activatedRoute : ActivatedRoute,
-    private router : Router
+    private router : Router,
+    private configServ : ConfigService
   ) { }
 
   private subscription : Subscription = new Subscription()
   pairs : Array<PairPlus> = []
   colors = ['green','default','gold','orange','red']
   strSeverities  : string[]
-  isFor : 'for1k' | 'for15k' | 'for30k'
   pagination : {total : number,paginate : Paginate, index : number} = {
     total : null,
     paginate : {limit : 20, skip : 0 },
     index : 1
   }
-  loading : boolean = false
+  loading : boolean = true
   request : Paginate&Record<number,Object> = {
     skip : this.pagination.paginate.skip,
     limit : this.pagination.paginate.limit,
     0 :{$group :{_id: "$pair", markets: { $push: {market :"$market", excl : "$exclusion.isExclude"} }}},
     1 :{$lookup: { from: "pairs",localField: "_id",foreignField: "name", as: "pair"}},
     2 :{$unwind: "$pair"},
-    3 :{$match: {}},
-    4 :{$addFields: {markets : {$filter: {input: "$markets",as: "item",cond: { $eq: [ "$$item.excl", false ] }}}  }},
+    3 :{$match: {}}, //Gérer par le filtreur
+
+    4 :{$addFields: {markets : {$filter: {input: "$markets",as: "item",cond: { $eq: [ "$$item.excl", false ] }}}  }},/*Permet
+    de ne récupérer que les market des symbols non-exclus qui utilisent cette paire */
     5 :{$lookup: {from: "markets", localField: "markets.market", foreignField: "name", as: "markets"}},
-    6 :{$addFields: { markets : { $filter: {
+    6 :{$addFields: { markets : { $filter: {//Permet de ne récupérer que les markets non-exclus qui utilisent cette paire
             input: "$markets",
             as: "item",
             cond: { $eq: [ "$$item.exclusion.isExclude", false ]}
           }}}},
     7:{$project: {pair :1,_id :0, marketsUsed : {$size: "$markets"}}},
-    8:{$sort : {"pair._id" : 1}}
+    8:{$sort : {}} //Gérer par le filtreur
   }
   checked = false;
   indeterminate = false;
   setOfCheckedId = new Set<string>();
   arrChecked : Pair[] = []
+  isfor : number
 
   ngOnInit(): void {
     this.subscription.add(this.pairsService.pairsSubject.subscribe((pairs : PairPlus[])=> this.pairs = pairs ))
     this.cryptoServ.getSeverities().subscribe(
       ({data})=> {
-        this.onUpdate()
         this.strSeverities = data.sort((a, b) => a.severity - b.severity).map(severity => severity.description)
       })
+    this.subscription.add(this.configServ.isforSubject.subscribe((graph: GraphConfig)=> {
+      this.isfor = graph.isfor
+    } ))
+
   }
 
   /*-----------------------On update ----------------------------------*/
@@ -144,7 +152,7 @@ export class PairsComponent implements OnInit,OnDestroy {
 
   onReset(){
     this.pairsService.resetMoyennes().subscribe(
-      resp => this.onUpdate()
+      () => this.onUpdate()
     )
   }
 

@@ -3,9 +3,13 @@
 
     <div>
       <nz-tag  style="cursor: pointer;" (click)="refreshCoinapi()">
-        Requêtes restantes : <strong>{{coinapi?.remaining}}</strong>/{{coinapi?.limit}}
+        Requêtes restantes : <strong>{{apikey?.remaining}}</strong>/{{apikey?.limit}}
       </nz-tag>
-      <nz-tag>Reset le <strong>{{coinapi?.dateReflow | date : 'dd MMM yyyy Hнmm'}}</strong></nz-tag>
+      <nz-tag>Reset le <strong>{{apikey?.dateReflow | date : 'dd MMM yyyy Hнmm'}}</strong></nz-tag>
+    </div>
+
+    <div style="width: 35%;">
+      <app-isfor-slider></app-isfor-slider>
     </div>
 
     <button class="d-inline-block" nz-button nzType="primary" nzShape="round"><i nz-icon nzType="user-switch"></i>Connexion</button>
