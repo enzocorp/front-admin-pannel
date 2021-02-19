@@ -18,7 +18,11 @@
     </thead>
     <tbody>
     <tr *ngFor="let key of keys">
-      <td (click)="chooseThisKey(key.key)" class="changeKey" ><nz-badge *ngIf="key.used" nzStatus="success" ></nz-badge> {{key.key}}</td>
+      <td>
+        <nz-badge *ngIf="key.used" nzStatus="success" ></nz-badge>
+        <span (click)="chooseThisKey(key.key)" class="changeKey" >{{key.key}} </span>
+        <i (click)="refreshThisKey(key.key)" nz-icon nzType="redo" style="color: dodgerblue; cursor: pointer" nzTheme="outline"></i>
+      </td>
       <td>{{key.user_owner}}</td>
       <td>{{key.remaining}}</td>
       <td>{{key.limit - key.remaining}}</td>

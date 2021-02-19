@@ -55,4 +55,7 @@ export class ConfigService {
   chooseOtherKey(key : string){
     return this.http.get(`${this.url}/apikey/choose/${key}`)
   }
+  refreshApikey(key : string){
+    return this.http.get(`${this.url}/apikey/refresh/${key}`)
+  }
 }

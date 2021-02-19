@@ -78,7 +78,7 @@ export class ChartPodiumComponent implements OnInit {
       const xAxis : Label[] = []
       this.podiumBests.forEach(item =>{
         xAxis.push(JSON.stringify(item))
-        obj.data.push(item.spread_usd.toFixed(1))
+        obj.data.push(item.spread_usd)
       })
       this.lineChart.xLabels = xAxis
       this.lineChart.yData = [obj]

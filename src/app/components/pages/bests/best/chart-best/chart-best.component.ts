@@ -1,6 +1,5 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {BehaviorSubject, Subject} from "rxjs";
-import {Podium} from "../../../../../models/podium";
 import {BaseChartDirective, Label} from "ng2-charts";
 import {ChartDataSets} from "chart.js";
 import {Best, BestFor} from "../../../../../models/best";
@@ -49,7 +48,7 @@ export class ChartBestComponent implements OnInit {
           labelString: 'rentabilité'
         },
         ticks: {
-          callback: (value) => '+' + value + ' $' },
+          callback: (value) => value >= 0 ? '+' + value + ' $'  : value + ' $' },
       }],
       xAxes: [{
         scaleLabel: {
@@ -76,7 +75,7 @@ export class ChartBestComponent implements OnInit {
       const xAxis : Label[] = []
       for(const num in this.best.isfor){
         xAxis.push( JSON.stringify({isfor: this.best.isfor[+num], index : +num })  )
-        obj.data.push(this.best.isfor[+num].spread_usd.toFixed(1))
+        obj.data.push(this.best.isfor[+num].spread_usd)
       }
       this.lineChart.xLabels = xAxis
       this.lineChart.yData = [obj]
