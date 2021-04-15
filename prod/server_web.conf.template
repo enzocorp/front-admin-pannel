@@ -1,0 +1,10 @@
+server {
+    listen ${SITE_PORT};
+    server_name ${SITE_HOSTNAME};
+
+    root /var/www/html ;
+    location / {
+        try_files $uri /index.html;
+        error_log /var/log/nginx/log_server_web;
+    }
+}
