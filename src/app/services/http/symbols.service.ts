@@ -29,6 +29,11 @@ export class SymbolsService {
   unreportGroupSymbol(names : string[]) : Subscribable<any>{
     return this.http.post(`${this.url}/unreport`,{data : names})
   }
+
+  resetMoyennes() : Subscribable<any>{
+    return this.http.get(`${this.url}/resetMoyennes`)
+  }
+
   reportGroupSymbol(data : Omit<Symbol['exclusion'],'excludeBy'|'isExclude'>&string[]) : Subscribable<any>{
     return this.http.post(`${this.url}/report`, {data})
   }

@@ -150,8 +150,13 @@ export class PairsComponent implements OnInit,OnDestroy {
     this.router.navigate([str], {relativeTo : this.activatedRoute ,queryParams : {request}}).then()
   }
 
-  onReset(){
+  onResetPairs(){
     this.pairsService.resetMoyennes().subscribe(
+      () => this.onUpdate()
+    )
+  }
+  onResetSymbols(){
+    this.symbolsServ.resetMoyennes().subscribe(
       () => this.onUpdate()
     )
   }

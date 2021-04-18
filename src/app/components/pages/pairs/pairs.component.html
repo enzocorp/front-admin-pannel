@@ -2,10 +2,16 @@
 <button class="mb-3" nz-button nzType="primary" [nzLoading]="loading">
   <i nz-icon nzType="search"></i>Pairs trouvés <span class="badge badge-light ml-3">{{pagination.total}}</span>
 </button>
-<button (click)="onReset()" nz-popover class="mb-3 ml-5" nz-button nzType="danger"
-        nzContent="Réinitialise toutes les moyennes des paires EN SERVICES ! Les données des paires éliminées ne seront reset">
-  <i nz-icon nzType="retweet"></i>Réinitialiser les moyennes
+<button (click)="onResetPairs()" nz-popover class="mb-3 ml-5" nz-button nzType="danger"
+        nzContent="Réinitialise toutes les moyennes des paires EN SERVICES ! Les données des paires éliminées ne seront pas reset">
+  <i nz-icon nzType="retweet"></i>[Paires] Reset Moyennes
 </button>
+
+<button (click)="onResetSymbols()" nz-popover class="mb-3 ml-5" nz-button nzType="danger"
+        nzContent="Réinitialise toutes les moyennes des symboles EN SERVICES ! Les données des symboles éliminés ne seront pas reset">
+  <i nz-icon nzType="retweet"></i> [Symboles] Reset Moyennes
+</button>
+
 <div>
   <div class="mb-3">
     <app-filters-pairs (onUpdate)="onUpdate()" [(request)]="request"></app-filters-pairs>

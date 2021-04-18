@@ -58,4 +58,8 @@ export class ConfigService {
   refreshApikey(key : string){
     return this.http.get(`${this.url}/apikey/refresh/${key}`)
   }
+
+  refreshAllApikeys(){
+    return this.http.get(`${this.url}/apikey/refresh/all`)
+  }
 }
