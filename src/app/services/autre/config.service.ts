@@ -48,18 +48,18 @@ export class ConfigService {
     return this.http.post(`${this.url}/apikey`,key)
   }
 
-  removeApikey(key : string){
+  removeApikey(key : string) : Subscribable<any> {
     return this.http.delete(`${this.url}/apikey/${key}`)
   }
 
-  chooseOtherKey(key : string){
+  chooseOtherKey(key : string) : Subscribable<any>{
     return this.http.get(`${this.url}/apikey/choose/${key}`)
   }
-  refreshApikey(key : string){
+  refreshApikey(key : string) : Subscribable<any>{
     return this.http.get(`${this.url}/apikey/refresh/${key}`)
   }
 
-  refreshAllApikeys(){
-    return this.http.get(`${this.url}/apikey/refresh/all`)
+  refreshAllApikeys() : Subscribable<any>{
+    return this.http.get(`${this.url}/apikey/refresh`)
   }
 }

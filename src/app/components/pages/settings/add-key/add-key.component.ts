@@ -19,7 +19,6 @@ export class AddKeyComponent implements OnInit {
 
   ngOnInit(): void {
     this.initform()
-    this.configServ.refreshAllApikeys()
   }
 
   initform(){

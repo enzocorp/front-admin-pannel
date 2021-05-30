@@ -29,12 +29,14 @@ export class SettingsComponent implements OnInit {
   }
 
   chooseThisKey(key : string){
-    console.log('choose est dekcneché')
     this.configServ.chooseOtherKey(key).subscribe(()=> this.reload())
   }
 
   refreshThisKey(key : string){
     this.configServ.refreshApikey(key).subscribe(() => this.reload() )
+  }
+  refreshAllKeys(){
+    this.configServ.refreshAllApikeys().subscribe(()=>      this.reload() )
   }
 
 }

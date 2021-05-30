@@ -1,9 +1,9 @@
-<nz-divider nzOrientation="left" nzText="Clées coinapi"></nz-divider>
+<nz-divider nzOrientation="left" nzText="Clés CoinApi"></nz-divider>
 <div nz-row>
   <div nz-col [nzSpan]="6">
     <app-add-key (afterSubmit)="reload()"></app-add-key>
   </div>
-
+  <button (click)="refreshAllKeys()" nz-button nzType="primary">Raffraichir</button>
   <nz-table  [nzData]="keys" nz-col nzBordered>
     <thead>
     <tr>

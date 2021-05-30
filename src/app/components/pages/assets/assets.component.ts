@@ -26,8 +26,6 @@ export class AssetsComponent implements OnInit {
     private assetsService : AssetsService,
     private symbolsServ : SymbolsService,
     private cryptoServ : CryptoService,
-    private activatedRoute : ActivatedRoute,
-    private router : Router,
   ) { }
 
   private subscription : Subscription = new Subscription()
